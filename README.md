@@ -11,11 +11,23 @@ This folder contains a complete responsive static landing page for HerdHarbor.
 
 ## Current signup behavior
 
-The early-access form opens the visitor's email app and prepares a message addressed to:
+The early-access form submits directly to Formspree using this endpoint:
 
-`hello@herdharbor.com`
+`https://formspree.io/f/xgogovez`
 
-This works without a server or paid form service. Before public launch, the form can be connected to a database-backed signup service so submissions happen directly on the page.
+Visitors remain on the HerdHarbor website and receive an on-page success or error message. Submissions are stored in the Formspree dashboard and sent according to the notification settings configured for the form.
+
+## Updating the existing GitHub Pages site
+
+1. Open the `HERDHARBOR` repository.
+2. Choose **Add file → Upload files**.
+3. Upload all files and the `assets` folder from this package.
+4. Replace the existing `index.html`, `styles.css`, and `script.js` files when prompted.
+5. Commit with a message such as `Connect early-access form to Formspree`.
+6. Wait one to three minutes, then refresh `https://herdharbor.com`.
+7. Submit one test entry and confirm it appears in the Formspree dashboard.
+
+The included `CNAME` file preserves the custom domain `herdharbor.com`.
 
 ## Publish with GitHub Pages
 

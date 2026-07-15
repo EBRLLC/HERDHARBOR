@@ -263,8 +263,8 @@
           <p class="eyebrow light">Early access</p>
           <h2>Help shape HerdHarbor before launch.</h2>
           <p>
-            Join the list for product updates and private-beta opportunities. Your answers will open in your email
-            app and be sent directly to <strong>hello@herdharbor.com</strong>.
+            Join the list for product updates and private-beta opportunities. Your information will be submitted
+            securely and sent directly to the HerdHarbor early-access inbox.
           </p>
           <div class="waitlist-note">
             <strong>Best fit for the first beta:</strong>
@@ -272,7 +272,11 @@
           </div>
         </div>
 
-        <form class="waitlist-form" id="waitlist-form">
+        <form class="waitlist-form" id="waitlist-form"
+              action="https://formspree.io/f/xgogovez"
+              method="POST">
+          <input type="hidden" name="_subject" value="New HerdHarbor early-access signup">
+          <input type="text" name="_gotcha" class="honeypot" tabindex="-1" autocomplete="off" aria-hidden="true">
           <div class="field-row">
             <label>
               Name
@@ -326,7 +330,7 @@
 
           <button class="button button-full" type="submit">Join the early-access list</button>
           <p class="form-note">
-            This launch version uses your email app to send the request. A direct database signup can be connected later.
+            Your information is used only for HerdHarbor product updates and beta-testing invitations.
           </p>
           <div class="form-status" id="form-status" role="status" aria-live="polite"></div>
         </form>

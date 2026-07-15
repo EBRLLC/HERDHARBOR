@@ -15,38 +15,58 @@ if (navToggle && nav) {
   });
 }
 
-document.getElementById("year").textContent = new Date().getFullYear();
+const year = document.getElementById("year");
+if (year) {
+  year.textContent = new Date().getFullYear();
+}
 
 const form = document.getElementById("waitlist-form");
 const status = document.getElementById("form-status");
 
-form.addEventListener("submit", (event) => {
-  event.preventDefault();
+if (form && status) {
+  form.addEventListener("submit", async (event) => {
+    event.preventDefault();
 
-  if (!form.reportValidity()) {
-    return;
-  }
+    if (!form.reportValidity()) {
+      return;
+    }
 
-  const data = new FormData(form);
-  const subject = "HerdHarbor early-access request";
-  const betaInterest = data.get("beta_interest") === "Yes" ? "Yes" : "No";
+    const submitButton = form.querySelector('button[type="submit"]');
+    const originalButtonText = submitButton.textContent;
 
-  const body = [
-    "HerdHarbor Early-Access Request",
-    "",
-    `Name: ${data.get("name")}`,
-    `Email: ${data.get("email")}`,
-    `Animals raised: ${data.get("animals")}`,
-    `Approximate animal count: ${data.get("animal_count")}`,
-    `Current recordkeeping system: ${data.get("current_system")}`,
-    `Interested in beta testing: ${betaInterest}`,
-    "",
-    "Biggest recordkeeping frustration:",
-    data.get("frustration"),
-  ].join("\n");
+    submitButton.disabled = true;
+    submitButton.textContent = "Submitting…";
+    status.className = "form-status";
+    status.textContent = "Sending your early-access request…";
 
-  const mailto = `mailto:hello@herdharbor.com?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+    try {
+      const response = await fetch(form.action, {
+        method: form.method,
+        body: new FormData(form),
+        headers: {
+          "Accept": "application/json"
+        }
+      });
 
-  status.textContent = "Opening your email app with your answers prepared…";
-  window.location.href = mailto;
-});
+      if (response.ok) {
+        form.reset();
+        status.className = "form-status success";
+        status.textContent = "You’re on the list! Watch your inbox for HerdHarbor updates.";
+      } else {
+        const data = await response.json().catch(() => null);
+        const message =
+          data?.errors?.map((error) => error.message).join(", ") ||
+          "We could not submit the form. Please try again or email hello@herdharbor.com.";
+        throw new Error(message);
+      }
+    } catch (error) {
+      status.className = "form-status error";
+      status.textContent =
+        error.message ||
+        "We could not submit the form. Please try again or email hello@herdharbor.com.";
+    } finally {
+      submitButton.disabled = false;
+      submitButton.textContent = originalButtonText;
+    }
+  });
+}
