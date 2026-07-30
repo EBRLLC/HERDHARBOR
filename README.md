@@ -1,6 +1,8 @@
-# HerdHarbor landing page
+# HerdHarbor website
 
-This folder contains a complete responsive static landing page for HerdHarbor.
+This repository contains the responsive public website at `https://herdharbor.com`.
+It describes the current HerdHarbor tester build and links to the live web app at
+`https://app.herdharbor.com`.
 
 ## Files
 
@@ -9,13 +11,15 @@ This folder contains a complete responsive static landing page for HerdHarbor.
 - `script.js` — mobile navigation and early-access form behavior
 - `assets/herdharbor-icon.png` — approved app icon
 
-## Current signup behavior
+## Current tester-list behavior
 
-The early-access form submits directly to Formspree using this endpoint:
+The tester update form submits directly to Formspree using this endpoint:
 
 `https://formspree.io/f/xgogovez`
 
-Visitors remain on the HerdHarbor website and receive an on-page success or error message. Submissions are stored in the Formspree dashboard and sent according to the notification settings configured for the form.
+Visitors remain on the HerdHarbor website and receive an on-page success or error
+message. Submissions are stored in the Formspree dashboard and sent according to
+the notification settings configured for the form.
 
 ## Updating the existing GitHub Pages site
 
@@ -23,7 +27,7 @@ Visitors remain on the HerdHarbor website and receive an on-page success or erro
 2. Choose **Add file → Upload files**.
 3. Upload all files and the `assets` folder from this package.
 4. Replace the existing `index.html`, `styles.css`, and `script.js` files when prompted.
-5. Commit with a message such as `Connect early-access form to Formspree`.
+5. Commit with a message describing the website update.
 6. Wait one to three minutes, then refresh `https://herdharbor.com`.
 7. Submit one test entry and confirm it appears in the Formspree dashboard.
 
@@ -40,10 +44,10 @@ The included `CNAME` file preserves the custom domain `herdharbor.com`.
 7. In GitHub Pages settings, add the custom domain `herdharbor.com`.
 8. GitHub will show the DNS records that need to be entered in Porkbun.
 
-## Recommended production URL structure
+## Production URL structure
 
 - `herdharbor.com` — public landing page
-- `app.herdharbor.com` — future application
+- `app.herdharbor.com` — live pre-alpha tester application
 - `herdharbor.app` — redirect to the public page or app download page
 
 ## Brand palette
