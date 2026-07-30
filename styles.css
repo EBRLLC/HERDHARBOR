@@ -21,6 +21,10 @@ html {
   scroll-behavior: smooth;
 }
 
+main section[id] {
+  scroll-margin-top: 92px;
+}
+
 body {
   margin: 0;
   color: var(--ink);
@@ -703,6 +707,10 @@ h3 {
   display: block;
   margin-bottom: 5px;
   color: white;
+}
+
+.tester-actions {
+  margin-top: 24px;
 }
 
 .waitlist-form {

@@ -51,7 +51,7 @@ if (form && status) {
       if (response.ok) {
         form.reset();
         status.className = "form-status success";
-        status.textContent = "You’re on the list! Watch your inbox for HerdHarbor updates.";
+        status.textContent = "You’re on the tester update list! Watch your inbox for HerdHarbor news.";
       } else {
         const data = await response.json().catch(() => null);
         const message =
