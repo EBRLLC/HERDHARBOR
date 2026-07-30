@@ -1,19 +1,36 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="description" content="HerdHarbor is affordable livestock recordkeeping for rabbit breeders, homesteaders, and small farms—without punishing you for growing.">
+  <meta name="description" content="HerdHarbor is a secure, multi-species livestock recordkeeping app for breeders, homesteaders, and small farms. Track animals, pedigrees, breeding, health, tasks, and farm finances in one place.">
   <meta name="theme-color" content="#0D2540">
 
+  <link rel="canonical" href="https://herdharbor.com/">
   <meta property="og:title" content="HerdHarbor — Livestock records without limits">
-  <meta property="og:description" content="Modern animal, breeding, litter, health, task, and pedigree records for real breeders and homesteaders.">
+  <meta property="og:description" content="Secure animal records, pedigrees, breeding, health, tasks, and farm finances for breeders, homesteaders, and small farms.">
   <meta property="og:type" content="website">
+  <meta property="og:url" content="https://herdharbor.com/">
+  <meta property="og:image" content="https://herdharbor.com/assets/herdharbor-icon.png">
+  <meta name="twitter:card" content="summary_large_image">
 
   <title>HerdHarbor — Livestock records without limits</title>
   <link rel="icon" href="assets/herdharbor-icon.png">
   <link rel="apple-touch-icon" href="assets/herdharbor-icon.png">
-  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="styles.css?v=2">
+
+  <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "SoftwareApplication",
+      "name": "HerdHarbor",
+      "applicationCategory": "BusinessApplication",
+      "operatingSystem": "Web",
+      "url": "https://herdharbor.com/",
+      "description": "Multi-species livestock recordkeeping for breeders, homesteaders, and small farms.",
+      "softwareVersion": "0.2.12"
+    }
+  </script>
 </head>
 <body>
   <a class="skip-link" href="#main">Skip to content</a>
@@ -34,7 +51,7 @@
         <a href="#features">Features</a>
         <a href="#mission">Why HerdHarbor</a>
         <a href="#faq">FAQ</a>
-        <a class="button button-small" href="#waitlist">Join early access</a>
+        <a class="button button-small" href="https://app.herdharbor.com/">Open the app</a>
       </nav>
     </div>
   </header>
@@ -43,153 +60,167 @@
     <section class="hero">
       <div class="container hero-grid">
         <div class="hero-copy">
-          <p class="eyebrow">Built for breeders, homesteaders, and small farms</p>
+          <p class="eyebrow">Now testing · HerdHarbor v0.2.12</p>
           <h1>Livestock records <span>without limits.</span></h1>
           <p class="hero-lead">
-            Manage animals, breedings, litters, pedigrees, health records, and daily tasks
-            without being punished for growing your herd.
+            Keep animal profiles, pedigrees, breedings, litters, health records,
+            tasks, photos, and farm finances together in one secure account.
           </p>
 
           <div class="hero-actions">
-            <a class="button" href="#waitlist">Join the early-access list</a>
-            <a class="button button-secondary" href="#features">See what is coming</a>
+            <a class="button" href="https://app.herdharbor.com/">Open HerdHarbor</a>
+            <a class="button button-secondary" href="#features">Explore current features</a>
           </div>
 
-          <ul class="trust-list" aria-label="HerdHarbor priorities">
-            <li>Fair pricing</li>
-            <li>Rabbit-first launch</li>
-            <li>Designed for every species</li>
+          <ul class="trust-list" aria-label="Current HerdHarbor features">
+            <li>Secure accounts and cloud sync</li>
+            <li>Multi-species records</li>
+            <li>Active tester build</li>
           </ul>
         </div>
 
-        <div class="product-preview" aria-label="HerdHarbor dashboard preview">
+        <section class="product-preview" aria-label="HerdHarbor dashboard preview">
           <div class="preview-topbar">
             <div class="preview-brand">
               <img src="assets/herdharbor-icon.png" alt="" width="36" height="36">
               <span>HerdHarbor</span>
             </div>
-            <div class="avatar">HH</div>
+            <div class="avatar" title="Version 0.2.12">v12</div>
           </div>
 
           <div class="preview-body">
             <div class="preview-heading">
               <div>
-                <p class="mini-label">Overview</p>
-                <h2>Your homestead at a glance</h2>
+                <p class="mini-label">Your operation</p>
+                <h2>Everything in one harbor</h2>
               </div>
-              <span class="status-pill">Private beta</span>
+              <span class="status-pill">Cloud sync active</span>
             </div>
 
             <div class="stat-grid">
               <article class="stat-card">
                 <div class="stat-icon" aria-hidden="true">♞</div>
                 <strong>Animals</strong>
-                <span>Profiles, IDs, breeds, locations</span>
+                <span>Profiles, photos, IDs, breeds, and locations</span>
               </article>
               <article class="stat-card">
-                <div class="stat-icon" aria-hidden="true">♡</div>
-                <strong>Breedings</strong>
-                <span>Pairings, due dates, litters</span>
+                <div class="stat-icon" aria-hidden="true">⌘</div>
+                <strong>Pedigrees</strong>
+                <span>Four generations with print and PDF tools</span>
               </article>
               <article class="stat-card">
-                <div class="stat-icon" aria-hidden="true">✚</div>
-                <strong>Health</strong>
-                <span>Weights, treatments, notes</span>
+                <div class="stat-icon" aria-hidden="true">$</div>
+                <strong>Budget</strong>
+                <span>Income, expenses, plans, and cost per head</span>
               </article>
               <article class="stat-card">
                 <div class="stat-icon" aria-hidden="true">✓</div>
-                <strong>Tasks</strong>
-                <span>Reminders that keep you moving</span>
+                <strong>Daily work</strong>
+                <span>Health, weights, breedings, litters, and tasks</span>
               </article>
             </div>
 
             <div class="activity-card">
               <div class="activity-title">
-                <strong>Upcoming records</strong>
-                <span>Sample view</span>
+                <strong>Recently added</strong>
+                <span>Tester build</span>
               </div>
               <div class="activity-row">
                 <span class="dot teal"></span>
                 <div>
-                  <strong>Nest box reminder</strong>
-                  <small>Doe 14 · due this week</small>
+                  <strong>Dog and horse records</strong>
+                  <small>Dedicated species and breed lists</small>
                 </div>
               </div>
               <div class="activity-row">
                 <span class="dot green"></span>
                 <div>
-                  <strong>Weight check</strong>
-                  <small>Litter B · scheduled tomorrow</small>
+                  <strong>Breed memory</strong>
+                  <small>Search common breeds or save your own</small>
                 </div>
               </div>
               <div class="activity-row">
                 <span class="dot navy"></span>
                 <div>
-                  <strong>Health note</strong>
-                  <small>Boer doe 6 · follow-up due</small>
+                  <strong>Stable account recovery</strong>
+                  <small>Password reset tested and working</small>
                 </div>
               </div>
             </div>
           </div>
-        </div>
+        </section>
       </div>
     </section>
 
-    <section class="problem-strip" aria-label="HerdHarbor promise">
+    <section class="problem-strip" aria-label="Current HerdHarbor status">
       <div class="container problem-grid">
-        <p class="problem-kicker">The problem</p>
+        <p class="problem-kicker">Current status</p>
         <p>
-          Breeders should not face a huge subscription jump simply because they own more than a handful of animals.
+          HerdHarbor has moved beyond the idea stage. The working pre-alpha is online
+          and being improved with real breeder feedback.
         </p>
-        <p class="problem-answer">HerdHarbor is being built differently.</p>
+        <p class="problem-answer">Create an account and test the current build today.</p>
       </div>
     </section>
 
     <section class="section" id="features">
       <div class="container">
         <div class="section-heading">
-          <p class="eyebrow">The first release</p>
-          <h2>Everything needed to replace notebooks and scattered spreadsheets.</h2>
+          <p class="eyebrow">Available now</p>
+          <h2>Practical tools for the barn, home, and office.</h2>
           <p>
-            The private beta will focus on the records breeders use every day, with room to expand into a complete homestead platform.
+            HerdHarbor combines everyday animal records with pedigree, planning, and
+            financial tools in a responsive app that works on phones, tablets, and computers.
           </p>
         </div>
 
         <div class="feature-grid">
           <article class="feature-card">
             <span class="feature-number">01</span>
-            <h3>Animal profiles</h3>
-            <p>Track species, breed, sex, ID, birth date, color, location, photos, notes, and status.</p>
+            <h3>Multi-species animal profiles</h3>
+            <p>Track rabbits, poultry, dogs, horses, goats, sheep, cattle, pigs, and custom animals with permanent profiles and photos.</p>
           </article>
 
           <article class="feature-card">
             <span class="feature-number">02</span>
-            <h3>Breeding and litter records</h3>
-            <p>Record pairings, due dates, nest-box dates, births, outcomes, weaning, and rebreeding plans.</p>
+            <h3>Breed lists that remember</h3>
+            <p>Start typing to search common breeds. Add a breed once and HerdHarbor remembers it for that species.</p>
           </article>
 
           <article class="feature-card">
             <span class="feature-number">03</span>
-            <h3>Pedigrees</h3>
-            <p>Build clean family trees and keep lineage connected to each animal’s permanent record.</p>
+            <h3>Breeding and litter records</h3>
+            <p>Record pairings, due dates, nest-box dates, births, outcomes, weaning details, and breeding notes.</p>
           </article>
 
           <article class="feature-card">
             <span class="feature-number">04</span>
-            <h3>Health and weights</h3>
-            <p>Keep treatment history, medication notes, vaccinations, weights, and follow-up reminders together.</p>
+            <h3>Four-generation pedigrees</h3>
+            <p>Build connected family trees, attach source files, and create clean sale pedigrees ready to print or save as PDF.</p>
           </article>
 
           <article class="feature-card">
             <span class="feature-number">05</span>
-            <h3>Tasks and reminders</h3>
-            <p>Stay ahead of due dates, nest boxes, health checks, weaning, cage cleaning, and recurring chores.</p>
+            <h3>Health, weights, and tasks</h3>
+            <p>Keep treatments, medications, vaccinations, observations, follow-up dates, chores, and reminders together.</p>
           </article>
 
           <article class="feature-card">
             <span class="feature-number">06</span>
-            <h3>Exports and printable records</h3>
-            <p>Keep ownership of your information with practical exports, cage cards, and printable reports.</p>
+            <h3>Budget and cost per head</h3>
+            <p>Track income, operating expenses, capital purchases, monthly plans, species costs, and estimated cost by animal.</p>
+          </article>
+
+          <article class="feature-card">
+            <span class="feature-number">07</span>
+            <h3>Secure accounts and cloud sync</h3>
+            <p>Sign in to load protected records across sessions, save changes to the cloud, recover a password, and retain an offline recovery copy.</p>
+          </article>
+
+          <article class="feature-card">
+            <span class="feature-number">08</span>
+            <h3>Built around your operation</h3>
+            <p>Add a farm or rabbitry logo, upload animal photos, choose light or dark mode, export backups, and send feedback inside the app.</p>
           </article>
         </div>
       </div>
@@ -201,29 +232,29 @@
           <img src="assets/herdharbor-icon.png" alt="HerdHarbor shield with lighthouse and livestock">
         </div>
         <div class="mission-copy">
-          <p class="eyebrow">Why HerdHarbor</p>
-          <h2>Your record system should become more useful as you grow—not dramatically more expensive.</h2>
+          <p class="eyebrow light">Why HerdHarbor</p>
+          <h2>Your record system should become more useful as you grow—not harder to afford.</h2>
           <p>
             HerdHarbor began after livestock and rabbit breeders voiced the same frustration:
-            affordable plans often become unaffordable as soon as their operation grows.
+            useful recordkeeping tools can become expensive or complicated as an operation grows.
           </p>
           <p>
-            We are building a modern, practical platform around transparent pricing, fast barn-side data entry,
-            and the records real breeders already rely on.
+            The goal is a modern, practical platform built around fast barn-side entry,
+            clear records, user ownership of data, and feedback from the people who raise animals.
           </p>
 
           <div class="promise-list">
             <div>
-              <strong>No surprise price cliffs</strong>
-              <span>Growth should be a success, not a penalty.</span>
+              <strong>Fair pricing remains the goal</strong>
+              <span>Growth should be a success, not a pricing penalty.</span>
             </div>
             <div>
-              <strong>Designed with real breeders</strong>
-              <span>Beta feedback will shape the product.</span>
+              <strong>Tested by real breeders</strong>
+              <span>Current features are being shaped by hands-on tester feedback.</span>
             </div>
             <div>
-              <strong>Built to expand</strong>
-              <span>Rabbit-first, with support for mixed livestock and homesteads.</span>
+              <strong>Ready for mixed operations</strong>
+              <span>One workspace can hold rabbits, poultry, dogs, horses, livestock, and other animals.</span>
             </div>
           </div>
         </div>
@@ -233,25 +264,25 @@
     <section class="section process-section">
       <div class="container">
         <div class="section-heading compact">
-          <p class="eyebrow">The plan</p>
-          <h2>Simple now. Powerful later.</h2>
+          <p class="eyebrow">The road ahead</p>
+          <h2>Working now. Improving every release.</h2>
         </div>
 
         <div class="process-grid">
           <article>
             <span>1</span>
-            <h3>Launch the private beta</h3>
-            <p>Start with animal, breeding, litter, pedigree, health, and task records.</p>
+            <h3>Test the current build</h3>
+            <p>Create an account and use the same animal, pedigree, health, task, budget, and backup tools available to current testers.</p>
           </article>
           <article>
             <span>2</span>
-            <h3>Build from breeder feedback</h3>
-            <p>Refine the workflows people use in the barn before adding unnecessary complexity.</p>
+            <h3>Refine from feedback</h3>
+            <p>Fix problems quickly and improve the workflows breeders use most before calling the product finished.</p>
           </article>
           <article>
             <span>3</span>
-            <h3>Grow into Homestead OS</h3>
-            <p>Add inventory, finances, poultry, equipment, garden planning, and team access over time.</p>
+            <h3>Expand with purpose</h3>
+            <p>Add deeper species-specific tools and homestead features without losing the simple daily experience.</p>
           </article>
         </div>
       </div>
@@ -260,22 +291,25 @@
     <section class="section waitlist-section" id="waitlist">
       <div class="container waitlist-grid">
         <div class="waitlist-copy">
-          <p class="eyebrow light">Early access</p>
-          <h2>Help shape HerdHarbor before launch.</h2>
+          <p class="eyebrow light">Tester access</p>
+          <h2>Try HerdHarbor and help shape what comes next.</h2>
           <p>
-            Join the list for product updates and private-beta opportunities. Your information will be submitted
-            securely and sent directly to the HerdHarbor early-access inbox.
+            The current pre-alpha is available online. Create an account to begin testing,
+            or join the update list for release news and future testing opportunities.
           </p>
+          <div class="hero-actions tester-actions">
+            <a class="button" href="https://app.herdharbor.com/">Open the tester app</a>
+          </div>
           <div class="waitlist-note">
-            <strong>Best fit for the first beta:</strong>
-            rabbit breeders, poultry keepers, and mixed-livestock homesteaders who actively maintain breeding or health records.
+            <strong>Pre-alpha reminder</strong>
+            HerdHarbor is actively being tested. Export regular JSON backups and report any issue through the in-app feedback button.
           </div>
         </div>
 
         <form class="waitlist-form" id="waitlist-form"
               action="https://formspree.io/f/xgogovez"
               method="POST">
-          <input type="hidden" name="_subject" value="New HerdHarbor early-access signup">
+          <input type="hidden" name="_subject" value="New HerdHarbor tester-list signup">
           <input type="text" name="_gotcha" class="honeypot" tabindex="-1" autocomplete="off" aria-hidden="true">
           <div class="field-row">
             <label>
@@ -291,7 +325,7 @@
           <div class="field-row">
             <label>
               What do you raise?
-              <input type="text" name="animals" placeholder="Rabbits, chickens, goats…" required>
+              <input type="text" name="animals" placeholder="Rabbits, dogs, horses, poultry…" required>
             </label>
             <label>
               Approximate animal count
@@ -325,12 +359,12 @@
 
           <label class="check-label">
             <input type="checkbox" name="beta_interest" value="Yes">
-            <span>I am interested in testing an early version.</span>
+            <span>I am interested in testing HerdHarbor.</span>
           </label>
 
-          <button class="button button-full" type="submit">Join the early-access list</button>
+          <button class="button button-full" type="submit">Join the tester update list</button>
           <p class="form-note">
-            Your information is used only for HerdHarbor product updates and beta-testing invitations.
+            Your information is used only for HerdHarbor product updates and testing invitations.
           </p>
           <div class="form-status" id="form-status" role="status" aria-live="polite"></div>
         </form>
@@ -341,28 +375,33 @@
       <div class="container faq-grid">
         <div class="section-heading compact">
           <p class="eyebrow">Questions</p>
-          <h2>What to expect.</h2>
+          <h2>What to know before testing.</h2>
         </div>
 
         <div class="accordion">
           <details>
-            <summary>Will HerdHarbor be only for rabbits?</summary>
-            <p>No. Rabbits are the first launch focus because their breeding and litter workflows are an excellent test case. The system is being structured for poultry, goats, sheep, cattle, pigs, and mixed homesteads.</p>
+            <summary>What species can I track now?</summary>
+            <p>The current build includes rabbits, chickens, ducks, turkeys, dogs, horses, goats, sheep, cattle, pigs, and an Other category for custom animals.</p>
           </details>
 
           <details>
-            <summary>How much will it cost?</summary>
-            <p>Final pricing has not been announced. The guiding promise is fair, transparent pricing without an extreme jump simply because the user has more animals.</p>
+            <summary>Are my records synced?</summary>
+            <p>Yes. The tester build uses secure accounts and cloud sync, with a local recovery copy when available. Because HerdHarbor is still pre-alpha, testers should also export regular JSON backups.</p>
           </details>
 
           <details>
-            <summary>Will I be able to import existing records?</summary>
-            <p>Import and export are part of the product direction. The specific file formats will be determined from beta-user needs and the systems breeders currently use.</p>
+            <summary>What can I import or export?</summary>
+            <p>You can export and restore complete JSON backups, download budget records as CSV, attach pedigree source images or PDFs, and print pedigrees or save them as PDF.</p>
           </details>
 
           <details>
-            <summary>When will the app launch?</summary>
-            <p>HerdHarbor will begin with a small private beta. Early-access members will receive progress updates and invitations as testing opens.</p>
+            <summary>How much will HerdHarbor cost?</summary>
+            <p>Final pricing has not been announced. The guiding promise remains fair, transparent pricing without an extreme jump simply because a user has more animals.</p>
+          </details>
+
+          <details>
+            <summary>Is HerdHarbor finished?</summary>
+            <p>Not yet. Version 0.2.12 is an active pre-alpha tester build. Core workflows are working, but features and designs may change as issues are fixed and tester feedback is applied.</p>
           </details>
         </div>
       </div>
@@ -381,14 +420,15 @@
 
       <div class="footer-links">
         <a href="mailto:hello@herdharbor.com">hello@herdharbor.com</a>
+        <a href="https://app.herdharbor.com/">Open the app</a>
         <a href="#features">Features</a>
-        <a href="#waitlist">Early access</a>
+        <a href="#waitlist">Tester updates</a>
       </div>
 
       <p class="copyright">© <span id="year"></span> HerdHarbor. All rights reserved.</p>
     </div>
   </footer>
 
-  <script src="script.js"></script>
+  <script src="script.js?v=2"></script>
 </body>
 </html>
