@@ -1,7 +1,7 @@
 # HerdHarbor website
 
 This repository contains the responsive public website at `https://herdharbor.com`.
-It describes the current HerdHarbor v0.5.2 tester build and links to the live web app at
+It describes the current HerdHarbor v0.5.3 tester build and links to the live web app at
 `https://app.herdharbor.com`.
 
 ## Files
