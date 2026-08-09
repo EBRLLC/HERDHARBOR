@@ -1,7 +1,7 @@
 # HerdHarbor website
 
 This repository contains the responsive public website at `https://herdharbor.com`.
-It describes the current HerdHarbor tester build and links to the live web app at
+It describes the current HerdHarbor v0.5.0 tester build and links to the live web app at
 `https://app.herdharbor.com`.
 
 ## Files
@@ -10,6 +10,7 @@ It describes the current HerdHarbor tester build and links to the live web app a
 - `styles.css` — approved HerdHarbor colors and responsive design
 - `script.js` — mobile navigation and early-access form behavior
 - `assets/herdharbor-icon.png` — approved app icon
+- `googlee5dfd9152782ad09.html` — permanent Google Search Console verification file
 
 ## Current tester-list behavior
 
@@ -31,7 +32,8 @@ the notification settings configured for the form.
 6. Wait one to three minutes, then refresh `https://herdharbor.com`.
 7. Submit one test entry and confirm it appears in the Formspree dashboard.
 
-The included `CNAME` file preserves the custom domain `herdharbor.com`.
+The included `CNAME` file preserves the custom domain `herdharbor.com`. The Google
+verification file and the verification meta tag in `index.html` must remain in place.
 
 ## Publish with GitHub Pages
 
