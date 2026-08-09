@@ -856,6 +856,30 @@ details p {
   text-align: right;
 }
 
+/* Store-readiness policy and support pages */
+.legal-main { min-height: 70vh; padding: 72px 0 96px; }
+.legal-shell { width: min(820px, calc(100% - 32px)); margin: 0 auto; }
+.legal-shell h1 { margin: 12px 0 16px; font-size: clamp(2.2rem, 7vw, 4rem); }
+.legal-shell h2 { margin: 36px 0 10px; font-size: 1.35rem; }
+.legal-shell h3 { margin: 24px 0 8px; font-size: 1.05rem; }
+.legal-shell p, .legal-shell li { color: var(--slate, #455564); line-height: 1.75; }
+.legal-shell ul, .legal-shell ol { padding-left: 24px; }
+.legal-meta { margin-bottom: 32px; color: var(--teal, #2e7d7b); font-weight: 700; }
+.legal-card { margin: 28px 0; padding: 24px; border: 1px solid rgba(13,37,64,.12); border-radius: 18px; background: #fff; box-shadow: 0 14px 40px rgba(13,37,64,.07); }
+.legal-card label { display: grid; gap: 7px; margin: 16px 0; color: #0d2540; font-weight: 700; }
+.legal-card input, .legal-card textarea, .legal-card select { width: 100%; padding: 12px 14px; border: 1px solid #a9b6bf; border-radius: 10px; font: inherit; }
+.legal-card textarea { min-height: 120px; resize: vertical; }
+.legal-card .button { border: 0; cursor: pointer; }
+.legal-card .button:disabled { cursor: wait; opacity: .65; }
+.legal-status { min-height: 1.6em; margin-top: 14px; font-weight: 700; }
+.legal-status.success { color: #24633d; }
+.legal-status.error { color: #9a2e2e; }
+.danger-card { border-color: rgba(154,46,46,.25); }
+.danger-card .button { background: #9a2e2e; }
+.page-nav { display: flex; flex-wrap: wrap; gap: 14px 22px; }
+.page-nav a { color: #0d5f66; font-weight: 700; }
+@media (max-width: 600px) { .legal-main { padding-top: 44px; } .legal-card { padding: 18px; } }
+
 @media (max-width: 960px) {
   .hero-grid,
   .mission-grid,
