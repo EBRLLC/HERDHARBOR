@@ -1,7 +1,7 @@
 # HerdHarbor website
 
 This repository contains the responsive public website at `https://herdharbor.com`.
-It describes the current HerdHarbor v0.5.3 tester build and links to the live web app at
+It describes the current HerdHarbor Alpha v1.0.0 tester build and links to the live web app at
 `https://app.herdharbor.com`.
 
 ## Files
@@ -49,7 +49,7 @@ verification file and the verification meta tag in `index.html` must remain in p
 ## Production URL structure
 
 - `herdharbor.com` — public landing page
-- `app.herdharbor.com` — live pre-alpha tester application
+- `app.herdharbor.com` — live alpha tester application
 - `herdharbor.app` — redirect to the public page or app download page
 
 ## Brand palette
