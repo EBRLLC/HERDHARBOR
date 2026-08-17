@@ -346,12 +346,13 @@ h3 {
 
 .avatar {
   display: grid;
-  width: 38px;
+  min-width: 58px;
   height: 38px;
+  padding: 0 8px;
   place-items: center;
   color: var(--navy);
   background: var(--cream);
-  border-radius: 50%;
+  border-radius: 999px;
   font-size: 0.78rem;
   font-weight: 900;
 }
