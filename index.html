@@ -34,6 +34,172 @@
       "featureList": "Animal records, visual multi-generation pedigrees, cattle ear-tag identification, breeding and birth management, educational symptom guide, health and tasks, production and hay tracking, full-year budgets, customers, sales, payments, QR cards, and animal transfers"
     }
   </script>
+
+  <style id="herdharbor-business-section-styles">
+    /* Business preview — isolated styles so the rest of HerdHarbor is unchanged */
+    #business {
+      padding-top: 88px;
+    }
+
+    #business .section-heading {
+      max-width: 860px;
+      margin-bottom: 34px;
+    }
+
+    .business-origin {
+      display: grid;
+      grid-template-columns: minmax(230px, 0.75fr) minmax(0, 2fr);
+      margin: 12px 0 40px;
+      overflow: hidden;
+      color: #fff;
+      background: #0D2A46;
+      border: 1px solid rgba(130, 208, 204, 0.2);
+      border-radius: 20px;
+      box-shadow: 0 18px 45px rgba(13, 37, 64, 0.12);
+    }
+
+    .business-origin-label {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      gap: 10px;
+      padding: 32px;
+      background: rgba(7, 24, 39, 0.28);
+      border-right: 1px solid rgba(255, 255, 255, 0.14);
+    }
+
+    .business-origin-label .eyebrow {
+      margin: 0;
+      color: #82D0CC;
+    }
+
+    .business-origin-label h3 {
+      margin: 0;
+      color: #fff;
+      font-size: clamp(1.35rem, 2vw, 1.8rem);
+      line-height: 1.2;
+    }
+
+    .business-origin-copy {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      gap: 16px;
+      padding: 34px 40px;
+    }
+
+    .business-origin-copy .business-origin-lead {
+      margin: 0;
+      max-width: 900px;
+      color: #fff;
+      font-size: clamp(1.2rem, 1.7vw, 1.65rem);
+      font-weight: 700;
+      line-height: 1.45;
+    }
+
+    .business-origin-copy .business-origin-support {
+      margin: 0;
+      max-width: 900px;
+      color: #DCE7ED;
+      font-size: 1rem;
+      line-height: 1.7;
+    }
+
+    #business .business-feature-grid {
+      margin-top: 0;
+    }
+
+    #business .business-feature-grid .feature-card {
+      display: flex;
+      flex-direction: column;
+      min-height: 0;
+    }
+
+    #business .business-feature-grid .feature-number {
+      margin-bottom: 28px;
+    }
+
+    #business .business-feature-grid h3 {
+      margin-top: 0;
+      margin-bottom: 14px;
+    }
+
+    #business .business-feature-grid p {
+      margin-bottom: 0;
+    }
+
+    #business-workflow {
+      padding-top: 78px;
+      padding-bottom: 78px;
+    }
+
+    #business-controls {
+      margin-top: 0;
+    }
+
+    #business-task-types {
+      padding-top: 82px;
+    }
+
+    #business-interest {
+      margin-top: 30px;
+    }
+
+    @media (max-width: 900px) {
+      #business {
+        padding-top: 68px;
+      }
+
+      .business-origin {
+        grid-template-columns: 1fr;
+      }
+
+      .business-origin-label {
+        padding: 26px 28px 22px;
+        border-right: 0;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.14);
+      }
+
+      .business-origin-copy {
+        padding: 28px;
+      }
+    }
+
+    @media (max-width: 600px) {
+      #business {
+        padding-top: 54px;
+      }
+
+      #business .section-heading {
+        margin-bottom: 26px;
+      }
+
+      .business-origin {
+        margin-bottom: 30px;
+        border-radius: 16px;
+      }
+
+      .business-origin-label,
+      .business-origin-copy {
+        padding: 22px;
+      }
+
+      .business-origin-copy .business-origin-lead {
+        font-size: 1.18rem;
+      }
+
+      #business .business-feature-grid .feature-number {
+        margin-bottom: 18px;
+      }
+
+      #business-workflow,
+      #business-task-types {
+        padding-top: 58px;
+        padding-bottom: 58px;
+      }
+    }
+  </style>
+
 </head>
 <body>
   <a class="skip-link" href="#main">Skip to content</a>
@@ -256,26 +422,28 @@
           </p>
         </div>
 
-        <div class="problem-strip">
-          <div class="problem-grid">
-            <p class="problem-kicker">Why we are building it</p>
+        <aside class="business-origin" aria-label="Why HerdHarbor Business is being developed">
+          <div class="business-origin-label">
+            <p class="eyebrow">Built from farm feedback</p>
+            <h3>Why HerdHarbor Business?</h3>
+          </div>
 
-            <p>
-              The Business workflow was moved forward after a farm with approximately
-              10 employees contacted HerdHarbor looking for an alternative to assigning
-              work through text messages and phone-call reminders.
+          <div class="business-origin-copy">
+            <p class="business-origin-lead">
+              A farm with approximately 10 employees asked HerdHarbor for a better way
+              to assign daily work than text messages and phone-call reminders.
             </p>
 
-            <p class="problem-answer">
+            <p class="business-origin-support">
               HerdHarbor Business is being designed so owners and managers can assign
-              work once, employees can see exactly what they are responsible for, and
-              completed work becomes part of a visible farm activity history instead of
-              disappearing inside text-message threads.
+              work once, employees can clearly see what they are responsible for, and
+              completed jobs become part of a visible farm activity history instead of
+              disappearing inside message threads.
             </p>
           </div>
-        </div>
+        </aside>
 
-        <div class="feature-grid">
+        <div class="feature-grid business-feature-grid">
           <article class="feature-card">
             <span class="feature-number">01</span>
             <h3>Separate Business workspace</h3>
