@@ -198,6 +198,276 @@
         padding-bottom: 58px;
       }
     }
+
+    /* Business role comparison */
+    #business-controls {
+      padding-top: 86px;
+      padding-bottom: 86px;
+    }
+
+    #business-controls .section-heading {
+      max-width: 840px;
+      margin-bottom: 34px;
+    }
+
+    .business-role-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 18px;
+      margin-bottom: 28px;
+    }
+
+    .business-role-card {
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      min-width: 0;
+      padding: 28px;
+      overflow: hidden;
+      background: rgba(255, 255, 255, 0.72);
+      border: 1px solid rgba(13, 37, 64, 0.14);
+      border-radius: 20px;
+      box-shadow: 0 12px 34px rgba(13, 37, 64, 0.08);
+    }
+
+    .business-role-card::before {
+      content: "";
+      position: absolute;
+      inset: 0 auto 0 0;
+      width: 5px;
+      background: #2E7D7B;
+    }
+
+    .business-role-card.role-manager::before {
+      background: #4E7FA5;
+    }
+
+    .business-role-card.role-employee::before {
+      background: #8A7A5B;
+    }
+
+    .business-role-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 18px;
+    }
+
+    .business-role-badge {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 30px;
+      padding: 6px 10px;
+      border-radius: 999px;
+      color: #0D2540;
+      background: #DDF1EF;
+      font-size: 0.74rem;
+      font-weight: 800;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+    }
+
+    .role-manager .business-role-badge {
+      background: #E5EEF5;
+    }
+
+    .role-employee .business-role-badge {
+      background: #F0E9DB;
+    }
+
+    .business-role-level {
+      color: #65727E;
+      font-size: 0.78rem;
+      font-weight: 700;
+      text-align: right;
+    }
+
+    .business-role-card h3 {
+      margin: 0 0 10px;
+      color: #0D2540;
+      font-size: 1.45rem;
+      line-height: 1.2;
+    }
+
+    .business-role-card > p {
+      margin: 0 0 22px;
+      color: #435466;
+      line-height: 1.65;
+    }
+
+    .business-role-list {
+      display: grid;
+      gap: 11px;
+      margin: auto 0 0;
+      padding: 0;
+      list-style: none;
+    }
+
+    .business-role-list li {
+      display: grid;
+      grid-template-columns: 22px minmax(0, 1fr);
+      gap: 10px;
+      align-items: start;
+      color: #263A4A;
+      font-size: 0.94rem;
+      line-height: 1.45;
+    }
+
+    .business-role-list .role-check {
+      display: inline-grid;
+      place-items: center;
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      color: #0D5F5B;
+      background: #E5F4F2;
+      font-size: 0.78rem;
+      font-weight: 900;
+    }
+
+    .business-permission-matrix {
+      overflow: hidden;
+      background: rgba(255, 255, 255, 0.72);
+      border: 1px solid rgba(13, 37, 64, 0.14);
+      border-radius: 20px;
+      box-shadow: 0 12px 34px rgba(13, 37, 64, 0.06);
+    }
+
+    .business-permission-matrix-header,
+    .business-permission-row {
+      display: grid;
+      grid-template-columns: minmax(220px, 1.5fr) repeat(3, minmax(150px, 1fr));
+      align-items: stretch;
+    }
+
+    .business-permission-matrix-header {
+      color: #fff;
+      background: #0D2A46;
+    }
+
+    .business-permission-matrix-header > div,
+    .business-permission-row > div {
+      min-width: 0;
+      padding: 15px 18px;
+      border-right: 1px solid rgba(13, 37, 64, 0.1);
+    }
+
+    .business-permission-matrix-header > div {
+      border-right-color: rgba(255, 255, 255, 0.14);
+      font-size: 0.86rem;
+      font-weight: 800;
+    }
+
+    .business-permission-matrix-header > div:last-child,
+    .business-permission-row > div:last-child {
+      border-right: 0;
+    }
+
+    .business-permission-row {
+      border-top: 1px solid rgba(13, 37, 64, 0.09);
+    }
+
+    .business-permission-row:first-of-type {
+      border-top: 0;
+    }
+
+    .business-permission-row:nth-child(even) {
+      background: rgba(247, 243, 234, 0.55);
+    }
+
+    .business-permission-name {
+      color: #0D2540;
+      font-weight: 800;
+    }
+
+    .permission-state {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      color: #435466;
+      font-size: 0.9rem;
+      font-weight: 700;
+      line-height: 1.35;
+    }
+
+    .permission-state::before {
+      content: "";
+      flex: 0 0 auto;
+      width: 9px;
+      height: 9px;
+      border-radius: 50%;
+      background: #2E7D7B;
+    }
+
+    .permission-state.configurable::before {
+      background: #4E7FA5;
+    }
+
+    .permission-state.limited::before {
+      background: #8A7A5B;
+    }
+
+    .permission-state.none::before {
+      background: #B8C0C7;
+    }
+
+    .business-permission-note {
+      margin: 16px 0 0;
+      color: #65727E;
+      font-size: 0.88rem;
+      line-height: 1.55;
+    }
+
+    @media (max-width: 980px) {
+      .business-role-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .business-role-card {
+        padding: 24px 26px;
+      }
+
+      .business-permission-matrix {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+      }
+
+      .business-permission-matrix-header,
+      .business-permission-row {
+        min-width: 820px;
+      }
+    }
+
+    @media (max-width: 600px) {
+      #business-controls {
+        padding-top: 60px;
+        padding-bottom: 60px;
+      }
+
+      .business-role-card {
+        padding: 22px;
+        border-radius: 16px;
+      }
+
+      .business-role-top {
+        align-items: flex-start;
+      }
+
+      .business-role-level {
+        max-width: 120px;
+      }
+
+      .business-permission-matrix {
+        border-radius: 16px;
+      }
+
+      .business-permission-note {
+        font-size: 0.84rem;
+      }
+    }
+
   </style>
 
 </head>
@@ -616,56 +886,129 @@
       </div>
     </section>
 
-    <section class="section mission-section" id="business-controls">
-      <div class="container mission-grid">
-        <div class="mission-mark">
-          <img
-            src="assets/herdharbor-icon.png"
-            alt="HerdHarbor shield with lighthouse and livestock"
-          >
+    <section class="section" id="business-controls">
+      <div class="container">
+        <div class="section-heading">
+          <p class="eyebrow">Planned Business permissions</p>
+          <h2>One farm. Three clear levels of access.</h2>
+          <p>
+            HerdHarbor Business is being designed so each person sees the tools needed
+            for their role. Owners keep full control, managers receive configurable
+            operational access, and employees stay focused on assigned work.
+          </p>
         </div>
 
-        <div class="mission-copy">
-          <p class="eyebrow light">Business controls</p>
-          <h2>The farm owner stays in control.</h2>
-
-          <p>
-            HerdHarbor Business is being designed around controlled access rather than
-            simply giving every employee access to the owner's complete account.
-          </p>
-
-          <p>
-            The goal is to let employees do their jobs quickly while allowing the
-            operation owner to decide who can view, create, edit, complete, or manage
-            different types of farm records.
-          </p>
-
-          <div class="promise-list">
-            <div>
-              <strong>Owner / Administrator</strong>
-              <span>
-                Full operation control, employee management, permissions, assignments,
-                farm records, reporting, and Business settings.
-              </span>
+        <div class="business-role-grid">
+          <article class="business-role-card role-owner">
+            <div class="business-role-top">
+              <span class="business-role-badge">Owner / Admin</span>
+              <span class="business-role-level">Full control</span>
             </div>
+            <h3>Runs the operation</h3>
+            <p>
+              The owner controls the Business workspace, team access, farm records,
+              assignments, reporting, and account-level settings.
+            </p>
+            <ul class="business-role-list">
+              <li><span class="role-check">✓</span><span>Add, remove, and manage team members</span></li>
+              <li><span class="role-check">✓</span><span>Set roles and permission levels</span></li>
+              <li><span class="role-check">✓</span><span>Create, assign, edit, and review work</span></li>
+              <li><span class="role-check">✓</span><span>Access full farm records and Business reporting</span></li>
+            </ul>
+          </article>
 
-            <div>
-              <strong>Manager</strong>
-              <span>
-                Planned access to assign and review work, oversee employees, manage
-                approved operational records, and monitor completion.
-              </span>
+          <article class="business-role-card role-manager">
+            <div class="business-role-top">
+              <span class="business-role-badge">Manager</span>
+              <span class="business-role-level">Configurable access</span>
             </div>
+            <h3>Coordinates the team</h3>
+            <p>
+              Managers can oversee daily work and approved operational records without
+              automatically receiving every owner-level Business control.
+            </p>
+            <ul class="business-role-list">
+              <li><span class="role-check">✓</span><span>Assign and review employee tasks</span></li>
+              <li><span class="role-check">✓</span><span>See outstanding, completed, and overdue work</span></li>
+              <li><span class="role-check">✓</span><span>Update approved animal and operational records</span></li>
+              <li><span class="role-check">✓</span><span>Access only the areas enabled by the owner</span></li>
+            </ul>
+          </article>
 
-            <div>
-              <strong>Employee</strong>
-              <span>
-                Focused access to assigned jobs and only the farm information required to
-                complete those responsibilities.
-              </span>
+          <article class="business-role-card role-employee">
+            <div class="business-role-top">
+              <span class="business-role-badge">Employee</span>
+              <span class="business-role-level">Focused access</span>
             </div>
+            <h3>Completes assigned work</h3>
+            <p>
+              Employees receive a simplified work-focused experience centered on what
+              they need to complete their responsibilities for the day.
+            </p>
+            <ul class="business-role-list">
+              <li><span class="role-check">✓</span><span>See today's assigned jobs and due work</span></li>
+              <li><span class="role-check">✓</span><span>Open linked animals, herds, flocks, or locations as permitted</span></li>
+              <li><span class="role-check">✓</span><span>Complete tasks and record required notes or observations</span></li>
+              <li><span class="role-check">✓</span><span>Stay out of unrelated management and account controls</span></li>
+            </ul>
+          </article>
+        </div>
+
+        <div class="business-permission-matrix" role="table" aria-label="Planned HerdHarbor Business role comparison">
+          <div class="business-permission-matrix-header" role="row">
+            <div role="columnheader">Permission area</div>
+            <div role="columnheader">Owner / Admin</div>
+            <div role="columnheader">Manager</div>
+            <div role="columnheader">Employee</div>
+          </div>
+
+          <div class="business-permission-row" role="row">
+            <div class="business-permission-name" role="rowheader">Team management</div>
+            <div role="cell"><span class="permission-state">Full</span></div>
+            <div role="cell"><span class="permission-state configurable">Owner controlled</span></div>
+            <div role="cell"><span class="permission-state none">No</span></div>
+          </div>
+
+          <div class="business-permission-row" role="row">
+            <div class="business-permission-name" role="rowheader">Assign farm tasks</div>
+            <div role="cell"><span class="permission-state">Full</span></div>
+            <div role="cell"><span class="permission-state configurable">Planned</span></div>
+            <div role="cell"><span class="permission-state none">No</span></div>
+          </div>
+
+          <div class="business-permission-row" role="row">
+            <div class="business-permission-name" role="rowheader">Review team completion</div>
+            <div role="cell"><span class="permission-state">Full</span></div>
+            <div role="cell"><span class="permission-state configurable">Planned</span></div>
+            <div role="cell"><span class="permission-state limited">Own work</span></div>
+          </div>
+
+          <div class="business-permission-row" role="row">
+            <div class="business-permission-name" role="rowheader">Edit farm records</div>
+            <div role="cell"><span class="permission-state">Full</span></div>
+            <div role="cell"><span class="permission-state configurable">Configurable</span></div>
+            <div role="cell"><span class="permission-state limited">Assigned areas</span></div>
+          </div>
+
+          <div class="business-permission-row" role="row">
+            <div class="business-permission-name" role="rowheader">Business reporting &amp; settings</div>
+            <div role="cell"><span class="permission-state">Full</span></div>
+            <div role="cell"><span class="permission-state configurable">Selected access</span></div>
+            <div role="cell"><span class="permission-state none">No</span></div>
+          </div>
+
+          <div class="business-permission-row" role="row">
+            <div class="business-permission-name" role="rowheader">Complete assigned work</div>
+            <div role="cell"><span class="permission-state">Yes</span></div>
+            <div role="cell"><span class="permission-state">Yes</span></div>
+            <div role="cell"><span class="permission-state">Yes</span></div>
           </div>
         </div>
+
+        <p class="business-permission-note">
+          These are planned Alpha v1.4.0 Business controls. Final permission options may
+          change during pilot testing as HerdHarbor validates real farm workflows.
+        </p>
       </div>
     </section>
 
