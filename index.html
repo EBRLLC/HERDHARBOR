@@ -1099,6 +1099,82 @@
     }
   </style>
 
+
+  <style id="herdharbor-release-strip-fix">
+    /* Current-release strip: prevent cramped columns and clipped text */
+    .problem-strip {
+      overflow: visible;
+    }
+
+    .problem-strip .problem-grid {
+      display: grid;
+      grid-template-columns: minmax(150px, 0.55fr) minmax(0, 2fr) minmax(280px, 1fr);
+      align-items: stretch;
+    }
+
+    .problem-strip .problem-grid > * {
+      min-width: 0;
+    }
+
+    .problem-strip .problem-kicker {
+      display: flex;
+      align-items: center;
+      margin: 0;
+      padding: 30px 28px;
+      line-height: 1.45;
+    }
+
+    .problem-strip .problem-grid > p:not(.problem-kicker):not(.problem-answer) {
+      display: flex;
+      align-items: center;
+      margin: 0;
+      padding: 30px 34px;
+      font-size: clamp(1.25rem, 2vw, 1.75rem);
+      line-height: 1.35;
+      overflow-wrap: anywhere;
+    }
+
+    .problem-strip .problem-answer {
+      display: flex;
+      align-items: center;
+      margin: 0;
+      padding: 28px 30px;
+      font-size: 0.96rem;
+      line-height: 1.6;
+      overflow-wrap: anywhere;
+      border-left: 1px solid rgba(255, 255, 255, 0.14);
+    }
+
+    @media (max-width: 980px) {
+      .problem-strip .problem-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .problem-strip .problem-kicker,
+      .problem-strip .problem-grid > p:not(.problem-kicker):not(.problem-answer),
+      .problem-strip .problem-answer {
+        padding: 24px 26px;
+      }
+
+      .problem-strip .problem-answer {
+        border-left: 0;
+        border-top: 1px solid rgba(255, 255, 255, 0.14);
+      }
+    }
+
+    @media (max-width: 600px) {
+      .problem-strip .problem-kicker,
+      .problem-strip .problem-grid > p:not(.problem-kicker):not(.problem-answer),
+      .problem-strip .problem-answer {
+        padding: 20px;
+      }
+
+      .problem-strip .problem-grid > p:not(.problem-kicker):not(.problem-answer) {
+        font-size: 1.2rem;
+      }
+    }
+  </style>
+
 </head>
 <body>
   <a class="skip-link" href="#main">Skip to content</a>
@@ -1151,6 +1227,7 @@
             <li>Cloud sync with offline recovery</li>
             <li>Excel import and export</li>
             <li>Installable on your devices</li>
+            <li>Public pricing from $9.99/month for Founder Members</li>
           </ul>
         </div>
 
@@ -1336,9 +1413,12 @@
         </div>
 
         <p class="pricing-bottom-note">
-          Founder pricing is intended as a permanent locked rate for the first 100 Founder
-          memberships. Standard and Business pricing shown above are HerdHarbor's published
-          planned rates and may be updated before paid billing begins.
+          These are HerdHarbor's published prices. Founder pricing is permanently locked
+          for the first 100 Founder memberships at $9.99 per month or $110 per year.
+          Standard Member is $14.99 per month or $150 per year. HerdHarbor Business is
+          $49.99 per month or $550 per year. Business features marked planned are still
+          being developed, but the published Business plan price is shown here so farms
+          know the cost before deciding whether HerdHarbor fits their operation.
         </p>
       </div>
     </section>
@@ -2069,9 +2149,14 @@
           </p>
 
           <p>
-            HerdHarbor Business is still in development. Features, permissions, tax-form
-            workflows, and Business pricing may change as the system is tested with real
-            farm operations. HerdHarbor will not replace professional tax, accounting, or
+            HerdHarbor Business pricing is published at <strong>$49.99 per month</strong>
+            or <strong>$550 per year</strong>. Planned Business features are still being
+            tested, but the price is not hidden behind a quote request or sales call.
+          </p>
+
+          <p>
+            HerdHarbor Business is still in development. Features, permissions, and tax-form workflows may change as the system is tested with real
+            farm operations. The published Business plan price is $49.99 per month or $550 per year. HerdHarbor will not replace professional tax, accounting, or
             legal advice.
           </p>
 
@@ -2273,8 +2358,15 @@
           </details>
 
           <details>
-            <summary>How much will HerdHarbor cost?</summary>
-            <p>Final pricing has not been announced on this page. The guiding promise remains fair, transparent pricing without an extreme jump simply because a user has more animals.</p>
+            <summary>How much does HerdHarbor cost?</summary>
+            <p>
+              Pricing is public. The first 100 Founder Members can lock in $9.99 per month
+              or $110 per year for life and receive unlimited animals plus all base Member
+              features. Standard Member pricing is $14.99 per month or $150 per year.
+              HerdHarbor Business is $49.99 per month or $550 per year and is planned to
+              include team roles, employee assignments, recurring jobs, completion tracking,
+              Business controls, W-9 paperwork organization, and accounting workbook tools.
+            </p>
           </details>
 
           <details>
