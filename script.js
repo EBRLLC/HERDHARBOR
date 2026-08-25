@@ -22,6 +22,32 @@ if (nav && !nav.querySelector('a[href="/releases/v1.4.0/"]')) {
   else nav.appendChild(releaseLink);
 }
 
+function normalizeReleaseCopy() {
+  const replacements = new Map([
+    ["HerdHarbor Alpha · Version 1.3.0", "HerdHarbor Alpha · Version 1.4.0"],
+    ["Current release v1.3.0 Alpha", "Current release v1.4.0 Alpha"],
+    ["Coming in Alpha v1.4.0", "Coming in Alpha v1.5.0"],
+    ["Business controls are planned for Alpha v1.4.0 and remain subject to pilot testing.", "Business controls are planned for Alpha v1.5.0 and remain subject to pilot testing."],
+    ["Business controls are planned for Alpha v1.4.0", "Business controls are planned for Alpha v1.5.0"]
+  ]);
+
+  const walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT);
+  const nodes = [];
+  while (walker.nextNode()) nodes.push(walker.currentNode);
+  nodes.forEach((node) => {
+    let value = node.nodeValue;
+    replacements.forEach((replacement, original) => {
+      if (value.includes(original)) value = value.replaceAll(original, replacement);
+    });
+    node.nodeValue = value;
+  });
+
+  const heroVersion = document.querySelector(".hero-card .version, .hero-visual .version, [data-current-version]");
+  if (heroVersion && heroVersion.textContent.trim() === "v1.3.0") heroVersion.textContent = "v1.4.0";
+}
+
+normalizeReleaseCopy();
+
 function addReleaseBanner() {
   if (document.querySelector(".hh-release-banner")) return;
   const header = document.querySelector(".site-header");
