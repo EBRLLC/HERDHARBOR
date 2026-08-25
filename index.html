@@ -1,304 +1,2594 @@
-<!--
-HERDHARBOR WEBSITE INDEX UPDATE
-Rabbit Genetics v2
-Prepared for the existing EBRLLC/HERDHARBOR index.html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="HerdHarbor is multi-species livestock management for breeders, homesteaders, and small farms. Track animals, breeding, production, finances, customers, sales, cattle identification, and pedigrees in one place.">
+  <meta name="theme-color" content="#0D2540">
+  <meta name="google-site-verification" content="Kwvtn1V0yTv6reRa8Fj4KrP1TsvNh_bb7UdI5Q0mn9I">
 
-IMPORTANT:
-This is a drop-in update for the existing index.html.
-It is intentionally NOT a full-site overwrite, so current Pricing, Business,
-How-To, FAQ, and other working sections are preserved.
+  <link rel="canonical" href="https://herdharbor.com/">
+  <meta property="og:title" content="HerdHarbor — Livestock records without limits">
+  <meta property="og:description" content="Manage animals from breeding and birth through production, finances, cattle identification, customers, sales, QR cards, and pedigree transfers.">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://herdharbor.com/">
+  <meta property="og:image" content="https://herdharbor.com/assets/herdharbor-icon.png">
+  <meta name="twitter:card" content="summary">
 
-LATEST APP CAPABILITIES REFLECTED HERE:
-- Deterministic A/B/C/D/E inheritance
-- En/en broken-pattern inheritance
-- Vienna V/v inheritance
-- VM / VC / BEW support
-- Pedigree-based carrier inference
-- Offspring-based carrier inference
-- Uncertainty/confidence ranges
-- Dedicated rabbit genetics UI
--->
+  <title>HerdHarbor — Livestock records without limits</title>
+  <link rel="icon" href="assets/herdharbor-icon.png">
+  <link rel="apple-touch-icon" href="assets/herdharbor-icon.png">
+  <link rel="stylesheet" href="styles.css?v=3">
 
-<!-- =========================================================
-1. HEAD / SEO REPLACEMENTS
-Replace the matching tags/data in <head>.
-========================================================= -->
+  <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "SoftwareApplication",
+      "name": "HerdHarbor",
+      "applicationCategory": "BusinessApplication",
+      "operatingSystem": "Web",
+      "url": "https://herdharbor.com/",
+      "description": "Multi-species livestock management for breeders, homesteaders, and small farms.",
+      "softwareVersion": "1.3.0",
+      "installUrl": "https://app.herdharbor.com/",
+      "featureList": "Animal records, visual multi-generation pedigrees, cattle ear-tag identification, breeding and birth management, educational symptom guide, health and tasks, production and hay tracking, full-year budgets, customers, sales, payments, QR cards, and animal transfers"
+    }
+  </script>
 
-<meta name="description" content="HerdHarbor is multi-species livestock management for breeders, homesteaders, and farms, with animal records, pedigrees, breeding, production, finances, sales, and advanced rabbit color-genetics analysis including Vienna inheritance.">
+  <style id="herdharbor-business-section-styles">
+    /* Business preview — isolated styles so the rest of HerdHarbor is unchanged */
+    #business {
+      padding-top: 88px;
+    }
 
-<meta property="og:title" content="HerdHarbor — Livestock records and smarter breeding">
-<meta property="og:description" content="Manage livestock records from breeding and birth through production, sales, pedigrees, and advanced rabbit genetics with A/B/C/D/E, broken-pattern, Vienna, pedigree, and offspring analysis.">
+    #business .section-heading {
+      max-width: 860px;
+      margin-bottom: 34px;
+    }
 
-<title>HerdHarbor — Livestock records and smarter breeding</title>
+    .business-origin {
+      display: grid;
+      grid-template-columns: minmax(230px, 0.75fr) minmax(0, 2fr);
+      margin: 12px 0 40px;
+      overflow: hidden;
+      color: #fff;
+      background: #0D2A46;
+      border: 1px solid rgba(130, 208, 204, 0.2);
+      border-radius: 20px;
+      box-shadow: 0 18px 45px rgba(13, 37, 64, 0.12);
+    }
 
-<!-- Replace the current SoftwareApplication JSON-LD block with this one. -->
-<script type="application/ld+json">
-{
-  "@context": "https://schema.org",
-  "@type": "SoftwareApplication",
-  "name": "HerdHarbor",
-  "applicationCategory": "BusinessApplication",
-  "operatingSystem": "Web",
-  "url": "https://herdharbor.com/",
-  "description": "Multi-species livestock management for breeders, homesteaders, and farms with advanced rabbit breeding and color-genetics tools.",
-  "softwareVersion": "Alpha - Rabbit Genetics v2",
-  "installUrl": "https://app.herdharbor.com/",
-  "featureList": "Animal records, visual multi-generation pedigrees, rabbit color genetics, deterministic A/B/C/D/E inheritance, En broken-pattern inheritance, Vienna VM/VC/BEW inheritance, pedigree and offspring carrier inference, breeding and birth management, cattle identification, health records, tasks, production tracking, budgets, customers, sales, payments, QR cards, transfers, cloud sync, backups, and Excel tools"
-}
-</script>
+    .business-origin-label {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      gap: 10px;
+      padding: 32px;
+      background: rgba(7, 24, 39, 0.28);
+      border-right: 1px solid rgba(255, 255, 255, 0.14);
+    }
+
+    .business-origin-label .eyebrow {
+      margin: 0;
+      color: #82D0CC;
+    }
+
+    .business-origin-label h3 {
+      margin: 0;
+      color: #fff;
+      font-size: clamp(1.35rem, 2vw, 1.8rem);
+      line-height: 1.2;
+    }
+
+    .business-origin-copy {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      gap: 16px;
+      padding: 34px 40px;
+    }
+
+    .business-origin-copy .business-origin-lead {
+      margin: 0;
+      max-width: 900px;
+      color: #fff;
+      font-size: clamp(1.2rem, 1.7vw, 1.65rem);
+      font-weight: 700;
+      line-height: 1.45;
+    }
+
+    .business-origin-copy .business-origin-support {
+      margin: 0;
+      max-width: 900px;
+      color: #DCE7ED;
+      font-size: 1rem;
+      line-height: 1.7;
+    }
+
+    #business .business-feature-grid {
+      margin-top: 0;
+    }
+
+    #business .business-feature-grid .feature-card {
+      display: flex;
+      flex-direction: column;
+      min-height: 0;
+    }
+
+    #business .business-feature-grid .feature-number {
+      margin-bottom: 28px;
+    }
+
+    #business .business-feature-grid h3 {
+      margin-top: 0;
+      margin-bottom: 14px;
+    }
+
+    #business .business-feature-grid p {
+      margin-bottom: 0;
+    }
+
+    #business-workflow {
+      padding-top: 78px;
+      padding-bottom: 78px;
+    }
+
+    #business-controls {
+      margin-top: 0;
+    }
+
+    #business-task-types {
+      padding-top: 82px;
+    }
+
+    #business-interest {
+      margin-top: 30px;
+    }
+
+    @media (max-width: 900px) {
+      #business {
+        padding-top: 68px;
+      }
+
+      .business-origin {
+        grid-template-columns: 1fr;
+      }
+
+      .business-origin-label {
+        padding: 26px 28px 22px;
+        border-right: 0;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.14);
+      }
+
+      .business-origin-copy {
+        padding: 28px;
+      }
+    }
+
+    @media (max-width: 600px) {
+      #business {
+        padding-top: 54px;
+      }
+
+      #business .section-heading {
+        margin-bottom: 26px;
+      }
+
+      .business-origin {
+        margin-bottom: 30px;
+        border-radius: 16px;
+      }
+
+      .business-origin-label,
+      .business-origin-copy {
+        padding: 22px;
+      }
+
+      .business-origin-copy .business-origin-lead {
+        font-size: 1.18rem;
+      }
+
+      #business .business-feature-grid .feature-number {
+        margin-bottom: 18px;
+      }
+
+      #business-workflow,
+      #business-task-types {
+        padding-top: 58px;
+        padding-bottom: 58px;
+      }
+    }
+
+    /* Business role comparison */
+    #business-controls {
+      padding-top: 86px;
+      padding-bottom: 86px;
+    }
+
+    #business-controls .section-heading {
+      max-width: 840px;
+      margin-bottom: 34px;
+    }
+
+    .business-role-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 18px;
+      margin-bottom: 28px;
+    }
+
+    .business-role-card {
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      min-width: 0;
+      padding: 28px;
+      overflow: hidden;
+      background: rgba(255, 255, 255, 0.72);
+      border: 1px solid rgba(13, 37, 64, 0.14);
+      border-radius: 20px;
+      box-shadow: 0 12px 34px rgba(13, 37, 64, 0.08);
+    }
+
+    .business-role-card::before {
+      content: "";
+      position: absolute;
+      inset: 0 auto 0 0;
+      width: 5px;
+      background: #2E7D7B;
+    }
+
+    .business-role-card.role-manager::before {
+      background: #4E7FA5;
+    }
+
+    .business-role-card.role-employee::before {
+      background: #8A7A5B;
+    }
+
+    .business-role-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 18px;
+    }
+
+    .business-role-badge {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 30px;
+      padding: 6px 10px;
+      border-radius: 999px;
+      color: #0D2540;
+      background: #DDF1EF;
+      font-size: 0.74rem;
+      font-weight: 800;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+    }
+
+    .role-manager .business-role-badge {
+      background: #E5EEF5;
+    }
+
+    .role-employee .business-role-badge {
+      background: #F0E9DB;
+    }
+
+    .business-role-level {
+      color: #65727E;
+      font-size: 0.78rem;
+      font-weight: 700;
+      text-align: right;
+    }
+
+    .business-role-card h3 {
+      margin: 0 0 10px;
+      color: #0D2540;
+      font-size: 1.45rem;
+      line-height: 1.2;
+    }
+
+    .business-role-card > p {
+      margin: 0 0 22px;
+      color: #435466;
+      line-height: 1.65;
+    }
+
+    .business-role-list {
+      display: grid;
+      gap: 11px;
+      margin: auto 0 0;
+      padding: 0;
+      list-style: none;
+    }
+
+    .business-role-list li {
+      display: grid;
+      grid-template-columns: 22px minmax(0, 1fr);
+      gap: 10px;
+      align-items: start;
+      color: #263A4A;
+      font-size: 0.94rem;
+      line-height: 1.45;
+    }
+
+    .business-role-list .role-check {
+      display: inline-grid;
+      place-items: center;
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      color: #0D5F5B;
+      background: #E5F4F2;
+      font-size: 0.78rem;
+      font-weight: 900;
+    }
+
+    .business-permission-matrix {
+      overflow: hidden;
+      background: rgba(255, 255, 255, 0.72);
+      border: 1px solid rgba(13, 37, 64, 0.14);
+      border-radius: 20px;
+      box-shadow: 0 12px 34px rgba(13, 37, 64, 0.06);
+    }
+
+    .business-permission-matrix-header,
+    .business-permission-row {
+      display: grid;
+      grid-template-columns: minmax(220px, 1.5fr) repeat(3, minmax(150px, 1fr));
+      align-items: stretch;
+    }
+
+    .business-permission-matrix-header {
+      color: #fff;
+      background: #0D2A46;
+    }
+
+    .business-permission-matrix-header > div,
+    .business-permission-row > div {
+      min-width: 0;
+      padding: 15px 18px;
+      border-right: 1px solid rgba(13, 37, 64, 0.1);
+    }
+
+    .business-permission-matrix-header > div {
+      border-right-color: rgba(255, 255, 255, 0.14);
+      font-size: 0.86rem;
+      font-weight: 800;
+    }
+
+    .business-permission-matrix-header > div:last-child,
+    .business-permission-row > div:last-child {
+      border-right: 0;
+    }
+
+    .business-permission-row {
+      border-top: 1px solid rgba(13, 37, 64, 0.09);
+    }
+
+    .business-permission-row:first-of-type {
+      border-top: 0;
+    }
+
+    .business-permission-row:nth-child(even) {
+      background: rgba(247, 243, 234, 0.55);
+    }
+
+    .business-permission-name {
+      color: #0D2540;
+      font-weight: 800;
+    }
+
+    .permission-state {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      color: #435466;
+      font-size: 0.9rem;
+      font-weight: 700;
+      line-height: 1.35;
+    }
+
+    .permission-state::before {
+      content: "";
+      flex: 0 0 auto;
+      width: 9px;
+      height: 9px;
+      border-radius: 50%;
+      background: #2E7D7B;
+    }
+
+    .permission-state.configurable::before {
+      background: #4E7FA5;
+    }
+
+    .permission-state.limited::before {
+      background: #8A7A5B;
+    }
+
+    .permission-state.none::before {
+      background: #B8C0C7;
+    }
+
+    .business-permission-note {
+      margin: 16px 0 0;
+      color: #65727E;
+      font-size: 0.88rem;
+      line-height: 1.55;
+    }
+
+    @media (max-width: 980px) {
+      .business-role-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .business-role-card {
+        padding: 24px 26px;
+      }
+
+      .business-permission-matrix {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+      }
+
+      .business-permission-matrix-header,
+      .business-permission-row {
+        min-width: 820px;
+      }
+    }
+
+    @media (max-width: 600px) {
+      #business-controls {
+        padding-top: 60px;
+        padding-bottom: 60px;
+      }
+
+      .business-role-card {
+        padding: 22px;
+        border-radius: 16px;
+      }
+
+      .business-role-top {
+        align-items: flex-start;
+      }
+
+      .business-role-level {
+        max-width: 120px;
+      }
+
+      .business-permission-matrix {
+        border-radius: 16px;
+      }
+
+      .business-permission-note {
+        font-size: 0.84rem;
+      }
+    }
 
 
-<!-- =========================================================
-2. NAVIGATION
-Add this link in the existing main navigation near Features.
-========================================================= -->
+    /* Planned Business accounting workflow */
+    #business-accounting-workflow {
+      padding-top: 82px;
+      padding-bottom: 82px;
+      background:
+        radial-gradient(circle at top right, rgba(130, 208, 204, 0.10), transparent 34%),
+        linear-gradient(180deg, #FBF9F4 0%, #F7F3EA 100%);
+      border-top: 1px solid rgba(13, 37, 64, 0.08);
+      border-bottom: 1px solid rgba(13, 37, 64, 0.08);
+    }
 
-<a href="#genetics">Rabbit Genetics</a>
+    #business-accounting-workflow .section-heading {
+      max-width: 860px;
+      margin-bottom: 34px;
+    }
+
+    .business-accounting-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 16px;
+      margin-top: 10px;
+    }
+
+    .business-accounting-step {
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      min-width: 0;
+      padding: 26px;
+      background: #fff;
+      border: 1px solid rgba(13, 37, 64, 0.14);
+      border-radius: 20px;
+      box-shadow: 0 12px 32px rgba(13, 37, 64, 0.07);
+    }
+
+    .business-accounting-step::after {
+      content: "→";
+      position: absolute;
+      top: 50%;
+      right: -14px;
+      z-index: 2;
+      width: 28px;
+      height: 28px;
+      display: grid;
+      place-items: center;
+      transform: translateY(-50%);
+      color: #0D5F5B;
+      background: #E6F4F2;
+      border: 1px solid rgba(46, 125, 123, 0.18);
+      border-radius: 50%;
+      font-weight: 900;
+    }
+
+    .business-accounting-step:last-child::after {
+      display: none;
+    }
+
+    .business-accounting-step-number {
+      display: inline-grid;
+      place-items: center;
+      width: 38px;
+      height: 38px;
+      margin-bottom: 16px;
+      color: #fff;
+      background: #0D2A46;
+      border-radius: 12px;
+      font-size: 0.9rem;
+      font-weight: 900;
+    }
+
+    .business-accounting-planned {
+      display: inline-flex;
+      align-items: center;
+      width: fit-content;
+      margin-bottom: 12px;
+      padding: 5px 9px;
+      color: #0D5F5B;
+      background: #E5F4F2;
+      border-radius: 999px;
+      font-size: 0.7rem;
+      font-weight: 900;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+    }
+
+    .business-accounting-step h3 {
+      margin: 0 0 10px;
+      color: #0D2540;
+      font-size: 1.18rem;
+      line-height: 1.25;
+    }
+
+    .business-accounting-step p {
+      margin: 0 0 16px;
+      color: #4E5E6B;
+      line-height: 1.6;
+    }
+
+    .business-accounting-step ul {
+      display: grid;
+      gap: 8px;
+      margin: auto 0 0;
+      padding: 0;
+      list-style: none;
+    }
+
+    .business-accounting-step li {
+      display: grid;
+      grid-template-columns: 18px minmax(0, 1fr);
+      gap: 8px;
+      align-items: start;
+      color: #344957;
+      font-size: 0.9rem;
+      line-height: 1.45;
+    }
+
+    .business-accounting-step li::before {
+      content: "✓";
+      color: #0D5F5B;
+      font-weight: 900;
+    }
+
+    .business-accounting-summary {
+      display: grid;
+      grid-template-columns: minmax(0, 1.4fr) minmax(280px, 0.8fr);
+      gap: 24px;
+      align-items: center;
+      margin-top: 28px;
+      padding: 26px 28px;
+      color: #fff;
+      background: #0D2A46;
+      border-radius: 20px;
+      box-shadow: 0 14px 36px rgba(13, 37, 64, 0.12);
+    }
+
+    .business-accounting-summary h3 {
+      margin: 0 0 8px;
+      color: #fff;
+      font-size: 1.35rem;
+    }
+
+    .business-accounting-summary p {
+      margin: 0;
+      color: #D7E3EA;
+      line-height: 1.65;
+    }
+
+    .business-accounting-summary .summary-label {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 44px;
+      padding: 10px 14px;
+      color: #D9F4F1;
+      background: rgba(130, 208, 204, 0.14);
+      border: 1px solid rgba(130, 208, 204, 0.24);
+      border-radius: 12px;
+      font-size: 0.82rem;
+      font-weight: 900;
+      text-align: center;
+    }
+
+    .business-accounting-disclaimer {
+      margin: 18px 0 0;
+      color: #65727E;
+      font-size: 0.86rem;
+      line-height: 1.55;
+    }
+
+    @media (max-width: 1050px) {
+      .business-accounting-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .business-accounting-step::after {
+        display: none;
+      }
+    }
+
+    @media (max-width: 720px) {
+      #business-accounting-workflow {
+        padding-top: 58px;
+        padding-bottom: 58px;
+      }
+
+      .business-accounting-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .business-accounting-step {
+        padding: 22px;
+        border-radius: 16px;
+      }
+
+      .business-accounting-summary {
+        grid-template-columns: 1fr;
+        padding: 22px;
+        border-radius: 16px;
+      }
+    }
 
 
-<!-- =========================================================
-3. HERO
-Replace the current hero-copy content with this version.
-Keep the surrounding .hero / .hero-grid structure already in index.html.
-========================================================= -->
+    .business-accounting-cta {
+      display: grid;
+      grid-template-columns: minmax(0, 1.35fr) auto;
+      gap: 24px;
+      align-items: center;
+      margin-top: 28px;
+      padding: 28px 30px;
+      background: #fff;
+      border: 1px solid rgba(13, 37, 64, 0.13);
+      border-radius: 20px;
+      box-shadow: 0 12px 32px rgba(13, 37, 64, 0.07);
+    }
 
-<div class="hero-copy">
-  <p class="eyebrow">HerdHarbor Alpha · Rabbit Genetics v2</p>
+    .business-accounting-cta-copy {
+      min-width: 0;
+    }
 
-  <h1>Livestock records <span>without limits.</span></h1>
+    .business-accounting-cta-copy .eyebrow {
+      margin-bottom: 8px;
+    }
 
-  <p class="hero-lead">
-    Manage the full journey—from breeding and birth to production, finances,
-    cattle identification, customers, sales, pedigrees, and advanced rabbit
-    color-genetics analysis—in one secure account.
-  </p>
+    .business-accounting-cta h3 {
+      margin: 0 0 8px;
+      color: #0D2540;
+      font-size: 1.35rem;
+      line-height: 1.25;
+    }
 
-  <div class="hero-actions">
-    <a class="button" href="https://app.herdharbor.com/">Open the tester app</a>
-    <a class="button button-secondary" href="#genetics">Explore Rabbit Genetics</a>
-  </div>
+    .business-accounting-cta p {
+      margin: 0;
+      max-width: 760px;
+      color: #566774;
+      line-height: 1.65;
+    }
 
-  <ul class="trust-list" aria-label="Current HerdHarbor features">
-    <li>Unlimited livestock records and multi-generation pedigrees</li>
-    <li>Rabbit Genetics v2 with Vienna inheritance</li>
-    <li>Cloud sync with offline recovery</li>
-    <li>Excel import, export, backups, QR cards, and transfers</li>
-  </ul>
-</div>
+    .business-accounting-cta-actions {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+      gap: 10px;
+    }
+
+    .business-accounting-cta-actions .button {
+      white-space: nowrap;
+      text-align: center;
+    }
+
+    @media (max-width: 840px) {
+      .business-accounting-cta {
+        grid-template-columns: 1fr;
+      }
+
+      .business-accounting-cta-actions {
+        justify-content: flex-start;
+      }
+    }
+
+    @media (max-width: 520px) {
+      .business-accounting-cta {
+        padding: 22px;
+        border-radius: 16px;
+      }
+
+      .business-accounting-cta-actions {
+        display: grid;
+        grid-template-columns: 1fr;
+        width: 100%;
+      }
+
+      .business-accounting-cta-actions .button {
+        width: 100%;
+      }
+    }
 
 
-<!-- =========================================================
-4. NEW RABBIT GENETICS SECTION
-Recommended placement:
-After the current pedigree/problem section and BEFORE #features.
-Uses classes already present on the current HerdHarbor homepage.
-========================================================= -->
+    .business-accounting-cta-form {
+      display: grid;
+      grid-template-columns: minmax(180px, 0.9fr) minmax(220px, 1.1fr) auto;
+      gap: 10px;
+      align-items: end;
+      width: min(100%, 760px);
+      margin-top: 18px;
+    }
 
-<section class="section" id="genetics">
-  <div class="container">
+    .business-accounting-cta-form label {
+      display: grid;
+      gap: 6px;
+      color: #263A4A;
+      font-size: 0.82rem;
+      font-weight: 800;
+    }
 
-    <div class="section-heading">
-      <p class="eyebrow">New in the Alpha</p>
-      <h2>Breeding decisions backed by real rabbit genetics.</h2>
-      <p>
-        HerdHarbor's Rabbit Genetics system goes beyond showing the same generic
-        color list for every pairing. The genetics engine analyzes the sire and
-        dam using recorded phenotype, known genotype, pedigree evidence, and
-        offspring evidence to calculate genetically possible outcomes while
-        preserving uncertainty where an allele is still unknown.
-      </p>
+    .business-accounting-cta-form input {
+      width: 100%;
+      min-height: 46px;
+      padding: 10px 12px;
+      color: #18212A;
+      background: #fff;
+      border: 1px solid rgba(13, 37, 64, 0.18);
+      border-radius: 10px;
+      font: inherit;
+    }
+
+    .business-accounting-cta-form input:focus {
+      outline: 3px solid rgba(46, 125, 123, 0.18);
+      border-color: #2E7D7B;
+    }
+
+    .business-accounting-cta-form .button {
+      min-height: 46px;
+      margin: 0;
+    }
+
+    .business-accounting-form-status {
+      grid-column: 1 / -1;
+      min-height: 24px;
+      margin-top: 2px;
+      font-size: 0.88rem;
+      font-weight: 800;
+      line-height: 1.45;
+    }
+
+    .business-accounting-form-status.is-working {
+      color: #435466;
+    }
+
+    .business-accounting-form-status.is-success {
+      color: #0D5F5B;
+    }
+
+    .business-accounting-form-status.is-error {
+      color: #9A2D2D;
+    }
+
+    .business-accounting-cta-actions {
+      margin-top: 14px;
+    }
+
+    @media (max-width: 840px) {
+      .business-accounting-cta-form {
+        grid-template-columns: 1fr 1fr;
+      }
+
+      .business-accounting-cta-form .button {
+        grid-column: 1 / -1;
+        width: fit-content;
+      }
+    }
+
+    @media (max-width: 620px) {
+      .business-accounting-cta-form {
+        grid-template-columns: 1fr;
+        width: 100%;
+      }
+
+      .business-accounting-cta-form .button {
+        grid-column: auto;
+        width: 100%;
+      }
+    }
+
+  </style>
+
+
+  <style id="herdharbor-pricing-styles">
+    /* Transparent pricing section */
+    #pricing {
+      padding-top: 76px;
+      padding-bottom: 84px;
+      background:
+        radial-gradient(circle at top left, rgba(130, 208, 204, 0.12), transparent 36%),
+        linear-gradient(180deg, #FBF9F4 0%, #F7F3EA 100%);
+      border-top: 1px solid rgba(13, 37, 64, 0.08);
+      border-bottom: 1px solid rgba(13, 37, 64, 0.08);
+    }
+
+    #pricing .section-heading {
+      max-width: 820px;
+      margin-bottom: 34px;
+    }
+
+    .pricing-transparency-note {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      margin-top: 8px;
+      padding: 8px 12px;
+      color: #0D5F5B;
+      background: #E6F4F2;
+      border-radius: 999px;
+      font-size: 0.85rem;
+      font-weight: 800;
+    }
+
+    .pricing-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 20px;
+      align-items: stretch;
+    }
+
+    .pricing-card {
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      min-width: 0;
+      padding: 30px;
+      background: #fff;
+      border: 1px solid rgba(13, 37, 64, 0.14);
+      border-radius: 22px;
+      box-shadow: 0 14px 38px rgba(13, 37, 64, 0.08);
+    }
+
+    .pricing-card.pricing-founder {
+      border: 2px solid #2E7D7B;
+      box-shadow: 0 18px 44px rgba(46, 125, 123, 0.14);
+    }
+
+    .pricing-card.pricing-business {
+      background: #0D2A46;
+      color: #fff;
+      border-color: #0D2A46;
+    }
+
+    .pricing-badge {
+      display: inline-flex;
+      align-items: center;
+      width: fit-content;
+      min-height: 30px;
+      margin-bottom: 18px;
+      padding: 6px 11px;
+      border-radius: 999px;
+      color: #0D5F5B;
+      background: #E1F3F1;
+      font-size: 0.75rem;
+      font-weight: 900;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+    }
+
+    .pricing-standard .pricing-badge {
+      color: #435466;
+      background: #EEF1F3;
+    }
+
+    .pricing-business .pricing-badge {
+      color: #D6F3F0;
+      background: rgba(130, 208, 204, 0.15);
+      border: 1px solid rgba(130, 208, 204, 0.24);
+    }
+
+    .pricing-card h3 {
+      margin: 0 0 8px;
+      color: #0D2540;
+      font-size: 1.55rem;
+      line-height: 1.2;
+    }
+
+    .pricing-business h3 {
+      color: #fff;
+    }
+
+    .pricing-plan-description {
+      min-height: 52px;
+      margin: 0 0 22px;
+      color: #5D6A75;
+      line-height: 1.6;
+    }
+
+    .pricing-business .pricing-plan-description {
+      color: #D3DFE6;
+    }
+
+    .pricing-price-block {
+      display: grid;
+      gap: 8px;
+      margin-bottom: 22px;
+      padding-bottom: 22px;
+      border-bottom: 1px solid rgba(13, 37, 64, 0.1);
+    }
+
+    .pricing-business .pricing-price-block {
+      border-bottom-color: rgba(255, 255, 255, 0.14);
+    }
+
+    .pricing-monthly {
+      display: flex;
+      align-items: baseline;
+      gap: 6px;
+      color: #0D2540;
+    }
+
+    .pricing-business .pricing-monthly {
+      color: #fff;
+    }
+
+    .pricing-amount {
+      font-size: clamp(2.15rem, 3vw, 2.8rem);
+      font-weight: 900;
+      letter-spacing: -0.04em;
+      line-height: 1;
+    }
+
+    .pricing-period {
+      color: #65727E;
+      font-size: 0.9rem;
+      font-weight: 700;
+    }
+
+    .pricing-business .pricing-period {
+      color: #B9C7D0;
+    }
+
+    .pricing-yearly {
+      margin: 0;
+      color: #435466;
+      font-size: 0.96rem;
+      font-weight: 800;
+    }
+
+    .pricing-business .pricing-yearly {
+      color: #D6E1E8;
+    }
+
+    .pricing-yearly strong {
+      color: #0D5F5B;
+    }
+
+    .pricing-business .pricing-yearly strong {
+      color: #82D0CC;
+    }
+
+    .pricing-feature-list {
+      display: grid;
+      gap: 11px;
+      margin: 0 0 26px;
+      padding: 0;
+      list-style: none;
+    }
+
+    .pricing-feature-list li {
+      display: grid;
+      grid-template-columns: 22px minmax(0, 1fr);
+      gap: 9px;
+      align-items: start;
+      color: #304452;
+      line-height: 1.45;
+    }
+
+    .pricing-business .pricing-feature-list li {
+      color: #E4EDF2;
+    }
+
+    .pricing-feature-list li::before {
+      content: "✓";
+      display: inline-grid;
+      place-items: center;
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      color: #0D5F5B;
+      background: #E5F4F2;
+      font-size: 0.75rem;
+      font-weight: 900;
+    }
+
+    .pricing-business .pricing-feature-list li::before {
+      color: #D9F4F1;
+      background: rgba(130, 208, 204, 0.16);
+    }
+
+    .pricing-card .button {
+      margin-top: auto;
+      text-align: center;
+    }
+
+    .pricing-business .button {
+      color: #0D2540;
+      background: #fff;
+    }
+
+    .pricing-founder-note {
+      margin: 16px 0 0;
+      color: #65727E;
+      font-size: 0.82rem;
+      line-height: 1.5;
+    }
+
+    .pricing-business .pricing-founder-note {
+      color: #B9C7D0;
+    }
+
+    .pricing-bottom-note {
+      max-width: 900px;
+      margin: 26px auto 0;
+      color: #65727E;
+      font-size: 0.9rem;
+      line-height: 1.6;
+      text-align: center;
+    }
+
+    @media (max-width: 980px) {
+      .pricing-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .pricing-plan-description {
+        min-height: 0;
+      }
+    }
+
+    @media (max-width: 600px) {
+      #pricing {
+        padding-top: 56px;
+        padding-bottom: 62px;
+      }
+
+      .pricing-card {
+        padding: 24px;
+        border-radius: 18px;
+      }
+
+      .pricing-bottom-note {
+        text-align: left;
+      }
+    }
+  </style>
+
+
+  <style id="herdharbor-release-strip-fix">
+    /* Current-release strip: prevent cramped columns and clipped text */
+    .problem-strip {
+      overflow: visible;
+    }
+
+    .problem-strip .problem-grid {
+      display: grid;
+      grid-template-columns: minmax(150px, 0.55fr) minmax(0, 2fr) minmax(280px, 1fr);
+      align-items: stretch;
+    }
+
+    .problem-strip .problem-grid > * {
+      min-width: 0;
+    }
+
+    .problem-strip .problem-kicker {
+      display: flex;
+      align-items: center;
+      margin: 0;
+      padding: 30px 28px;
+      line-height: 1.45;
+    }
+
+    .problem-strip .problem-grid > p:not(.problem-kicker):not(.problem-answer) {
+      display: flex;
+      align-items: center;
+      margin: 0;
+      padding: 30px 34px;
+      font-size: clamp(1.25rem, 2vw, 1.75rem);
+      line-height: 1.35;
+      overflow-wrap: anywhere;
+    }
+
+    .problem-strip .problem-answer {
+      display: flex;
+      align-items: center;
+      margin: 0;
+      padding: 28px 30px;
+      font-size: 0.96rem;
+      line-height: 1.6;
+      overflow-wrap: anywhere;
+      border-left: 1px solid rgba(255, 255, 255, 0.14);
+    }
+
+    @media (max-width: 980px) {
+      .problem-strip .problem-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .problem-strip .problem-kicker,
+      .problem-strip .problem-grid > p:not(.problem-kicker):not(.problem-answer),
+      .problem-strip .problem-answer {
+        padding: 24px 26px;
+      }
+
+      .problem-strip .problem-answer {
+        border-left: 0;
+        border-top: 1px solid rgba(255, 255, 255, 0.14);
+      }
+    }
+
+    @media (max-width: 600px) {
+      .problem-strip .problem-kicker,
+      .problem-strip .problem-grid > p:not(.problem-kicker):not(.problem-answer),
+      .problem-strip .problem-answer {
+        padding: 20px;
+      }
+
+      .problem-strip .problem-grid > p:not(.problem-kicker):not(.problem-answer) {
+        font-size: 1.2rem;
+      }
+    }
+  </style>
+
+
+  <style id="herdharbor-definitive-header-fix">
+    .site-header .nav-wrap {
+      min-height: 74px !important;
+      display: flex !important;
+      align-items: center !important;
+      justify-content: space-between !important;
+      gap: 24px !important;
+    }
+
+    .site-header .brand {
+      flex: 0 0 auto !important;
+      display: inline-flex !important;
+      align-items: center !important;
+      gap: 10px !important;
+      white-space: nowrap !important;
+      font-size: 1.48rem !important;
+      line-height: 1 !important;
+    }
+
+    .site-header .brand img {
+      flex: 0 0 auto !important;
+      width: 46px !important;
+      height: 46px !important;
+    }
+
+    .site-header .site-nav {
+      flex: 0 1 auto !important;
+      min-width: 0 !important;
+      display: flex !important;
+      align-items: center !important;
+      justify-content: flex-end !important;
+      flex-wrap: nowrap !important;
+      gap: 20px !important;
+      margin-left: auto !important;
+    }
+
+    .site-header .site-nav > a {
+      flex: 0 0 auto !important;
+      white-space: nowrap !important;
+      line-height: 1.2 !important;
+    }
+
+    .site-header .site-nav .button-small {
+      min-height: 44px !important;
+      padding: 10px 16px !important;
+    }
+
+    .site-header .nav-toggle {
+      display: none !important;
+    }
+
+    @media (max-width: 1180px) {
+      .site-header .nav-wrap {
+        position: relative !important;
+      }
+
+      .site-header .nav-toggle {
+        display: block !important;
+        flex: 0 0 auto !important;
+        margin-left: auto !important;
+      }
+
+      .site-header .site-nav {
+        position: absolute !important;
+        top: 100% !important;
+        left: 0 !important;
+        right: 0 !important;
+        z-index: 150 !important;
+        display: none !important;
+        width: 100% !important;
+        margin: 0 !important;
+        padding: 14px 18px 18px !important;
+        flex-direction: column !important;
+        align-items: stretch !important;
+        gap: 6px !important;
+        background: rgba(247, 243, 234, 0.99) !important;
+        border-top: 1px solid rgba(13, 37, 64, 0.08) !important;
+        border-bottom: 1px solid rgba(13, 37, 64, 0.12) !important;
+        box-shadow: 0 16px 28px rgba(13, 37, 64, 0.10) !important;
+        backdrop-filter: blur(16px) !important;
+      }
+
+      .site-header .site-nav.open {
+        display: flex !important;
+      }
+
+      .site-header .site-nav > a {
+        width: 100% !important;
+        padding: 11px 12px !important;
+        border-radius: 10px !important;
+      }
+
+      .site-header .site-nav .button-small {
+        width: 100% !important;
+        margin-top: 4px !important;
+      }
+    }
+
+    @media (max-width: 600px) {
+      .site-header .nav-wrap {
+        min-height: 68px !important;
+      }
+
+      .site-header .brand {
+        font-size: 1.28rem !important;
+        gap: 8px !important;
+      }
+
+      .site-header .brand img {
+        width: 40px !important;
+        height: 40px !important;
+      }
+    }
+  </style>
+
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+
+  <!-- HERDHARBOR HEADER FIX: compact nav v2 -->
+  <header class="site-header" id="top">
+    <div class="container nav-wrap">
+      <a class="brand" href="#top" aria-label="HerdHarbor home">
+        <img src="assets/herdharbor-icon.png" alt="" width="48" height="48">
+        <span>HerdHarbor</span>
+      </a>
+
+      <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="site-nav">
+        <span class="sr-only">Open navigation</span>
+        <span></span><span></span><span></span>
+      </button>
+
+      <nav id="site-nav" class="site-nav" aria-label="Main navigation">
+        <a href="#features">Features</a>
+        <a href="#pricing">Pricing</a>
+        <a href="#business">Business</a>
+        <a href="/how-to/">How-To</a>
+        <a href="#faq">FAQ</a>
+        <a class="button button-small" href="https://app.herdharbor.com/">Open the app</a>
+      </nav>
     </div>
+  </header>
 
-    <div class="feature-grid">
+  <main id="main">
+    <section class="hero">
+      <div class="container hero-grid">
+        <div class="hero-copy">
+          <p class="eyebrow">HerdHarbor Alpha · Version 1.3.0</p>
+          <h1>Livestock records <span>without limits.</span></h1>
+          <p class="hero-lead">
+            Manage the full journey—from breeding and birth to production, finances,
+            cattle identification, customers, sales, and pedigree transfers—in one secure account.
+          </p>
 
-      <article class="feature-card">
-        <div class="feature-number">01</div>
-        <h3>A/B/C/D/E inheritance</h3>
-        <p>
-          Track the five core rabbit color loci and calculate inheritance from
-          the actual alleles available from each parent instead of relying only
-          on visible color names.
-        </p>
-      </article>
+          <div class="hero-actions">
+            <a class="button" href="https://app.herdharbor.com/">Open the tester app</a>
+            <a class="button button-secondary" href="#features">See what is included</a>
+          </div>
 
-      <article class="feature-card">
-        <div class="feature-number">02</div>
-        <h3>Broken-pattern genetics</h3>
-        <p>
-          En and en are included in pair analysis so broken, solid, and
-          Charlie-pattern possibilities can be evaluated separately from the
-          base coat-color loci.
-        </p>
-      </article>
+          <ul class="trust-list" aria-label="Current HerdHarbor features">
+            <li>Cloud sync with offline recovery</li>
+            <li>Excel import and export</li>
+            <li>Installable on your devices</li>
+            <li>Public pricing from $9.99/month for Founder Members</li>
+          </ul>
+        </div>
 
-      <article class="feature-card">
-        <div class="feature-number">03</div>
-        <h3>Vienna built in</h3>
-        <p>
-          HerdHarbor supports Vienna Carrier (VC), Vienna Marked (VM), and
-          Blue-Eyed White (BEW) inheritance so breeders can account for the
-          Vienna gene when evaluating a pairing.
-        </p>
-      </article>
+        <section class="product-preview" aria-label="HerdHarbor dashboard preview">
+          <div class="preview-topbar">
+            <div class="preview-brand">
+              <img src="assets/herdharbor-icon.png" alt="" width="36" height="36">
+              <span>HerdHarbor</span>
+            </div>
+            <div class="avatar" title="Version 1.3.0 Alpha">v1.3.0</div>
+          </div>
 
-      <article class="feature-card">
-        <div class="feature-number">04</div>
-        <h3>Pedigree carrier inference</h3>
-        <p>
-          Known colors and genetics in the pedigree can identify recessive
-          alleles that may have traveled through earlier generations instead
-          of treating every visually identical rabbit as genetically identical.
-        </p>
-      </article>
+          <div class="preview-body">
+            <div class="preview-heading">
+              <div>
+                <p class="mini-label">Your operation</p>
+                <h2>Everything in one harbor</h2>
+              </div>
+              <span class="status-pill">Cloud sync active</span>
+            </div>
 
-      <article class="feature-card">
-        <div class="feature-number">05</div>
-        <h3>Offspring evidence</h3>
-        <p>
-          Previous litters can provide evidence of hidden recessive genes.
-          HerdHarbor can use genetically informative offspring to narrow a
-          parent's possible genotype as more breeding history is recorded.
-        </p>
-      </article>
+            <div class="stat-grid">
+              <article class="stat-card">
+                <div class="stat-icon" aria-hidden="true">♞</div>
+                <strong>Animals</strong>
+                <span>Profiles, photos, IDs, breeds, locations, and cattle ear tags</span>
+              </article>
+              <article class="stat-card">
+                <div class="stat-icon" aria-hidden="true">⌘</div>
+                <strong>Breeding</strong>
+                <span>Due dates, birth records, offspring, and pedigrees</span>
+              </article>
+              <article class="stat-card">
+                <div class="stat-icon" aria-hidden="true">$</div>
+                <strong>Farm</strong>
+                <span>Production, hay, full-year budgets, and reports</span>
+              </article>
+              <article class="stat-card">
+                <div class="stat-icon" aria-hidden="true">✓</div>
+                <strong>Business</strong>
+                <span>Customers, sales, payments, QR cards, and transfers</span>
+              </article>
+            </div>
 
-      <article class="feature-card">
-        <div class="feature-number">06</div>
-        <h3>Uncertainty stays visible</h3>
-        <p>
-          HerdHarbor does not silently turn an unknown allele into a known one.
-          Unknown, possible, inferred, and supported genetics remain distinct so
-          breeders can see how strong the evidence behind a prediction really is.
-        </p>
-      </article>
-
-    </div>
-
-    <div class="problem-card" style="margin-top: 28px;">
-      <p class="eyebrow">Why it matters</p>
-      <h3>Same visible color does not always mean same genetics.</h3>
-      <p>
-        A black rabbit may carry chocolate, dilute, chinchilla, Japanese,
-        non-extension, Vienna, or other recessive genetics without showing them
-        visually. HerdHarbor is being built to preserve that difference and make
-        pair analysis more useful as pedigree and litter history grow.
-      </p>
-      <p>
-        Genetics predictions are breeding-planning tools, not DNA tests.
-        When a genotype is incomplete, HerdHarbor keeps the uncertainty visible
-        rather than presenting an unsupported result as certain.
-      </p>
-    </div>
-
-  </div>
-</section>
-
-
-<!-- =========================================================
-5. CURRENT FEATURES INTRO
-Replace the paragraph directly under:
-"One connected record from breeding to sale."
-========================================================= -->
-
-<p>
-  The current tester build brings daily animal care, breeding decisions,
-  rabbit color-genetics analysis, multi-generation pedigrees, production
-  records, farm finances, cattle identification, and customer paperwork into
-  one responsive app.
-</p>
-
-
-<!-- =========================================================
-6. OPTIONAL FEATURE CARD
-Add inside the existing #features .feature-grid if you want Genetics
-represented there as well as in its dedicated section.
-========================================================= -->
-
-<article class="feature-card">
-  <div class="feature-number">GEN</div>
-  <h3>Rabbit Genetics & Pair Analysis</h3>
-  <p>
-    Analyze rabbit pairings using A/B/C/D/E, En, and Vienna inheritance,
-    pedigree evidence, known carrier status, and prior offspring. Unknown
-    genetics remain visible instead of being replaced by a generic result.
-  </p>
-</article>
-
-
-<!-- =========================================================
-7. TESTER / CALL-TO-ACTION COPY
-Replace old text that says Version 1.3.0 Alpha is available online.
-========================================================= -->
-
-<h2>Try HerdHarbor and help shape what comes next.</h2>
-<p>
-  The current HerdHarbor Alpha is available online and now includes Rabbit
-  Genetics v2. Create an account to begin testing animal records, pedigrees,
-  pair analysis, Vienna inheritance, breeding workflows, production records,
-  finances, and the rest of the HerdHarbor system.
-</p>
-
-<div class="hero-actions tester-actions">
-  <a class="button" href="https://app.herdharbor.com/">Open the tester app</a>
-</div>
-
-<div class="waitlist-note">
-  <strong>Alpha-testing reminder</strong>
-  HerdHarbor is actively testing new breeding and genetics workflows. Confirm
-  cloud sync, keep regular backups, and report incorrect color or inheritance
-  results through the in-app feedback system so the genetics engine can continue
-  to improve.
-</div>
-
-
-<!-- =========================================================
-8. FAQ ITEM
-Add inside the existing FAQ section.
-========================================================= -->
-
-<details>
-  <summary>How does HerdHarbor predict rabbit colors?</summary>
-  <p>
-    HerdHarbor's Rabbit Genetics system analyzes the sire and dam using the
-    A, B, C, D, and E color loci together with En broken-pattern inheritance
-    and Vienna inheritance. When available, pedigree and offspring evidence can
-    help identify possible hidden recessive alleles. If part of a genotype is
-    still unknown, HerdHarbor keeps that uncertainty visible rather than
-    pretending the allele is known.
-  </p>
-</details>
-
-<details>
-  <summary>Does HerdHarbor support Vienna carriers and Vienna-marked rabbits?</summary>
-  <p>
-    Yes. Rabbit Genetics v2 includes Vienna inheritance and supports recorded
-    Vienna Carrier (VC), Vienna Marked (VM), and Blue-Eyed White (BEW) status
-    during breeding analysis.
-  </p>
-</details>
-
-
-<!-- =========================================================
-9. OPTIONAL HOMEPAGE "LATEST UPDATE" CALLOUT
-This can be placed directly below the hero if desired.
-========================================================= -->
-
-<section class="section">
-  <div class="container">
-    <div class="problem-card">
-      <p class="eyebrow">Latest Alpha update</p>
-      <h2>Rabbit Genetics v2 is now part of HerdHarbor.</h2>
-      <p>
-        Pair Analysis now uses deterministic inheritance across A/B/C/D/E,
-        broken-pattern, and Vienna genetics. The system can also use pedigree
-        and offspring history as evidence for hidden carrier genes while showing
-        uncertainty when the available records cannot prove an allele.
-      </p>
-      <div class="hero-actions">
-        <a class="button" href="#genetics">See how Rabbit Genetics works</a>
-        <a class="button button-secondary" href="https://app.herdharbor.com/">Test it in HerdHarbor</a>
+            <div class="activity-card">
+              <div class="activity-title">
+                <strong>Current release</strong>
+                <span>v1.3.0 Alpha</span>
+              </div>
+              <div class="activity-row">
+                <span class="dot teal"></span>
+                <div>
+                  <strong>Cattle ear-tag records</strong>
+                  <small>Dedicated ear-tag number and color fields across animal records, search, documents, spreadsheets, and transfers</small>
+                </div>
+              </div>
+              <div class="activity-row">
+                <span class="dot green"></span>
+                <div>
+                  <strong>Enhanced pedigree identification</strong>
+                  <small>Sex-colored pedigree cards, clearer printed records, and optional stored-animal photos</small>
+                </div>
+              </div>
+              <div class="activity-row">
+                <span class="dot navy"></span>
+                <div>
+                  <strong>Complete Member workflow</strong>
+                  <small>Animals, breeding, health, symptom lookup, production, finances, customers, sales, tasks, reports, and cloud sync remain connected</small>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
       </div>
-    </div>
-  </div>
-</section>
+    </section>
 
-<!-- END HERDHARBOR RABBIT GENETICS v2 INDEX UPDATE -->
+
+    <section class="section" id="pricing">
+      <div class="container">
+        <div class="section-heading">
+          <p class="eyebrow">Simple, public pricing</p>
+          <h2>No hidden prices. Know what HerdHarbor costs before you sign up.</h2>
+          <p>
+            HerdHarbor is being built around straightforward pricing with unlimited animals
+            on every paid Member plan. No request-a-quote form and no price jump just because
+            your herd, flock, or rabbitry grows.
+          </p>
+          <span class="pricing-transparency-note">Pricing shown publicly — no sales call required</span>
+        </div>
+
+        <div class="pricing-grid">
+          <article class="pricing-card pricing-founder">
+            <span class="pricing-badge">First 100 Founders</span>
+            <h3>Founder Member</h3>
+            <p class="pricing-plan-description">
+              The complete base HerdHarbor experience at a locked Founder rate for the first
+              100 members who join the Founder program.
+            </p>
+
+            <div class="pricing-price-block">
+              <div class="pricing-monthly">
+                <span class="pricing-amount">$9.99</span>
+                <span class="pricing-period">/ month</span>
+              </div>
+              <p class="pricing-yearly">or <strong>$110 / year</strong></p>
+            </div>
+
+            <ul class="pricing-feature-list">
+              <li>Unlimited animals</li>
+              <li>All base Member features</li>
+              <li>Animal, breeding, birth, health, and pedigree records</li>
+              <li>Production, budgets, customers, sales, payments, and reports</li>
+              <li>Cloud sync, backups, Excel tools, QR cards, and transfers</li>
+              <li>Founder pricing locked for life</li>
+            </ul>
+
+            <a class="button" href="https://app.herdharbor.com/">Open HerdHarbor</a>
+            <p class="pricing-founder-note">
+              Founder pricing is limited to the first 100 qualifying Founder memberships.
+            </p>
+          </article>
+
+          <article class="pricing-card pricing-standard">
+            <span class="pricing-badge">Standard</span>
+            <h3>Standard Member</h3>
+            <p class="pricing-plan-description">
+              Full HerdHarbor Member access for breeders, homesteaders, and farms that want
+              one connected livestock record system.
+            </p>
+
+            <div class="pricing-price-block">
+              <div class="pricing-monthly">
+                <span class="pricing-amount">$14.99</span>
+                <span class="pricing-period">/ month</span>
+              </div>
+              <p class="pricing-yearly">or <strong>$150 / year</strong></p>
+            </div>
+
+            <ul class="pricing-feature-list">
+              <li>Unlimited animals</li>
+              <li>All base Member features</li>
+              <li>Animal, breeding, birth, health, and pedigree records</li>
+              <li>Production, budgets, customers, sales, payments, and reports</li>
+              <li>Cloud sync, backups, Excel tools, QR cards, and transfers</li>
+              <li>Designed for individual owners and family-run operations</li>
+            </ul>
+
+            <a class="button button-secondary" href="https://app.herdharbor.com/">Open HerdHarbor</a>
+          </article>
+
+          <article class="pricing-card pricing-business">
+            <span class="pricing-badge">Business</span>
+            <h3>HerdHarbor Business</h3>
+            <p class="pricing-plan-description">
+              The full HerdHarbor platform plus upcoming employee access, permissions,
+              assignments, recurring jobs, and team-management controls.
+            </p>
+
+            <div class="pricing-price-block">
+              <div class="pricing-monthly">
+                <span class="pricing-amount">$49.99</span>
+                <span class="pricing-period">/ month</span>
+              </div>
+              <p class="pricing-yearly">or <strong>$550 / year</strong></p>
+            </div>
+
+            <ul class="pricing-feature-list">
+              <li>Everything in Standard Member</li>
+              <li>Unlimited animals</li>
+              <li>Owner, Manager, and Employee roles</li>
+              <li>Employee task assignments and recurring farm work</li>
+              <li>Completion tracking and farm activity history</li>
+              <li>Planned W-9 paperwork organization</li>
+              <li>Printable and exportable accounting workbook worksheets</li>
+              <li>Business permissions and management controls</li>
+            </ul>
+
+            <a class="button" href="#business">See Business features</a>
+            <p class="pricing-founder-note">
+              Business controls are planned for Alpha v1.4.0 and remain subject to pilot testing.
+            </p>
+          </article>
+        </div>
+
+        <p class="pricing-bottom-note">
+          These are HerdHarbor's published prices. Founder pricing is permanently locked
+          for the first 100 Founder memberships at $9.99 per month or $110 per year.
+          Standard Member is $14.99 per month or $150 per year. HerdHarbor Business is
+          $49.99 per month or $550 per year. Business features marked planned are still
+          being developed, but the published Business plan price is shown here so farms
+          know the cost before deciding whether HerdHarbor fits their operation.
+        </p>
+      </div>
+    </section>
+
+
+    <section class="problem-strip" aria-label="HerdHarbor version 1.3.0 alpha status">
+      <div class="container problem-grid">
+        <p class="problem-kicker">Version 1.3.0 Alpha</p>
+        <p>
+          HerdHarbor keeps the complete Member recordkeeping workflow while making
+          cattle identification and pedigree records easier to use in day-to-day farm work.
+        </p>
+        <p class="problem-answer">The v1.3.0 alpha adds dedicated cattle ear-tag number and color fields throughout animal records, search, QR cards, pedigree views, sale documents, animal selectors, spreadsheets, and transfer files. The current pedigree experience also adds clearer sex-based visual identification and optional stored-animal photos while preserving readable printed records.</p>
+      </div>
+    </section>
+
+    <section class="section" id="features">
+      <div class="container">
+        <div class="section-heading">
+          <p class="eyebrow">Available now</p>
+          <h2>One connected record from breeding to sale.</h2>
+          <p>
+            The current tester build brings daily animal care, breeding decisions,
+            production records, farm finances, cattle identification, and customer paperwork into one responsive app.
+          </p>
+        </div>
+
+        <div class="feature-grid">
+          <article class="feature-card">
+            <span class="feature-number">01</span>
+            <h3>Animals, cattle IDs, and pedigrees</h3>
+            <p>Keep searchable profiles, photos, identification, cattle ear-tag number and color, status, location, breed memory, and connected multi-generation pedigrees with clearer visual sex identification.</p>
+          </article>
+
+          <article class="feature-card">
+            <span class="feature-number">02</span>
+            <h3>Breeding and birth management</h3>
+            <p>Track pairings, pregnancy checks, species-aware due dates, birth outcomes, fostering, losses, weaning, and performance.</p>
+          </article>
+
+          <article class="feature-card">
+            <span class="feature-number">03</span>
+            <h3>Offspring in one step</h3>
+            <p>Create retained offspring from a birth record with sire, dam, birth date, sex, tags, and pedigree connections already linked.</p>
+          </article>
+
+          <article class="feature-card">
+            <span class="feature-number">04</span>
+            <h3>Health records and symptom guide</h3>
+            <p>Record treatments, observations, weights, and follow-ups, then use an educational symptom lookup with urgent warning signs and veterinary references.</p>
+          </article>
+
+          <article class="feature-card">
+            <span class="feature-number">05</span>
+            <h3>Production and hay</h3>
+            <p>Log eggs, broilers, dairy, hay, and custom products with quantities, use, waste, revenue, comparisons, and year filtering.</p>
+          </article>
+
+          <article class="feature-card">
+            <span class="feature-number">06</span>
+            <h3>Full-year farm finances</h3>
+            <p>Review all 12 months of income, operating and capital expenses, net results, plans, actuals, and cost per head.</p>
+          </article>
+
+          <article class="feature-card">
+            <span class="feature-number">07</span>
+            <h3>Customers, sales, and payments</h3>
+            <p>Manage buyers, quotes, reservations, multi-animal sales, deposits, balances, discounts, fees, and Available, Reserved, or Sold status.</p>
+          </article>
+
+          <article class="feature-card">
+            <span class="feature-number">08</span>
+            <h3>Documents, QR cards, and transfers</h3>
+            <p>Print invoices, receipts, bills of sale, and cage cards, then send a portable animal transfer with its three-generation pedigree and supported cattle identification.</p>
+          </article>
+
+          <article class="feature-card">
+            <span class="feature-number">09</span>
+            <h3>Cloud, Excel, and backups</h3>
+            <p>Use protected multi-device sync, an offline device copy, JSON backups, and reviewed Excel imports and exports across major records, including cattle ear-tag fields.</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+
+    <section class="section" id="business">
+      <div class="container">
+        <div class="section-heading">
+          <p class="eyebrow">Coming in Alpha v1.4.0</p>
+          <h2>HerdHarbor Business — built for farms with a team.</h2>
+          <p>
+            HerdHarbor Business is being developed for farms and livestock operations
+            that need more than individual recordkeeping. The upcoming Business workspace
+            will add employee access, job assignments, recurring farm tasks, completion
+            tracking, and management controls while keeping animal records, production,
+            health, breeding, and farm operations connected in one system.
+          </p>
+        </div>
+
+        <aside class="business-origin" aria-label="Why HerdHarbor Business is being developed">
+          <div class="business-origin-label">
+            <p class="eyebrow">Built from farm feedback</p>
+            <h3>Why HerdHarbor Business?</h3>
+          </div>
+
+          <div class="business-origin-copy">
+            <p class="business-origin-lead">
+              A farm with approximately 10 employees asked HerdHarbor for a better way
+              to assign daily work than text messages and phone-call reminders.
+            </p>
+
+            <p class="business-origin-support">
+              HerdHarbor Business is being designed so owners and managers can assign
+              work once, employees can clearly see what they are responsible for, and
+              completed jobs become part of a visible farm activity history instead of
+              disappearing inside message threads.
+            </p>
+          </div>
+        </aside>
+
+        <div class="feature-grid business-feature-grid">
+          <article class="feature-card">
+            <span class="feature-number">01</span>
+            <h3>Separate Business workspace</h3>
+            <p>
+              Business accounts will have a dedicated team-management workspace while
+              retaining HerdHarbor's livestock, production, health, breeding, financial,
+              customer, sales, and recordkeeping tools.
+            </p>
+          </article>
+
+          <article class="feature-card">
+            <span class="feature-number">02</span>
+            <h3>Employee accounts</h3>
+            <p>
+              Farm owners will be able to add employees to the operation so workers can
+              sign in with their own access instead of sharing the owner's HerdHarbor
+              account.
+            </p>
+          </article>
+
+          <article class="feature-card">
+            <span class="feature-number">03</span>
+            <h3>Role-based permissions</h3>
+            <p>
+              Owners will control what each team member can see and change. Employees can
+              be limited to the records and responsibilities needed for their job without
+              receiving unrestricted access to the entire business.
+            </p>
+          </article>
+
+          <article class="feature-card">
+            <span class="feature-number">04</span>
+            <h3>Task assignments</h3>
+            <p>
+              Owners and managers will be able to assign jobs directly to individual
+              employees or members of the farm team with clear instructions, due dates,
+              animals, locations, and priorities attached to the assignment.
+            </p>
+          </article>
+
+          <article class="feature-card">
+            <span class="feature-number">05</span>
+            <h3>Recurring farm jobs</h3>
+            <p>
+              Daily, weekly, monthly, and custom recurring assignments will support
+              routine work such as feeding, watering, cleaning, milking, egg collection,
+              health checks, pasture checks, maintenance, breeding preparation, and other
+              repeated farm responsibilities.
+            </p>
+          </article>
+
+          <article class="feature-card">
+            <span class="feature-number">06</span>
+            <h3>Employee Today view</h3>
+            <p>
+              Employees will have a simple view showing what needs to be completed today,
+              what is coming next, and anything overdue so workers do not have to search
+              through the full farm-management system to find their assignments.
+            </p>
+          </article>
+
+          <article class="feature-card">
+            <span class="feature-number">07</span>
+            <h3>Completion tracking</h3>
+            <p>
+              Assigned work will have visible completion status so owners and managers can
+              see what has been completed, what is still open, and when the work was
+              recorded.
+            </p>
+          </article>
+
+          <article class="feature-card">
+            <span class="feature-number">08</span>
+            <h3>Animal-linked jobs</h3>
+            <p>
+              Tasks will be able to reference a specific animal, herd, flock, pen, pasture,
+              or other work area. Employees will know exactly where the job belongs and
+              managers will be able to connect completed work back to the appropriate farm
+              records.
+            </p>
+          </article>
+
+          <article class="feature-card">
+            <span class="feature-number">09</span>
+            <h3>Health and treatment assignments</h3>
+            <p>
+              Farms will be able to assign animal checks, follow-up observations, treatment
+              reminders, weighing, medication-related tasks, and other health work while
+              maintaining appropriate access controls around sensitive records.
+            </p>
+          </article>
+
+          <article class="feature-card">
+            <span class="feature-number">10</span>
+            <h3>Production assignments</h3>
+            <p>
+              Work such as milking, egg collection, livestock checks, hay work, feeding,
+              weighing, and other production activities can be assigned to employees and
+              connected with HerdHarbor's existing production records.
+            </p>
+          </article>
+
+          <article class="feature-card">
+            <span class="feature-number">11</span>
+            <h3>Manager oversight</h3>
+            <p>
+              Managers will be able to review outstanding assignments, completed work,
+              overdue tasks, employee workloads, and the day's farm activity without
+              contacting every employee individually for an update.
+            </p>
+          </article>
+
+          <article class="feature-card">
+            <span class="feature-number">12</span>
+            <h3>Farm activity history</h3>
+            <p>
+              Completed assignments will create a clearer operational history showing
+              what work was performed, who completed it, and when it was finished instead
+              of leaving important information scattered across calls and text messages.
+            </p>
+          </article>
+
+          <article class="feature-card">
+            <span class="feature-number">13</span>
+            <h3>Planned W-9 paperwork tools</h3>
+            <p>
+              HerdHarbor Business is planned to include a secure place to organize
+              contractor and vendor W-9 paperwork, track whether required paperwork has
+              been received, and prepare printable records for the farm's own files.
+              Tax forms and requirements can change, so final workflows will be reviewed
+              before release and will not replace guidance from a qualified tax professional.
+            </p>
+          </article>
+
+          <article class="feature-card">
+            <span class="feature-number">14</span>
+            <h3>Accounting workbook worksheets</h3>
+            <p>
+              Planned Business reporting will include printable and exportable workbook-style
+              worksheets for organizing farm income, expenses, payments, customers, vendors,
+              production, and other accounting records so information can be reviewed in
+              HerdHarbor or shared with a bookkeeper or accountant.
+            </p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="section process-section" id="business-workflow">
+      <div class="container">
+        <div class="section-heading compact">
+          <p class="eyebrow">Planned team workflow</p>
+          <h2>Assign the job. Complete the work. Keep the farm informed.</h2>
+        </div>
+
+        <div class="process-grid">
+          <article>
+            <span>1</span>
+            <h3>Create the assignment</h3>
+            <p>
+              The owner or manager chooses the work, employee, animal or location,
+              due date, priority, instructions, and whether the job repeats.
+            </p>
+          </article>
+
+          <article>
+            <span>2</span>
+            <h3>Employee sees today's work</h3>
+            <p>
+              Each employee signs in and sees a focused list of assigned jobs rather than
+              searching through text messages, missed calls, or the entire farm database.
+            </p>
+          </article>
+
+          <article>
+            <span>3</span>
+            <h3>Complete and record</h3>
+            <p>
+              The employee marks the work complete and can record required notes,
+              observations, animal information, or other job details when appropriate.
+            </p>
+          </article>
+
+          <article>
+            <span>4</span>
+            <h3>Management sees the result</h3>
+            <p>
+              Owners and managers can immediately see completed, outstanding, and overdue
+              work and maintain a history of farm activity across the team.
+            </p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="business-controls">
+      <div class="container">
+        <div class="section-heading">
+          <p class="eyebrow">Planned Business permissions</p>
+          <h2>One farm. Three clear levels of access.</h2>
+          <p>
+            HerdHarbor Business is being designed so each person sees the tools needed
+            for their role. Owners keep full control, managers receive configurable
+            operational access, and employees stay focused on assigned work.
+          </p>
+        </div>
+
+        <div class="business-role-grid">
+          <article class="business-role-card role-owner">
+            <div class="business-role-top">
+              <span class="business-role-badge">Owner / Admin</span>
+              <span class="business-role-level">Full control</span>
+            </div>
+            <h3>Runs the operation</h3>
+            <p>
+              The owner controls the Business workspace, team access, farm records,
+              assignments, reporting, and account-level settings.
+            </p>
+            <ul class="business-role-list">
+              <li><span class="role-check">✓</span><span>Add, remove, and manage team members</span></li>
+              <li><span class="role-check">✓</span><span>Set roles and permission levels</span></li>
+              <li><span class="role-check">✓</span><span>Create, assign, edit, and review work</span></li>
+              <li><span class="role-check">✓</span><span>Access full farm records and Business reporting</span></li>
+            </ul>
+          </article>
+
+          <article class="business-role-card role-manager">
+            <div class="business-role-top">
+              <span class="business-role-badge">Manager</span>
+              <span class="business-role-level">Configurable access</span>
+            </div>
+            <h3>Coordinates the team</h3>
+            <p>
+              Managers can oversee daily work and approved operational records without
+              automatically receiving every owner-level Business control.
+            </p>
+            <ul class="business-role-list">
+              <li><span class="role-check">✓</span><span>Assign and review employee tasks</span></li>
+              <li><span class="role-check">✓</span><span>See outstanding, completed, and overdue work</span></li>
+              <li><span class="role-check">✓</span><span>Update approved animal and operational records</span></li>
+              <li><span class="role-check">✓</span><span>Access only the areas enabled by the owner</span></li>
+            </ul>
+          </article>
+
+          <article class="business-role-card role-employee">
+            <div class="business-role-top">
+              <span class="business-role-badge">Employee</span>
+              <span class="business-role-level">Focused access</span>
+            </div>
+            <h3>Completes assigned work</h3>
+            <p>
+              Employees receive a simplified work-focused experience centered on what
+              they need to complete their responsibilities for the day.
+            </p>
+            <ul class="business-role-list">
+              <li><span class="role-check">✓</span><span>See today's assigned jobs and due work</span></li>
+              <li><span class="role-check">✓</span><span>Open linked animals, herds, flocks, or locations as permitted</span></li>
+              <li><span class="role-check">✓</span><span>Complete tasks and record required notes or observations</span></li>
+              <li><span class="role-check">✓</span><span>Stay out of unrelated management and account controls</span></li>
+            </ul>
+          </article>
+        </div>
+
+        <div class="business-permission-matrix" role="table" aria-label="Planned HerdHarbor Business role comparison">
+          <div class="business-permission-matrix-header" role="row">
+            <div role="columnheader">Permission area</div>
+            <div role="columnheader">Owner / Admin</div>
+            <div role="columnheader">Manager</div>
+            <div role="columnheader">Employee</div>
+          </div>
+
+          <div class="business-permission-row" role="row">
+            <div class="business-permission-name" role="rowheader">Team management</div>
+            <div role="cell"><span class="permission-state">Full</span></div>
+            <div role="cell"><span class="permission-state configurable">Owner controlled</span></div>
+            <div role="cell"><span class="permission-state none">No</span></div>
+          </div>
+
+          <div class="business-permission-row" role="row">
+            <div class="business-permission-name" role="rowheader">Assign farm tasks</div>
+            <div role="cell"><span class="permission-state">Full</span></div>
+            <div role="cell"><span class="permission-state configurable">Planned</span></div>
+            <div role="cell"><span class="permission-state none">No</span></div>
+          </div>
+
+          <div class="business-permission-row" role="row">
+            <div class="business-permission-name" role="rowheader">Review team completion</div>
+            <div role="cell"><span class="permission-state">Full</span></div>
+            <div role="cell"><span class="permission-state configurable">Planned</span></div>
+            <div role="cell"><span class="permission-state limited">Own work</span></div>
+          </div>
+
+          <div class="business-permission-row" role="row">
+            <div class="business-permission-name" role="rowheader">Edit farm records</div>
+            <div role="cell"><span class="permission-state">Full</span></div>
+            <div role="cell"><span class="permission-state configurable">Configurable</span></div>
+            <div role="cell"><span class="permission-state limited">Assigned areas</span></div>
+          </div>
+
+          <div class="business-permission-row" role="row">
+            <div class="business-permission-name" role="rowheader">Business reporting &amp; settings</div>
+            <div role="cell"><span class="permission-state">Full</span></div>
+            <div role="cell"><span class="permission-state configurable">Selected access</span></div>
+            <div role="cell"><span class="permission-state none">No</span></div>
+          </div>
+
+          <div class="business-permission-row" role="row">
+            <div class="business-permission-name" role="rowheader">Accounting worksheets</div>
+            <div role="cell"><span class="permission-state">Full</span></div>
+            <div role="cell"><span class="permission-state configurable">Configurable</span></div>
+            <div role="cell"><span class="permission-state none">No by default</span></div>
+          </div>
+
+          <div class="business-permission-row" role="row">
+            <div class="business-permission-name" role="rowheader">W-9 paperwork records</div>
+            <div role="cell"><span class="permission-state">Full</span></div>
+            <div role="cell"><span class="permission-state configurable">Owner controlled</span></div>
+            <div role="cell"><span class="permission-state none">No by default</span></div>
+          </div>
+
+          <div class="business-permission-row" role="row">
+            <div class="business-permission-name" role="rowheader">Complete assigned work</div>
+            <div role="cell"><span class="permission-state">Yes</span></div>
+            <div role="cell"><span class="permission-state">Yes</span></div>
+            <div role="cell"><span class="permission-state">Yes</span></div>
+          </div>
+        </div>
+
+        <p class="business-permission-note">
+          These are planned Alpha v1.4.0 Business controls. Final permission options may
+          change during pilot testing as HerdHarbor validates real farm workflows.
+        </p>
+      </div>
+    </section>
+
+    <section class="section" id="business-task-types">
+      <div class="container">
+        <div class="section-heading">
+          <p class="eyebrow">Planned task categories</p>
+          <h2>Built around the work farms actually assign.</h2>
+          <p>
+            HerdHarbor Business will build on the task system already used inside the
+            Member experience and expand it for multi-employee operations.
+          </p>
+        </div>
+
+        <div class="feature-grid">
+          <article class="feature-card">
+            <h3>Feeding &amp; Watering</h3>
+            <p>
+              Daily feeding, water checks, ration changes, supplements, and other routine
+              animal-care assignments.
+            </p>
+          </article>
+
+          <article class="feature-card">
+            <h3>Cleaning</h3>
+            <p>
+              Stalls, cages, pens, barns, feeders, waterers, bedding, sanitation, and
+              facility-cleaning schedules.
+            </p>
+          </article>
+
+          <article class="feature-card">
+            <h3>Health</h3>
+            <p>
+              Animal observations, health checks, weighing, scheduled follow-ups, and
+              other authorized health-related work.
+            </p>
+          </article>
+
+          <article class="feature-card">
+            <h3>Breeding</h3>
+            <p>
+              Breeding preparation, pregnancy checks, nest-box preparation, expected
+              birth checks, weaning tasks, and breeding-related reminders.
+            </p>
+          </article>
+
+          <article class="feature-card">
+            <h3>Production</h3>
+            <p>
+              Milking, egg collection, livestock production checks, harvest-related work,
+              hay activity, and other production responsibilities.
+            </p>
+          </article>
+
+          <article class="feature-card">
+            <h3>Movement &amp; Pasture</h3>
+            <p>
+              Pen changes, pasture rotation, animal movement, fence checks, gates, and
+              location-specific assignments.
+            </p>
+          </article>
+
+          <article class="feature-card">
+            <h3>Maintenance</h3>
+            <p>
+              Equipment checks, repairs, fencing, water systems, barns, pens, and other
+              farm-maintenance work.
+            </p>
+          </article>
+
+          <article class="feature-card">
+            <h3>Accounting &amp; Paperwork</h3>
+            <p>
+              Planned Business tools will help organize W-9 paperwork, vendor and contractor
+              records, payment documentation, printable accounting worksheets, and other
+              office-side farm administration.
+            </p>
+          </article>
+
+          <article class="feature-card">
+            <h3>Custom Tasks</h3>
+            <p>
+              Farms will still be able to create their own assignments when the work does
+              not fit one of HerdHarbor's standard categories.
+            </p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+
+    <section class="section" id="business-accounting-workflow">
+      <div class="container">
+        <div class="section-heading">
+          <p class="eyebrow">Planned Business accounting workflow</p>
+          <h2>From paperwork collection to accountant-ready records.</h2>
+          <p>
+            HerdHarbor Business is planned to connect contractor and vendor paperwork,
+            receipt and document status tracking, printable workbook worksheets, and
+            accountant handoff into one organized workflow. Each capability below is
+            planned for the Business experience and is not yet released.
+          </p>
+        </div>
+
+        <div class="business-accounting-grid">
+          <article class="business-accounting-step">
+            <span class="business-accounting-step-number">1</span>
+            <span class="business-accounting-planned">Planned</span>
+            <h3>Organize W-9 paperwork</h3>
+            <p>
+              Keep contractor and vendor paperwork associated with the correct Business
+              record instead of relying on scattered email attachments or paper folders.
+            </p>
+            <ul>
+              <li>Track which contractor or vendor the paperwork belongs to</li>
+              <li>Record whether required paperwork has been requested or received</li>
+              <li>Keep printable records available for the farm's own files</li>
+            </ul>
+          </article>
+
+          <article class="business-accounting-step">
+            <span class="business-accounting-step-number">2</span>
+            <span class="business-accounting-planned">Planned</span>
+            <h3>Track receipts and document status</h3>
+            <p>
+              Give owners and approved managers a clearer view of which supporting
+              documents are complete and what still needs attention before bookkeeping.
+            </p>
+            <ul>
+              <li>Mark paperwork and receipts as received, missing, or needing review</li>
+              <li>Connect supporting records to vendors, payments, or farm expenses</li>
+              <li>Reduce last-minute searching at bookkeeping or tax-preparation time</li>
+            </ul>
+          </article>
+
+          <article class="business-accounting-step">
+            <span class="business-accounting-step-number">3</span>
+            <span class="business-accounting-planned">Planned</span>
+            <h3>Build printable workbook worksheets</h3>
+            <p>
+              Turn HerdHarbor Business records into organized workbook-style worksheets
+              that can be printed or exported for internal review.
+            </p>
+            <ul>
+              <li>Organize income, expenses, payments, customers, vendors, and production</li>
+              <li>Prepare printable worksheets for record review and reconciliation</li>
+              <li>Export structured records for use outside HerdHarbor when needed</li>
+            </ul>
+          </article>
+
+          <article class="business-accounting-step">
+            <span class="business-accounting-step-number">4</span>
+            <span class="business-accounting-planned">Planned</span>
+            <h3>Prepare an accountant handoff</h3>
+            <p>
+              Make it easier to provide a bookkeeper or accountant with organized farm
+              records instead of a collection of screenshots, messages, and loose files.
+            </p>
+            <ul>
+              <li>Review what is complete before sharing records</li>
+              <li>Print or export the accounting workbook package</li>
+              <li>Keep the farm's operational records separate from professional advice</li>
+            </ul>
+          </article>
+        </div>
+
+        <div class="business-accounting-summary">
+          <div>
+            <h3>Planned result: cleaner records before they leave the farm.</h3>
+            <p>
+              The goal is not to turn HerdHarbor into an accounting firm. The planned
+              Business workflow is meant to organize the farm's source records so an owner,
+              bookkeeper, or accountant can review the information with less manual sorting.
+            </p>
+          </div>
+          <div class="summary-label">
+            Planned Business feature — Alpha v1.4.0 development
+          </div>
+        </div>
+
+        <p class="business-accounting-disclaimer">
+          Planned tax-form and accounting workflows may change before release as requirements
+          are reviewed and pilot farms test the process. HerdHarbor will organize records and
+          paperwork but will not provide tax, accounting, or legal advice.
+        </p>
+
+        <div class="business-accounting-cta" aria-label="HerdHarbor Business accounting updates">
+          <div class="business-accounting-cta-copy">
+            <p class="eyebrow">Interested in the planned Business tools?</p>
+            <h3>Join the Alpha waitlist for Business updates.</h3>
+            <p>
+              W-9 organization, receipt tracking, accounting workbook worksheets, and
+              accountant handoff are planned Business capabilities and are not yet released.
+              Submit your information below to follow HerdHarbor testing and receive
+              Business-specific updates as development moves toward Alpha v1.4.0.
+            </p>
+
+            <form
+              class="business-accounting-cta-form"
+              id="business-accounting-waitlist-form"
+              action="https://formspree.io/f/xgogovez"
+              method="POST"
+              novalidate
+            >
+              <input type="hidden" name="_subject" value="HerdHarbor Business Alpha waitlist">
+              <input type="hidden" name="interest" value="HerdHarbor Business / Accounting workflow">
+              <input type="text" name="_gotcha" class="honeypot" tabindex="-1" autocomplete="off" aria-hidden="true">
+
+              <label>
+                Name
+                <input
+                  type="text"
+                  name="name"
+                  autocomplete="name"
+                  required
+                  placeholder="Your name"
+                >
+              </label>
+
+              <label>
+                Email
+                <input
+                  type="email"
+                  name="email"
+                  autocomplete="email"
+                  required
+                  placeholder="you@example.com"
+                >
+              </label>
+
+              <button class="button" type="submit">Join the Alpha waitlist</button>
+
+              <div
+                class="business-accounting-form-status"
+                id="business-accounting-form-status"
+                role="status"
+                aria-live="polite"
+              ></div>
+            </form>
+
+            <div class="business-accounting-cta-actions">
+              <a
+                class="button button-secondary"
+                href="mailto:hello@herdharbor.com?subject=HerdHarbor%20Business%20Updates"
+              >
+                Prefer email? Request Business updates
+              </a>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+
+    <section class="section waitlist-section" id="business-interest">
+      <div class="container waitlist-grid">
+        <div class="waitlist-copy">
+          <p class="eyebrow light">HerdHarbor Business</p>
+          <h2>Business and employee management is coming next.</h2>
+
+          <p>
+            Alpha v1.4.0 is planned to introduce HerdHarbor's dedicated Business
+            experience. Development will focus first on the workflows farms need to
+            replace text-message assignments, phone-call reminders, and disconnected
+            employee task lists.
+          </p>
+
+          <p>
+            Planned office-side tools also include W-9 paperwork organization and printable
+            or exportable accounting workbook worksheets designed to make it easier to hand
+            organized farm records to a bookkeeper or accountant.
+          </p>
+
+          <p>
+            HerdHarbor Business pricing is published at <strong>$49.99 per month</strong>
+            or <strong>$550 per year</strong>. Planned Business features are still being
+            tested, but the price is not hidden behind a quote request or sales call.
+          </p>
+
+          <p>
+            HerdHarbor Business is still in development. Features, permissions, and tax-form workflows may change as the system is tested with real
+            farm operations. The published Business plan price is $49.99 per month or $550 per year. HerdHarbor will not replace professional tax, accounting, or
+            legal advice.
+          </p>
+
+          <div class="hero-actions tester-actions">
+            <a class="button" href="mailto:hello@herdharbor.com?subject=HerdHarbor%20Business%20Testing">
+              Ask about Business testing
+            </a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section mission-section" id="mission">
+      <div class="container mission-grid">
+        <div class="mission-mark">
+          <img src="assets/herdharbor-icon.png" alt="HerdHarbor shield with lighthouse and livestock">
+        </div>
+        <div class="mission-copy">
+          <p class="eyebrow light">Why HerdHarbor</p>
+          <h2>Your record system should become more useful as you grow—not harder to afford.</h2>
+          <p>
+            HerdHarbor began after livestock and rabbit breeders voiced the same frustration:
+            useful recordkeeping tools can become expensive or complicated as an operation grows.
+          </p>
+          <p>
+            The goal is a modern, practical platform built around fast barn-side entry,
+            clear records, user ownership of data, and feedback from the people who raise animals.
+          </p>
+
+          <div class="promise-list">
+            <div>
+              <strong>Fair pricing remains the goal</strong>
+              <span>Growth should be a success, not a pricing penalty.</span>
+            </div>
+            <div>
+              <strong>Tested by real breeders</strong>
+              <span>Current features are being shaped by hands-on tester feedback.</span>
+            </div>
+            <div>
+              <strong>Ready for mixed operations</strong>
+              <span>One workspace can hold rabbits, poultry, dogs, horses, cattle, livestock, and other animals.</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section process-section" id="workflow">
+      <div class="container">
+        <div class="section-heading compact">
+          <p class="eyebrow">One connected workflow</p>
+          <h2>Follow the animal from breeding plan to new home.</h2>
+        </div>
+
+        <div class="process-grid">
+          <article>
+            <span>1</span>
+            <h3>Plan breeding</h3>
+            <p>Choose sire and dam, record the attempt, and let species-aware dates create pregnancy and birth-preparation reminders.</p>
+          </article>
+          <article>
+            <span>2</span>
+            <h3>Record the birth</h3>
+            <p>Capture outcomes and weaning, create retained offspring once, and inherit the correct parent and pedigree links.</p>
+          </article>
+          <article>
+            <span>3</span>
+            <h3>Run the operation</h3>
+            <p>Keep health, tasks, production, hay, cattle identification, expenses, income, and full-year performance attached to the same farm.</p>
+          </article>
+          <article>
+            <span>4</span>
+            <h3>Sell and transfer</h3>
+            <p>Reserve animals, record payments, print documents and QR cards, then transfer the animal, supported identification, and pedigree to its new owner.</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="section waitlist-section" id="waitlist">
+      <div class="container waitlist-grid">
+        <div class="waitlist-copy">
+          <p class="eyebrow light">Tester access</p>
+          <h2>Try HerdHarbor and help shape what comes next.</h2>
+          <p>
+            Version 1.3.0 Alpha is available online. Create an account to begin alpha testing,
+            or join the update list for release news and future testing opportunities.
+          </p>
+          <div class="hero-actions tester-actions">
+            <a class="button" href="https://app.herdharbor.com/">Open the tester app</a>
+          </div>
+          <div class="waitlist-note">
+            <strong>Alpha-testing reminder</strong>
+            HerdHarbor is actively testing Alpha v1.3.0. Confirm cloud sync, review Device storage in Settings, export regular JSON backups, and report issues through the in-app feedback button.
+          </div>
+        </div>
+
+        <form class="waitlist-form" id="waitlist-form"
+              action="https://formspree.io/f/xgogovez"
+              method="POST">
+          <input type="hidden" name="_subject" value="New HerdHarbor tester-list signup">
+          <input type="text" name="_gotcha" class="honeypot" tabindex="-1" autocomplete="off" aria-hidden="true">
+          <div class="field-row">
+            <label>
+              Name
+              <input type="text" name="name" autocomplete="name" required>
+            </label>
+            <label>
+              Email
+              <input type="email" name="email" autocomplete="email" required>
+            </label>
+          </div>
+
+          <div class="field-row">
+            <label>
+              What do you raise?
+              <input type="text" name="animals" placeholder="Rabbits, dogs, horses, poultry…" required>
+            </label>
+            <label>
+              Approximate animal count
+              <select name="animal_count" required>
+                <option value="">Choose one</option>
+                <option>1–10</option>
+                <option>11–25</option>
+                <option>26–50</option>
+                <option>51–100</option>
+                <option>More than 100</option>
+              </select>
+            </label>
+          </div>
+
+          <label>
+            How do you keep records today?
+            <select name="current_system" required>
+              <option value="">Choose one</option>
+              <option>Paper or notebook</option>
+              <option>Spreadsheet</option>
+              <option>Another livestock app</option>
+              <option>Phone notes or calendar</option>
+              <option>I do not have a consistent system</option>
+            </select>
+          </label>
+
+          <label>
+            What is your biggest recordkeeping frustration?
+            <textarea name="frustration" rows="4" placeholder="Pricing, pedigrees, reminders, data entry, exports…" required></textarea>
+          </label>
+
+          <label class="check-label">
+            <input type="checkbox" name="alpha_interest" value="Yes">
+            <span>I am interested in testing HerdHarbor.</span>
+          </label>
+
+          <button class="button button-full" type="submit">Join the tester update list</button>
+          <p class="form-note">
+            Your information is used only for HerdHarbor product updates and testing invitations.
+          </p>
+          <div class="form-status" id="form-status" role="status" aria-live="polite"></div>
+        </form>
+      </div>
+    </section>
+
+    <section class="section faq-section" id="faq">
+      <div class="container faq-grid">
+        <div class="section-heading compact">
+          <p class="eyebrow">Questions</p>
+          <h2>What to know before testing.</h2>
+        </div>
+
+        <div class="accordion">
+          <details>
+            <summary>What species can I track now?</summary>
+            <p>The current build includes rabbits, chickens, ducks, turkeys, dogs, horses, goats, sheep, cattle, pigs, and an Other category for custom animals and farm products. Cattle records also support dedicated ear-tag number and ear-tag color fields.</p>
+          </details>
+
+          <details>
+            <summary>Are my records synced?</summary>
+            <p>Yes. The tester build uses protected accounts, record-by-record cloud merging, visible sync status, conflict protection, and an offline device copy. During launch testing, testers should also export regular JSON backups.</p>
+          </details>
+
+          <details>
+            <summary>What can I import or export?</summary>
+            <p>You can export or restore a complete JSON backup. Excel tools cover Animals, Customers, Sales, Payments, Breeding, Births, Medical, Production, actual Budgeting, annual plans, and cattle ear-tag fields. You can also print pedigrees, invoices, receipts, bills of sale, QR cards, and focused reports.</p>
+          </details>
+
+          <details>
+            <summary>Can the symptom guide diagnose or treat an animal?</summary>
+            <p>No. HerdHarbor is not a veterinary provider. The guide is a static educational reference that shows possible concerns and urgency, not a diagnosis or treatment. Contact a licensed veterinarian for every health concern and seek emergency veterinary help for red-flag signs.</p>
+          </details>
+
+          <details>
+            <summary>How do payments affect my Budget?</summary>
+            <p>An invoice does not count as cash received. Each recorded payment creates one linked Budget income entry, and edits stay synchronized so income is not duplicated or overstated.</p>
+          </details>
+
+          <details>
+            <summary>How do QR cards and animal transfers work?</summary>
+            <p>Private QR cards open the correct animal after the farm owner signs in. A completed sale can also create a downloadable transfer file containing the animal and a three-generation pedigree for duplicate-safe import into another HerdHarbor account. Supported cattle ear-tag information is included with the animal record.</p>
+          </details>
+
+          <details>
+            <summary>How much does HerdHarbor cost?</summary>
+            <p>
+              Pricing is public. The first 100 Founder Members can lock in $9.99 per month
+              or $110 per year for life and receive unlimited animals plus all base Member
+              features. Standard Member pricing is $14.99 per month or $150 per year.
+              HerdHarbor Business is $49.99 per month or $550 per year and is planned to
+              include team roles, employee assignments, recurring jobs, completion tracking,
+              Business controls, W-9 paperwork organization, and accounting workbook tools.
+            </p>
+          </details>
+
+          <details>
+            <summary>Is HerdHarbor finished?</summary>
+            <p>HerdHarbor is now at Alpha v1.3.0. The current release preserves the complete Member experience while adding dedicated cattle ear-tag records throughout the workflow and improving pedigree identification with clearer visual cards and optional stored-animal photos. The app remains in active alpha testing as feedback continues to shape future releases.</p>
+          </details>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container footer-grid">
+      <div class="footer-brand">
+        <a class="brand brand-footer" href="#top">
+          <img src="assets/herdharbor-icon.png" alt="" width="44" height="44">
+          <span>HerdHarbor</span>
+        </a>
+        <p>Livestock records without limits. · HerdHarbor Alpha v1.3.0</p>
+      </div>
+
+      <div class="footer-links">
+        <a href="mailto:hello@herdharbor.com">hello@herdharbor.com</a>
+        <a href="https://app.herdharbor.com/">Open the app</a>
+        <a href="/how-to/">How-To</a>
+        <a href="/support/">Support</a>
+        <a href="/privacy/">Privacy</a>
+        <a href="/terms/">Terms</a>
+        <a href="/delete-account/">Delete account</a>
+      </div>
+
+      <p class="copyright">© <span id="year"></span> HerdHarbor. All rights reserved.</p>
+    </div>
+  </footer>
+
+  <script src="script.js?v=4"></script>
+
+  <script id="business-accounting-waitlist-script">
+    (() => {
+      "use strict";
+
+      const form = document.getElementById("business-accounting-waitlist-form");
+      const status = document.getElementById("business-accounting-form-status");
+
+      if (!form || !status) return;
+
+      const submitButton = form.querySelector('button[type="submit"]');
+      const defaultButtonText = submitButton ? submitButton.textContent : "Join the Alpha waitlist";
+
+      function setStatus(message, state) {
+        status.textContent = message;
+        status.className = "business-accounting-form-status";
+        if (state) status.classList.add(`is-${state}`);
+      }
+
+      form.addEventListener("submit", async (event) => {
+        event.preventDefault();
+
+        if (!form.checkValidity()) {
+          form.reportValidity();
+          setStatus("Please enter your name and a valid email address.", "error");
+          return;
+        }
+
+        const honeypot = form.querySelector('input[name="_gotcha"]');
+        if (honeypot && honeypot.value) {
+          setStatus("Thanks. Your request has been received.", "success");
+          form.reset();
+          return;
+        }
+
+        if (submitButton) {
+          submitButton.disabled = true;
+          submitButton.textContent = "Joining…";
+        }
+        setStatus("Submitting your Alpha waitlist request…", "working");
+
+        try {
+          const response = await fetch(form.action, {
+            method: "POST",
+            body: new FormData(form),
+            headers: {
+              "Accept": "application/json"
+            }
+          });
+
+          if (!response.ok) {
+            throw new Error(`Waitlist request failed with status ${response.status}`);
+          }
+
+          form.reset();
+          setStatus(
+            "You're on the HerdHarbor Business Alpha waitlist. We'll use this email for testing and Business updates.",
+            "success"
+          );
+        } catch (error) {
+          console.error("HerdHarbor Business waitlist submission failed:", error);
+          setStatus(
+            "We couldn't submit your request right now. Please try again, or use the Business updates email link below.",
+            "error"
+          );
+        } finally {
+          if (submitButton) {
+            submitButton.disabled = false;
+            submitButton.textContent = defaultButtonText;
+          }
+        }
+      });
+    })();
+  </script>
+
+</body>
+</html>
