@@ -1,6 +1,23 @@
 const navToggle = document.querySelector(".nav-toggle");
 const nav = document.querySelector(".site-nav");
 
+if (nav && !nav.querySelector('a[href="/how-to/"]')) {
+  const howToLink = document.createElement("a");
+  howToLink.href = "/how-to/";
+  howToLink.textContent = "How-To";
+
+  const faqLink = nav.querySelector('a[href="#faq"]');
+  const appButton = nav.querySelector(".button");
+
+  if (faqLink) {
+    nav.insertBefore(howToLink, faqLink);
+  } else if (appButton) {
+    nav.insertBefore(howToLink, appButton);
+  } else {
+    nav.appendChild(howToLink);
+  }
+}
+
 if (navToggle && nav) {
   navToggle.addEventListener("click", () => {
     const open = nav.classList.toggle("open");
