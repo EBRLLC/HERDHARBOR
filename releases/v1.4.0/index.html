@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="HerdHarbor Alpha v1.4.0 introduces Breeding Intelligence: rabbit genetic profiles, pedigree evidence, Pair Analysis, offspring color possibilities, immutable prediction history, and breeding performance.">
+  <meta name="theme-color" content="#0D2540">
+  <link rel="canonical" href="https://herdharbor.com/releases/v1.4.0/">
+  <meta property="og:title" content="HerdHarbor Alpha v1.4.0 — Breeding Intelligence">
+  <meta property="og:description" content="A major new breeding release built around rabbit genetics first, with a species-aware foundation for future livestock genetics modules.">
+  <meta property="og:type" content="article">
+  <meta property="og:url" content="https://herdharbor.com/releases/v1.4.0/">
+  <meta property="og:image" content="https://herdharbor.com/assets/herdharbor-icon.png">
+  <title>HerdHarbor Alpha v1.4.0 — Breeding Intelligence</title>
+  <link rel="icon" href="/assets/herdharbor-icon.png">
+  <link rel="stylesheet" href="/styles.css?v=3">
+  <style>
+    :root{--navy:#0D2540;--deep:#0D2A46;--teal:#2E7D7B;--mint:#82D0CC;--cream:#F7F3EA;--ink:#263A4A;--muted:#65727E}
+    body{background:var(--cream);color:var(--ink)}
+    .release-nav{position:sticky;top:0;z-index:10;background:rgba(13,37,64,.96);backdrop-filter:blur(8px);border-bottom:1px solid rgba(255,255,255,.1)}
+    .release-nav-inner{max-width:1160px;margin:auto;padding:14px 24px;display:flex;align-items:center;justify-content:space-between;gap:18px}.release-nav a{color:#fff;text-decoration:none;font-weight:800}.release-nav .back{color:#dce7ed;font-weight:700}
+    .release-hero{background:radial-gradient(circle at 82% 18%,rgba(130,208,204,.22),transparent 30%),linear-gradient(145deg,#071827,#0D2A46 58%,#15595C);color:#fff}.release-hero-inner{max-width:1160px;margin:auto;padding:88px 24px 82px;display:grid;grid-template-columns:minmax(0,1.5fr) minmax(300px,.75fr);gap:48px;align-items:center}.eyebrow{margin:0 0 10px;color:var(--mint);font-size:.8rem;font-weight:900;letter-spacing:.1em;text-transform:uppercase}.release-hero h1{margin:0;font-size:clamp(2.6rem,7vw,5.7rem);line-height:.96;letter-spacing:-.04em;color:#fff}.release-hero .lead{max-width:790px;margin:24px 0 0;color:#dce7ed;font-size:clamp(1.08rem,2vw,1.35rem);line-height:1.65}.hero-card{padding:26px;border:1px solid rgba(255,255,255,.15);border-radius:20px;background:rgba(255,255,255,.07);box-shadow:0 24px 55px rgba(0,0,0,.2)}.hero-card strong{display:block;font-size:1.45rem}.hero-card p{color:#dce7ed;line-height:1.6}.hero-card a{display:inline-flex;margin-top:6px;padding:11px 15px;border-radius:10px;background:var(--mint);color:var(--navy);font-weight:900;text-decoration:none}
+    .release-main{max-width:1160px;margin:auto;padding:72px 24px 90px}.intro{max-width:850px;margin-bottom:44px}.intro h2,.section h2{color:var(--navy);font-size:clamp(1.8rem,3.5vw,2.8rem);line-height:1.1}.intro p,.section p{line-height:1.72}.feature-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}.feature{padding:24px;border:1px solid rgba(13,37,64,.12);border-radius:18px;background:#fff;box-shadow:0 10px 28px rgba(13,37,64,.05)}.feature .num{display:inline-grid;place-items:center;width:36px;height:36px;margin-bottom:18px;border-radius:50%;background:#DDF1EF;color:#0D5F5B;font-weight:900}.feature h3{margin:0 0 10px;color:var(--navy);font-size:1.25rem}.feature p{margin:0;color:#435466;line-height:1.62}.section{padding-top:66px}.two-col{display:grid;grid-template-columns:1fr 1fr;gap:18px}.panel{padding:28px;border-radius:20px;background:#fff;border:1px solid rgba(13,37,64,.12)}.panel.dark{background:var(--deep);color:#fff}.panel.dark h3{color:#fff}.panel h3{margin-top:0;color:var(--navy);font-size:1.45rem}.panel ul{margin:0;padding-left:20px;line-height:1.75}.panel.dark li,.panel.dark p{color:#dce7ed}.status-row{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}.status{padding:18px;border-radius:14px;background:#fff;border:1px solid rgba(13,37,64,.12)}.status strong{display:block;color:var(--navy)}.status span{display:block;margin-top:6px;color:var(--muted);font-size:.9rem;line-height:1.45}.example{margin-top:18px;padding:26px;border-radius:20px;background:#fff;border:1px solid rgba(13,37,64,.12)}.example-head{display:flex;align-items:center;justify-content:space-between;gap:14px}.pill{padding:6px 10px;border-radius:999px;background:#DDF1EF;color:#0D5F5B;font-size:.76rem;font-weight:900}.outcome{display:flex;justify-content:space-between;gap:10px;padding:12px 0;border-top:1px solid rgba(13,37,64,.1)}.outcome:first-of-type{margin-top:15px}.warning{margin-top:16px;padding:15px 17px;border-left:4px solid #D5AA52;background:#FFF7E5;line-height:1.55}.sources a{color:#0D5F5B}.roadmap{padding:28px;border-radius:20px;background:linear-gradient(135deg,#EAF5F3,#fff);border:1px solid rgba(46,125,123,.18)}.roadmap strong{color:var(--navy)}
+    .release-footer{padding:34px 24px;background:#071827;color:#dce7ed;text-align:center}.release-footer a{color:#82D0CC}
+    @media(max-width:900px){.release-hero-inner{grid-template-columns:1fr}.feature-grid{grid-template-columns:1fr 1fr}.status-row{grid-template-columns:1fr 1fr}}
+    @media(max-width:620px){.release-hero-inner{padding:62px 20px 58px}.release-main{padding:52px 18px 70px}.feature-grid,.two-col,.status-row{grid-template-columns:1fr}.release-nav-inner{padding:12px 18px}.release-nav .back{font-size:.85rem}}
+  </style>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"SoftwareApplication","name":"HerdHarbor","applicationCategory":"BusinessApplication","operatingSystem":"Web, Android","softwareVersion":"1.4.0","url":"https://herdharbor.com/","releaseNotes":"https://herdharbor.com/releases/v1.4.0/","description":"Farm and livestock management with Breeding Intelligence, rabbit genetics, pedigrees, production, sales, and protected cloud synchronization."}</script>
+</head>
+<body>
+  <nav class="release-nav"><div class="release-nav-inner"><a href="/">HerdHarbor</a><a class="back" href="/">← Back to herdharbor.com</a></div></nav>
+
+  <header class="release-hero">
+    <div class="release-hero-inner">
+      <div>
+        <p class="eyebrow">Alpha v1.4.0 release</p>
+        <h1>Breeding Intelligence</h1>
+        <p class="lead">HerdHarbor is growing beyond recording breedings. Alpha v1.4.0 adds a reusable genetics and breeding-analysis foundation, with rabbit coat-color genetics as the first production module.</p>
+      </div>
+      <aside class="hero-card">
+        <strong>Built for breeders first.</strong>
+        <p>Pair pedigree history, genetics, previous offspring and production records in the same system already used to manage the farm.</p>
+        <a href="https://app.herdharbor.com/">Open HerdHarbor</a>
+      </aside>
+    </div>
+  </header>
+
+  <main class="release-main">
+    <section class="intro">
+      <p class="eyebrow">What changed</p>
+      <h2>Not a standalone color calculator.</h2>
+      <p>v1.4.0 introduces the <strong>HerdHarbor Breeding Intelligence Engine</strong>: a species-aware foundation designed to connect animal records, pedigrees, breeding history, offspring outcomes and genetics. Rabbit coat color is the first fully supported prediction module; future species can plug into the same architecture rather than requiring separate breeding systems.</p>
+    </section>
+
+    <section class="feature-grid" aria-label="v1.4.0 features">
+      <article class="feature"><span class="num">01</span><h3>Rabbit genetic profiles</h3><p>Optionally record A, B, C, D and E-series information without forcing casual users to understand genotype notation.</p></article>
+      <article class="feature"><span class="num">02</span><h3>Pair Analysis</h3><p>Select a buck and doe and review possible offspring colors alongside pedigree evidence, shared ancestors and previous pairing results.</p></article>
+      <article class="feature"><span class="num">03</span><h3>Honest uncertainty</h3><p>Unknown alleles stay unknown. Exact percentages only appear when the recorded supported genotypes justify an exact Mendelian calculation.</p></article>
+      <article class="feature"><span class="num">04</span><h3>Pedigree evidence</h3><p>Parents, grandparents and great-grandparents can contribute evidence without turning a color buried in the pedigree into a false guarantee.</p></article>
+      <article class="feature"><span class="num">05</span><h3>Learn from offspring</h3><p>Recorded kits can provide inheritance evidence about previously unknown carrier states. Confirmed information is protected from silent conflicts.</p></article>
+      <article class="feature"><span class="num">06</span><h3>Prediction history</h3><p>Save a snapshot of what was predicted at breeding time. Later discoveries improve future analysis without rewriting the historical prediction.</p></article>
+    </section>
+
+    <section class="section">
+      <p class="eyebrow">Evidence model</p>
+      <h2>HerdHarbor tells you what it knows—and what it doesn’t.</h2>
+      <div class="status-row">
+        <div class="status"><strong>Confirmed</strong><span>Breeder/test information or inheritance that establishes the allele.</span></div>
+        <div class="status"><strong>Inferred</strong><span>Strongly supported by recorded offspring or other inheritance evidence.</span></div>
+        <div class="status"><strong>Possible</strong><span>The genetics can be present, but available records do not establish them.</span></div>
+        <div class="status"><strong>Unknown</strong><span>There is not enough information, so HerdHarbor does not guess.</span></div>
+      </div>
+    </section>
+
+    <section class="section">
+      <p class="eyebrow">Example</p>
+      <h2>Exact when the genetics are exact. Conditional when they aren’t.</h2>
+      <div class="example">
+        <div class="example-head"><div><strong>Black buck × Blue doe</strong><div>Supported core-locus example</div></div><span class="pill">Pair Analysis</span></div>
+        <div class="outcome"><span>Black</span><strong>50%</strong></div>
+        <div class="outcome"><span>Blue</span><strong>50%</strong></div>
+        <div class="warning"><strong>Why?</strong> A 50/50 result is only shown when the buck's supported D-locus genotype is known to be Dd and the doe is dd. If the buck's second allele is unknown, HerdHarbor instead labels Blue as <em>possible</em> and explains the carrier dependency.</div>
+      </div>
+    </section>
+
+    <section class="section two-col">
+      <div class="panel">
+        <h3>Breeding workflow stays connected</h3>
+        <ul>
+          <li>Planned and completed breedings</li>
+          <li>Pregnancy checks and rebreed tracking</li>
+          <li>Expected birth, kindle and hatch dates</li>
+          <li>Birth/litter records and one-step offspring creation</li>
+          <li>Automatic sire/dam and pedigree relationships</li>
+          <li>Weaning reminders and survival records</li>
+          <li>Sire and dam performance history</li>
+        </ul>
+      </div>
+      <div class="panel dark">
+        <h3>Designed to expand by species</h3>
+        <p>The common engine handles pair selection, pedigree access, evidence, outcomes and history. Species modules can add their own terminology, reproductive timing and validated genetic rules.</p>
+        <ul>
+          <li>Rabbit genetics: v1.4.0 production module</li>
+          <li>Cattle genetics and performance: future module</li>
+          <li>Goat and sheep genetics: future modules</li>
+          <li>Poultry color, egg-color and hatch genetics: future modules</li>
+          <li>Horse and dog genetics: future modules</li>
+        </ul>
+      </div>
+    </section>
+
+    <section class="section">
+      <p class="eyebrow">Safety of the prediction</p>
+      <h2>Rabbit color is more complex than five loci.</h2>
+      <p>Alpha v1.4.0 intentionally starts with a supported core A/B/C/D/E model. Modifier genes, spotting, silvering, breed-specific expression and incomplete records can change the visible result. Outcomes affected by unsupported modifiers are shown as broader color families rather than a made-up exact answer.</p>
+      <p>Oregon State University Extension documents the major A, B, C, D and E coat-color genes and also describes additional spotting and silvering genetics, which is why HerdHarbor does not present its prediction engine as a guarantee. The goal is better breeding information with visible evidence and uncertainty.</p>
+    </section>
+
+    <section class="section sources">
+      <p class="eyebrow">Reference basis</p>
+      <h2>Genetics rules are source-backed.</h2>
+      <p>Production rules are being documented against breeder and extension references rather than generated from an AI-only rule list.</p>
+      <ul>
+        <li><a href="https://extension.oregonstate.edu/catalog/em-9708-rabbit-coat-color-genetics-summary-table">Oregon State University Extension — Rabbit coat color genetics summary table</a></li>
+        <li><a href="https://extension.oregonstate.edu/catalog/understanding-genetics-behind-rabbit-coat-colors-part-2-coat-color-genes">Oregon State University Extension — Understanding rabbit coat-color genes</a></li>
+        <li><a href="https://extension.usu.edu/small-acreage-livestock/research/rabbit-breeding-and-management-a-guide-for-producers">Utah State University Extension — Rabbit Breeding and Management</a></li>
+      </ul>
+    </section>
+
+    <section class="section">
+      <div class="roadmap">
+        <p class="eyebrow">Roadmap</p>
+        <h2>Business moves to Alpha v1.5.0.</h2>
+        <p><strong>v1.4.0 stays focused on breeding.</strong> HerdHarbor Business—including employee accounts, roles, permissions, job assignments, recurring team chores and the planned 10-employee farm pilot—is now targeted for Alpha v1.5.0. This gives the breeding engine room to become a real specialty without rushing the separate multi-user business architecture.</p>
+      </div>
+    </section>
+  </main>
+
+  <footer class="release-footer">HerdHarbor Alpha v1.4.0 · Breeding Intelligence · <a href="/">herdharbor.com</a></footer>
+</body>
+</html>
