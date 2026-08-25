@@ -1,0 +1,55 @@
+name: One-time homepage How-To navigation fix
+
+on:
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: write
+
+jobs:
+  add-how-to-nav:
+    if: contains(github.event.head_commit.message, 'Install permanent How-To nav')
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Add permanent How-To tab
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+
+          path = Path('index.html')
+          text = path.read_text(encoding='utf-8')
+
+          old = '''        <a href="#business">Business</a>
+        <a href="#faq">FAQ</a>'''
+          new = '''        <a href="#business">Business</a>
+        <a href="/how-to/">How-To</a>
+        <a href="#faq">FAQ</a>'''
+
+          if '<a href="/how-to/">How-To</a>' not in text:
+              if old not in text:
+                  raise SystemExit('Expected homepage navigation block was not found.')
+              text = text.replace(old, new, 1)
+
+          text = text.replace('script.js?v=3', 'script.js?v=4')
+          path.write_text(text, encoding='utf-8')
+          PY
+
+      - name: Remove one-time workflow and commit
+        run: |
+          rm -f .github/workflows/one-time-howto-nav.yml
+          git config user.name "EBRLLC"
+          git config user.email "mdamrell@yahoo.com"
+          git add -A
+          if git diff --cached --quiet; then
+            echo "No changes were needed."
+            exit 0
+          fi
+          git commit -m "Add permanent How-To tab to homepage navigation"
+          git push origin HEAD:main
