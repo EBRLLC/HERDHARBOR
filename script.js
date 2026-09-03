@@ -1,6 +1,6 @@
 const navToggle = document.querySelector(".nav-toggle");
 const nav = document.querySelector(".site-nav");
-const CURRENT_RELEASE = "1.6.1";
+const CURRENT_RELEASE = "1.7.0";
 
 if (nav && !nav.querySelector('a[href="#analytics"]')) {
   const analyticsLink = document.createElement("a");
@@ -31,6 +31,17 @@ if (nav && !nav.querySelector('a[href="#genetics"]')) {
   else nav.appendChild(geneticsLink);
 }
 
+if (nav && !nav.querySelector('a[href="#standards"]')) {
+  const standardsLink = document.createElement("a");
+  standardsLink.href = "#standards";
+  standardsLink.textContent = "Standards";
+  const geneticsLink = nav.querySelector('a[href="#genetics"]');
+  const howToLink = nav.querySelector('a[href="/how-to/"]');
+  if (geneticsLink?.nextSibling) nav.insertBefore(standardsLink, geneticsLink.nextSibling);
+  else if (howToLink) nav.insertBefore(standardsLink, howToLink);
+  else nav.appendChild(standardsLink);
+}
+
 if (nav && !nav.querySelector('a[href="/how-to/"]')) {
   const howToLink = document.createElement("a");
   howToLink.href = "/how-to/";
@@ -45,26 +56,26 @@ if (nav && !nav.querySelector('a[href="/how-to/"]')) {
 if (nav) {
   nav.querySelectorAll('a[href^="/releases/"]').forEach((link) => link.remove());
   const releaseLink = document.createElement("a");
-  releaseLink.href = "/releases/v1.6.1/";
-  releaseLink.textContent = "v1.6.1";
+  releaseLink.href = "/releases/v1.7.0/";
+  releaseLink.textContent = "v1.7.0";
   const appButton = nav.querySelector(".button");
   if (appButton) nav.insertBefore(releaseLink, appButton);
   else nav.appendChild(releaseLink);
 }
 
 function updateSeoAndStructuredData() {
-  const description = "HerdHarbor Alpha v1.6.1 combines farm analytics, complete domestic rabbit genetics, optional standards and multi-species guidance, Shows, pedigrees, breeding, production, health, finances, sales, and protected cloud records.";
+  const description = "HerdHarbor Alpha v1.7.0 adds optional ARBA Standards & Judging to farm analytics, complete domestic rabbit genetics, Shows, pedigrees, breeding, production, health, finances, sales, and protected cloud records.";
   const meta = document.querySelector('meta[name="description"]');
   if (meta) meta.content = description;
   const og = document.querySelector('meta[property="og:description"]');
-  if (og) og.content = "HerdHarbor Alpha v1.6.1 brings analytics, complete domestic rabbit genetics, Shows, pedigrees, breeding intelligence, production, health, and optional standards and multi-species resources into one farm workspace.";
+  if (og) og.content = "HerdHarbor Alpha v1.7.0 adds an optional ARBA standards browser, breeder-facing standards evaluation, judging references, Shows integration, and standards-aware breeding insights without making ARBA mandatory.";
   document.querySelectorAll('script[type="application/ld+json"]').forEach((script) => {
     try {
       const data = JSON.parse(script.textContent);
       if (data?.["@type"] !== "SoftwareApplication") return;
-      data.softwareVersion = "1.6.1";
+      data.softwareVersion = "1.7.0";
       data.description = description;
-      data.featureList = "Farm analytics, growth and weight charts, breeding, sales, revenue, feed, Shows, production and health analytics, animal records, visual multi-generation pedigrees, complete domestic rabbit genetics, A/B/C/D/E/En/V inheritance, phenotype-constrained probability ranges, pedigree and offspring evidence, optional standards references, multi-species genetics guidance, health, tasks, production, finances, customers, sales, QR cards, transfers, cloud sync, backups, and Excel tools";
+      data.featureList = "Optional ARBA rabbit standards browser, breeder-facing standards evaluation, judging references, show standards observations, standards-aware breeding insights, farm analytics, growth and weight charts, breeding, sales, revenue, feed, Shows, production and health analytics, animal records, visual multi-generation pedigrees, complete domestic rabbit genetics, A/B/C/D/E/En/V inheritance, phenotype-constrained probability ranges, pedigree and offspring evidence, health, tasks, production, finances, customers, sales, QR cards, transfers, cloud sync, backups, and Excel tools";
       script.textContent = JSON.stringify(data);
     } catch {}
   });
@@ -72,15 +83,21 @@ function updateSeoAndStructuredData() {
 
 function normalizeReleaseCopy() {
   const replacements = new Map([
-    ["HerdHarbor Alpha · Version 1.3.0", "HerdHarbor Alpha · Version 1.6.1"],
-    ["HerdHarbor Alpha · Version 1.4.0", "HerdHarbor Alpha · Version 1.6.1"],
-    ["HerdHarbor Alpha · Version 1.4.5", "HerdHarbor Alpha · Version 1.6.1"],
-    ["Current release v1.3.0 Alpha", "Current release v1.6.1 Alpha"],
-    ["Current release v1.4.0 Alpha", "Current release v1.6.1 Alpha"],
-    ["Current release v1.4.5 Alpha", "Current release v1.6.1 Alpha"],
-    ["Version 1.3.0 Alpha is available online", "Version 1.6.1 Alpha is available online"],
-    ["Version 1.4.0 Alpha is available online", "Version 1.6.1 Alpha is available online"],
-    ["Version 1.4.5 Alpha is available online", "Version 1.6.1 Alpha is available online"]
+    ["HerdHarbor Alpha · Version 1.3.0", "HerdHarbor Alpha · Version 1.7.0"],
+    ["HerdHarbor Alpha · Version 1.4.0", "HerdHarbor Alpha · Version 1.7.0"],
+    ["HerdHarbor Alpha · Version 1.4.5", "HerdHarbor Alpha · Version 1.7.0"],
+    ["HerdHarbor Alpha · Version 1.6.1", "HerdHarbor Alpha · Version 1.7.0"],
+    ["Current release v1.3.0 Alpha", "Current release v1.7.0 Alpha"],
+    ["Current release v1.4.0 Alpha", "Current release v1.7.0 Alpha"],
+    ["Current release v1.4.5 Alpha", "Current release v1.7.0 Alpha"],
+    ["Current release v1.6.1 Alpha", "Current release v1.7.0 Alpha"],
+    ["Version 1.3.0 Alpha is available online", "Version 1.7.0 Alpha is available online"],
+    ["Version 1.4.0 Alpha is available online", "Version 1.7.0 Alpha is available online"],
+    ["Version 1.4.5 Alpha is available online", "Version 1.7.0 Alpha is available online"],
+    ["Version 1.6.1 Alpha is available online", "Version 1.7.0 Alpha is available online"],
+    ["Version 1.6.1 Alpha", "Version 1.7.0 Alpha"],
+    ["v1.6.1 Alpha", "v1.7.0 Alpha"],
+    ["v1.6.1", "v1.7.0"]
   ]);
   const walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT);
   const nodes = [];
@@ -90,8 +107,13 @@ function normalizeReleaseCopy() {
     replacements.forEach((replacement, original) => { if (value.includes(original)) value = value.replaceAll(original, replacement); });
     node.nodeValue = value;
   });
-  const heroVersion = document.querySelector(".hero-card .version, .hero-visual .version, [data-current-version]");
-  if (heroVersion && /^v1\.(?:3\.0|4\.0|4\.5|5\.0)$/.test(heroVersion.textContent.trim())) heroVersion.textContent = "v1.6.1";
+  document.querySelectorAll('[title*="Version 1.6.1"], [aria-label*="1.6.1"]').forEach((element) => {
+    if (element.title) element.title = element.title.replaceAll("1.6.1", "1.7.0");
+    const label = element.getAttribute("aria-label");
+    if (label) element.setAttribute("aria-label", label.replaceAll("1.6.1", "1.7.0"));
+  });
+  const heroVersion = document.querySelector(".hero-card .version, .hero-visual .version, [data-current-version], .preview-topbar .avatar");
+  if (heroVersion && /^v1\.(?:3\.0|4\.0|4\.5|5\.0|6\.1)$/.test(heroVersion.textContent.trim())) heroVersion.textContent = "v1.7.0";
 }
 
 function addShowsSection() {
@@ -104,7 +126,7 @@ function addShowsSection() {
   section.className = "section";
   section.id = "shows";
   section.innerHTML = `<div class="container">
-    <div class="section-heading"><p class="eyebrow">Alpha v1.6.1 · Shows</p><h2>Track the animal beyond the barn.</h2><p>HerdHarbor Shows adds competition, award, exhibitor, and youth-project records without creating a second animal database. Show entries point back to the animal already in HerdHarbor, and project money and health records continue to use the same Finance and Health systems.</p></div>
+    <div class="section-heading"><p class="eyebrow">Alpha v1.7.0 · Shows</p><h2>Track the animal beyond the barn.</h2><p>HerdHarbor Shows adds competition, award, exhibitor, and youth-project records without creating a second animal database. Show entries point back to the animal already in HerdHarbor, and project money and health records continue to use the same Finance and Health systems.</p></div>
     <div class="feature-grid">
       <article class="feature-card"><div class="feature-number">01</div><h3>Shows & competitions</h3><p>Record county and state fairs, 4-H, FFA, ARBA, breed-club, rabbit, poultry, livestock, open, youth, and custom show types with dates, organizations, locations, notes, and attachments.</p></article>
       <article class="feature-card"><div class="feature-number">02</div><h3>Classes, results & awards</h3><p>Enter multiple classes for the same animal, placements beyond 10th, judge names, scores, comments, strengths, improvement notes, and multiple awards tied to the correct result.</p></article>
@@ -153,7 +175,7 @@ function addAnalyticsSection() {
   section.className = "section";
   section.id = "analytics";
   section.innerHTML = `<div class="container">
-    <div class="section-heading"><p class="eyebrow">Alpha v1.6.1 · Farm Analytics</p><h2>Turn everyday farm records into useful decisions.</h2><p>HerdHarbor calculates charts and summaries from records already in your account. Filter the whole farm by species and date range without maintaining a separate reporting system.</p></div>
+    <div class="section-heading"><p class="eyebrow">Alpha v1.7.0 · Farm Analytics</p><h2>Turn everyday farm records into useful decisions.</h2><p>HerdHarbor calculates charts and summaries from records already in your account. Filter the whole farm by species and date range without maintaining a separate reporting system.</p></div>
     <div class="feature-grid">
       <article class="feature-card"><div class="feature-number">01</div><h3>Overview</h3><p>Review active animals, births, breeding activity, health records, production, sales, revenue, expenses, and current farm trends in one place.</p></article>
       <article class="feature-card"><div class="feature-number">02</div><h3>Growth & weight</h3><p>Follow recorded weights over time, compare animal growth, and use actual health measurements instead of estimates.</p></article>
@@ -162,19 +184,45 @@ function addAnalyticsSection() {
       <article class="feature-card"><div class="feature-number">05</div><h3>Sales, revenue & feed</h3><p>Review recorded sales, received income, expenses, feed use, and management-level financial trends.</p></article>
       <article class="feature-card"><div class="feature-number">06</div><h3>Health measurements</h3><p>Use weights, temperatures, body condition, observations, treatments, and other recorded measurements to spot changes over time.</p></article>
     </div>
-    <div class="hero-actions" style="margin-top:28px"><a class="button" href="https://app.herdharbor.com/#analytics">Open Analytics</a><a class="button button-secondary" href="/releases/v1.6.1/">Read the v1.6.1 notes</a></div>
+    <div class="hero-actions" style="margin-top:28px"><a class="button" href="https://app.herdharbor.com/#analytics">Open Analytics</a><a class="button button-secondary" href="/releases/v1.7.0/">Read the v1.7.0 notes</a></div>
   </div>`;
   const target = shows || genetics;
   if (target?.parentNode) target.parentNode.insertBefore(section, target); else main.appendChild(section);
 }
 
+function addStandardsSection() {
+  if (document.querySelector("#standards")) return;
+  const shows = document.querySelector("#shows");
+  const genetics = document.querySelector("#genetics");
+  const features = document.querySelector("#features");
+  const main = document.querySelector("main");
+  const target = shows || genetics || features;
+  if (!target && !main) return;
+  const section = document.createElement("section");
+  section.className = "section";
+  section.id = "standards";
+  section.innerHTML = `<div class="container">
+    <div class="section-heading"><p class="eyebrow">Alpha v1.7.0 · Optional ARBA Standards & Judging</p><h2>Use breed standards as a reference—without making ARBA mandatory.</h2><p>HerdHarbor now gives rabbit breeders an optional in-app standards and judging-reference workflow. Breeders who do not use ARBA can leave the feature off and continue using HerdHarbor normally.</p></div>
+    <div class="feature-grid">
+      <article class="feature-card"><div class="feature-number">01</div><h3>Standards browser</h3><p>Browse Rabbit → Breed → Variety with recognized-breed references, class structure, public weight information, working-standard status, and breeder-facing considerations.</p></article>
+      <article class="feature-card"><div class="feature-number">02</div><h3>Evaluate animal records</h3><p>Use recorded age, sex, weight, variety, supported measurements, and breeder-entered concerns to flag weight status, class eligibility, possible faults or disqualifications, and missing information.</p></article>
+      <article class="feature-card"><div class="feature-number">03</div><h3>Judging reference</h3><p>Review general judging terminology, faults, disqualifications, show classifications, breed considerations, and schedule-of-points guidance where appropriate.</p></article>
+      <article class="feature-card"><div class="feature-number">04</div><h3>Connected to Shows</h3><p>Record judge, class, placement, leg, points, BOV, BOSV, BOB, BOSB, Best in Show, Reserve in Show, notes, and standards observations without replacing the existing Shows system.</p></article>
+      <article class="feature-card"><div class="feature-number">05</div><h3>Breeding intelligence</h3><p>Combine genetics, pedigree context, show history, and saved standards evaluations to surface useful pairing observations while keeping each evidence source distinct.</p></article>
+      <article class="feature-card"><div class="feature-number">06</div><h3>Optional by design</h3><p>ARBA tools default off. Core animals, pedigrees, breeding, genetics, health, sales, production, finance, Analytics, and Shows continue to work independently.</p></article>
+    </div>
+    <div class="problem-card" style="margin-top:28px"><p class="eyebrow">Informational breeder tool</p><h3>HerdHarbor does not replace an ARBA judge or the current Standard of Perfection.</h3><p>Exact numerical decisions are only made where a verified structured rule is bundled. Unknown or incomplete rules are left unresolved rather than guessed, and proprietary Standard of Perfection prose is not reproduced.</p><div class="hero-actions"><a class="button" href="https://app.herdharbor.com/#standards">Open Standards</a><a class="button button-secondary" href="/releases/v1.7.0/">Read the v1.7.0 release notes</a></div></div>
+  </div>`;
+  if (target?.parentNode) target.parentNode.insertBefore(section, target); else main.appendChild(section);
+}
+
 function addReleaseFaqs() {
   const faq = document.querySelector("#faq");
-  if (!faq || faq.querySelector("[data-v150-faq]")) return;
+  if (!faq || faq.querySelector("[data-v170-faq]")) return;
   const target = faq.querySelector(".faq-list, .faq-grid, .container") || faq;
   const wrap = document.createElement("div");
-  wrap.dataset.v150Faq = "1";
-  wrap.innerHTML = `<details><summary>What is the Shows section?</summary><p>Shows is HerdHarbor’s competition record system. It tracks shows, classes, placements, awards, judge feedback, animal history, exhibitors, and optional 4-H/FFA projects while using the same animals, Finance, Health, and cloud-sync records already in HerdHarbor.</p></details><details><summary>Does Shows create a second budget or health system?</summary><p>No. Show and project income or expenses are normal HerdHarbor Finance transactions with show/project links. Project weights and health records use the existing HerdHarbor Health history, so edits remain consistent everywhere.</p></details><details><summary>Can I use Shows for 4-H or FFA?</summary><p>Yes. Projects can be created inside Shows and linked to an exhibitor, year, and existing animal. Goals, notes, photos, growth, average daily gain, expenses, health history, competitions, and a printable Project Record are supported.</p></details><details><summary>How does HerdHarbor predict rabbit colors?</summary><p>Pair Analysis crosses recorded A, B, C, D, E, En, and Vienna genetics. Phenotype, pedigree, and offspring evidence constrain unknown alleles. Exact percentages are shown only when supported; otherwise HerdHarbor shows a min–max genetic range.</p></details><details><summary>Are HerdHarbor genetics predictions DNA results?</summary><p>No. Pair Analysis is a breeding-planning estimate based on recorded information and deterministic inheritance rules. Evidence labels distinguish known, phenotype-proven, offspring-proven, inferred, possible, and unknown genetics.</p></details>`;
+  wrap.dataset.v170Faq = "1";
+  wrap.innerHTML = `<details><summary>What is the Shows section?</summary><p>Shows is HerdHarbor’s competition record system. It tracks shows, classes, placements, awards, judge feedback, animal history, exhibitors, and optional 4-H/FFA projects while using the same animals, Finance, Health, and cloud-sync records already in HerdHarbor.</p></details><details><summary>Does Shows create a second budget or health system?</summary><p>No. Show and project income or expenses are normal HerdHarbor Finance transactions with show/project links. Project weights and health records use the existing HerdHarbor Health history, so edits remain consistent everywhere.</p></details><details><summary>Can I use Shows for 4-H or FFA?</summary><p>Yes. Projects can be created inside Shows and linked to an exhibitor, year, and existing animal. Goals, notes, photos, growth, average daily gain, expenses, health history, competitions, and a printable Project Record are supported.</p></details><details><summary>How does HerdHarbor predict rabbit colors?</summary><p>Pair Analysis crosses recorded A, B, C, D, E, En, and Vienna genetics. Phenotype, pedigree, and offspring evidence constrain unknown alleles. Exact percentages are shown only when supported; otherwise HerdHarbor shows a min–max genetic range.</p></details><details><summary>Are HerdHarbor genetics predictions DNA results?</summary><p>No. Pair Analysis is a breeding-planning estimate based on recorded information and deterministic inheritance rules. Evidence labels distinguish known, phenotype-proven, offspring-proven, inferred, possible, and unknown genetics.</p></details><details><summary>Do I have to use ARBA Standards in HerdHarbor?</summary><p>No. ARBA Standards & Judging is optional and defaults off. It is an informational breeder reference, not a replacement for an ARBA judge, registrar, show rules, or the current Standard of Perfection.</p></details>`;
   while (wrap.firstChild) target.appendChild(wrap.firstChild);
 }
 
@@ -191,8 +239,8 @@ function addReleaseBanner() {
   }
   const banner = document.createElement("aside");
   banner.className = "hh-release-banner";
-  banner.setAttribute("aria-label", "HerdHarbor Alpha v1.6.1 release");
-  banner.innerHTML = `<div class="hh-release-banner-inner"><div class="hh-release-banner-copy"><span class="hh-release-banner-badge">Alpha v1.6.1</span><span><strong>Analytics and complete rabbit genetics are now live.</strong> Explore farm trends, growth, Shows, production, health, deterministic breeding predictions, pedigrees, and optional standards and multi-species resources.</span></div><a href="/releases/v1.6.1/">See what’s new →</a></div>`;
+  banner.setAttribute("aria-label", "HerdHarbor Alpha v1.7.0 release");
+  banner.innerHTML = `<div class="hh-release-banner-inner"><div class="hh-release-banner-copy"><span class="hh-release-banner-badge">Alpha v1.7.0</span><span><strong>Optional ARBA Standards & Judging is now live.</strong> Browse standards, evaluate rabbit records, connect standards observations to Shows, and add standards context to breeding decisions—without making ARBA mandatory.</span></div><a href="/releases/v1.7.0/">See what’s new →</a></div>`;
   if (header?.parentNode) header.parentNode.insertBefore(banner, header.nextSibling); else main?.parentNode?.insertBefore(banner, main);
 }
 
@@ -201,6 +249,7 @@ normalizeReleaseCopy();
 addGeneticsSection();
 addShowsSection();
 addAnalyticsSection();
+addStandardsSection();
 addReleaseFaqs();
 addReleaseBanner();
 
