@@ -1,55 +1,32 @@
 # HerdHarbor website
 
 This repository contains the responsive public website at `https://herdharbor.com`.
-It describes the current HerdHarbor Alpha v1.2.0 tester build and links to the live web app at
+It describes the current HerdHarbor Alpha v1.8.4 public release and links to the live web app at
 `https://app.herdharbor.com`.
 
 ## Files
 
-- `index.html` — page structure and content
+- `index.html` — page structure and current release, pricing, trial, referral, and feature content
 - `styles.css` — approved HerdHarbor colors and responsive design
-- `script.js` — mobile navigation and early-access form behavior
+- `script.js` — mobile navigation behavior
+- `CURRENT-RELEASE.md` — current public release contract
 - `assets/herdharbor-icon.png` — approved app icon
 - `googlee5dfd9152782ad09.html` — permanent Google Search Console verification file
 
-## Current tester-list behavior
+## Current public membership messaging
 
-The tester update form submits directly to Formspree using this endpoint:
-
-`https://formspree.io/f/xgogovez`
-
-Visitors remain on the HerdHarbor website and receive an on-page success or error
-message. Submissions are stored in the Formspree dashboard and sent according to
-the notification settings configured for the form.
-
-## Updating the existing GitHub Pages site
-
-1. Open the `HERDHARBOR` repository.
-2. Choose **Add file → Upload files**.
-3. Upload all files and the `assets` folder from this package.
-4. Replace the existing `index.html`, `styles.css`, and `script.js` files when prompted.
-5. Commit with a message describing the website update.
-6. Wait one to three minutes, then refresh `https://herdharbor.com`.
-7. Submit one test entry and confirm it appears in the Formspree dashboard.
-
-The included `CNAME` file preserves the custom domain `herdharbor.com`. The Google
-verification file and the verification meta tag in `index.html` must remain in place.
-
-## Publish with GitHub Pages
-
-1. Create a new GitHub repository, such as `herdharbor-site`.
-2. Upload the contents of this folder to the repository root.
-3. Open **Settings → Pages**.
-4. Under **Build and deployment**, choose **Deploy from a branch**.
-5. Select the `main` branch and `/ (root)`.
-6. Save and wait for GitHub Pages to publish the site.
-7. In GitHub Pages settings, add the custom domain `herdharbor.com`.
-8. GitHub will show the DNS records that need to be entered in Porkbun.
+- Eligible adult accounts receive one calendar month of Member access free.
+- No credit card is required to start the trial.
+- Member is $14.99/month after the trial if the user chooses to continue.
+- Eligible adults can fall back to Free Adult without deleting existing herd records.
+- A referral qualifies after the referred Member's first successful monthly renewal.
+- Every five qualified referrals earns one stackable Member-month credit.
+- AI-assisted pedigree, voice, and photo tools remain publicly described as Coming Soon while testing continues.
 
 ## Production URL structure
 
 - `herdharbor.com` — public landing page
-- `app.herdharbor.com` — live alpha tester application
+- `app.herdharbor.com` — live application
 - `herdharbor.app` — redirect to the public page or app download page
 
 ## Brand palette
