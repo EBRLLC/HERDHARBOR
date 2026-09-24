@@ -18,6 +18,15 @@
     .quick-guide .route-link{display:inline-flex;margin-top:10px;color:var(--teal);font-weight:850;text-decoration:none}
     @media(max-width:620px){.quick-guide{padding:15px}}
 
+    .task-hub{margin:0 0 30px}.task-hub h2,.start-here h2{margin:0 0 8px;color:var(--navy);font-size:clamp(1.45rem,3vw,2rem)}.task-hub>p,.start-here>p{margin:0 0 18px;color:var(--muted)}
+    .common-task-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}.common-task{display:flex;flex-direction:column;gap:10px;padding:18px;background:#fff;border:1px solid var(--border);border-radius:16px;box-shadow:var(--shadow)}.common-task-top{display:flex;align-items:center;gap:12px}.common-task h3{margin:0;color:var(--navy);font-size:1rem}.task-meta,.guide-meta{display:flex;flex-wrap:wrap;gap:8px}.meta-chip{display:inline-flex;align-items:center;gap:5px;padding:5px 8px;border-radius:999px;background:#EEF5F4;color:#285E5C;font-size:.72rem;font-weight:850}.meta-chip.neutral{background:#EEF1F4;color:#4F6170}.task-actions,.guide-actions{display:flex;flex-wrap:wrap;gap:8px;margin-top:auto}.mini-link{display:inline-flex;align-items:center;justify-content:center;min-height:36px;padding:7px 10px;border-radius:9px;border:1px solid var(--border);color:var(--navy);background:#fff;text-decoration:none;font-size:.8rem;font-weight:850}.mini-link.primary{color:#fff;background:var(--teal);border-color:var(--teal)}
+    .visual-slot{margin-top:4px;padding:10px 12px;border:1px dashed #B8C7CC;border-radius:10px;color:var(--muted);background:#FBFCFC;font-size:.76rem;text-align:center}
+    .start-here{margin:0 0 30px;padding:22px;background:#fff;border:1px solid var(--border);border-radius:18px;box-shadow:var(--shadow)}.start-steps{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:10px}.start-step{min-width:0;padding:14px;background:var(--cream);border:1px solid var(--border);border-radius:13px}.start-step b{display:grid;width:28px;height:28px;margin-bottom:9px;place-items:center;color:#fff;background:var(--teal);border-radius:8px;font-size:.75rem}.start-step strong{display:block;color:var(--navy);font-size:.86rem;line-height:1.25}.start-step a{display:inline-block;margin-top:7px;color:var(--teal);font-size:.76rem;font-weight:850}
+    .search-tools{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-top:9px;color:#D5E0E7;font-size:.78rem}.search-tools button{padding:4px 8px;color:#fff;background:transparent;border:1px solid rgba(255,255,255,.35);border-radius:8px;cursor:pointer}.search-empty{display:none;margin:0 0 22px;padding:16px;background:#FFF3D9;border:1px solid #E6C98E;border-radius:13px;color:#5B451E}.search-empty.show{display:block}mark.hh-search-hit{padding:0 2px;background:#FFF1A8;border-radius:3px}
+    .guide-meta{margin:-8px 0 18px}.guide-actions{margin:0 0 18px}.guide-nav{display:flex;justify-content:space-between;gap:12px;margin-top:22px;padding-top:16px;border-top:1px solid var(--border)}.guide-nav a{color:var(--teal);font-size:.84rem;font-weight:850;text-decoration:none}.guide-nav a:last-child{text-align:right;margin-left:auto}
+    .guide-feedback{margin-top:18px;padding:14px 16px;background:#F3F7F6;border:1px solid var(--border);border-radius:13px}.guide-feedback strong{display:block;color:var(--navy);margin-bottom:8px}.feedback-actions{display:flex;gap:8px}.feedback-actions button{min-height:34px;padding:6px 11px;border:1px solid var(--border);border-radius:9px;background:#fff;color:var(--navy);font-weight:850;cursor:pointer}.feedback-message{margin:8px 0 0;color:var(--muted);font-size:.82rem}
+    @media(max-width:980px){.common-task-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.start-steps{grid-template-columns:repeat(2,minmax(0,1fr))}}@media(max-width:620px){.common-task-grid,.start-steps{grid-template-columns:1fr}.search-tools{align-items:flex-start;flex-direction:column}.guide-nav{flex-direction:column}.guide-nav a:last-child{margin-left:0;text-align:left}.task-actions,.guide-actions{display:grid}.mini-link{width:100%}.guide-card[data-icon-label]::after{display:none}}
+
   </style>
 </head>
 <body>
@@ -58,12 +67,32 @@
       <div class="search-wrap">
         <label for="guide-search">Search the guides</label>
         <input id="guide-search" class="search" type="search" placeholder="Try pedigree, litter, health, referral, weight…" autocomplete="off">
+        <div class="search-tools"><span id="search-count" role="status" aria-live="polite">15 guides available</span><button id="clear-search" type="button">Clear search</button></div>
       </div>
     </div>
   </section>
 
   <main class="content">
     <div class="notice"><strong>Current for Alpha v1.8.4.</strong> HerdHarbor uses an animal-first workflow: open an animal when the job is specific to that animal, and use Dashboard/Quick Add for day-to-day work.</div>
+
+
+    <section class="task-hub" aria-labelledby="common-tasks-title">
+      <h2 id="common-tasks-title">Most common tasks</h2>
+      <p>Jump straight to the job you need to finish. Times are estimates.</p>
+      <div class="common-task-grid">
+        <article class="common-task"><div class="common-task-top"><span class="guide-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><use href="#i-animal"></use></svg></span><h3>Add an Animal</h3></div><p>Create the animal record that other HerdHarbor tools can reuse.</p><div class="task-meta"><span class="meta-chip">Estimated 2–3 min</span><span class="meta-chip neutral">Basic</span></div><div class="visual-slot">Visual walkthrough coming soon.</div><div class="task-actions"><a class="mini-link" href="#animals">View guide</a><a class="mini-link primary" href="https://app.herdharbor.com/#animals">Open in HerdHarbor</a></div></article><article class="common-task"><div class="common-task-top"><span class="guide-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><use href="#i-breeding"></use></svg></span><h3>Record a Breeding</h3></div><p>Save the pairing once so due dates and later birth records stay connected.</p><div class="task-meta"><span class="meta-chip">Estimated 1–2 min</span><span class="meta-chip neutral">Basic</span></div><div class="visual-slot">Visual walkthrough coming soon.</div><div class="task-actions"><a class="mini-link" href="#breeding">View guide</a><a class="mini-link primary" href="https://app.herdharbor.com/#breeding">Open in HerdHarbor</a></div></article><article class="common-task"><div class="common-task-top"><span class="guide-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><use href="#i-litter"></use></svg></span><h3>Enter a Birth or Litter</h3></div><p>Record the birth and create offspring from the existing breeding.</p><div class="task-meta"><span class="meta-chip">Estimated 2–4 min</span><span class="meta-chip neutral">Basic</span></div><div class="visual-slot">Visual walkthrough coming soon.</div><div class="task-actions"><a class="mini-link" href="#litters">View guide</a><a class="mini-link primary" href="https://app.herdharbor.com/#litters">Open in HerdHarbor</a></div></article><article class="common-task"><div class="common-task-top"><span class="guide-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><use href="#i-health"></use></svg></span><h3>Add a Health Record</h3></div><p>Add routine care, medication, measurements, observations, or follow-up details.</p><div class="task-meta"><span class="meta-chip">Estimated 1–2 min</span><span class="meta-chip neutral">Basic</span></div><div class="visual-slot">Visual walkthrough coming soon.</div><div class="task-actions"><a class="mini-link" href="#health">View guide</a><a class="mini-link primary" href="https://app.herdharbor.com/#health">Open in HerdHarbor</a></div></article><article class="common-task"><div class="common-task-top"><span class="guide-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><use href="#i-pedigree"></use></svg></span><h3>Create a Pedigree</h3></div><p>Build and review ancestry tied to the subject animal.</p><div class="task-meta"><span class="meta-chip">Estimated 3–5 min</span><span class="meta-chip neutral">Basic</span></div><div class="visual-slot">Visual walkthrough coming soon.</div><div class="task-actions"><a class="mini-link" href="#pedigrees">View guide</a><a class="mini-link primary" href="https://app.herdharbor.com/#pedigrees">Open in HerdHarbor</a></div></article><article class="common-task"><div class="common-task-top"><span class="guide-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><use href="#i-sales"></use></svg></span><h3>Record a Sale</h3></div><p>Save buyer, sale, payment, and animal-status information together.</p><div class="task-meta"><span class="meta-chip">Estimated 1–2 min</span><span class="meta-chip neutral">Basic</span></div><div class="visual-slot">Visual walkthrough coming soon.</div><div class="task-actions"><a class="mini-link" href="#sales">View guide</a><a class="mini-link primary" href="https://app.herdharbor.com/#sales">Open in HerdHarbor</a></div></article>
+      </div>
+    </section>
+
+    <section class="start-here" aria-labelledby="start-here-title">
+      <h2 id="start-here-title">New to HerdHarbor? Start here.</h2>
+      <p>Use this simple path to get your operation set up without trying to learn every screen at once.</p>
+      <div class="start-steps">
+        <div class="start-step"><b>1</b><strong>Create your account</strong><a href="#getting-started">Read guide</a><br><a href="https://app.herdharbor.com/">Open app</a></div><div class="start-step"><b>2</b><strong>Add your first animal</strong><a href="#animals">Read guide</a><br><a href="https://app.herdharbor.com/#animals">Open app</a></div><div class="start-step"><b>3</b><strong>Build its pedigree</strong><a href="#pedigrees">Read guide</a><br><a href="https://app.herdharbor.com/#pedigrees">Open app</a></div><div class="start-step"><b>4</b><strong>Record a health entry</strong><a href="#health">Read guide</a><br><a href="https://app.herdharbor.com/#health">Open app</a></div><div class="start-step"><b>5</b><strong>Record a breeding</strong><a href="#breeding">Read guide</a><br><a href="https://app.herdharbor.com/#breeding">Open app</a></div><div class="start-step"><b>6</b><strong>Learn Today / Tasks</strong><a href="#tasks">Read guide</a><br><a href="https://app.herdharbor.com/#tasks">Open app</a></div><div class="start-step"><b>7</b><strong>Confirm sync & backup</strong><a href="#sync">Read guide</a><br><a href="https://app.herdharbor.com/#settings">Open app</a></div>
+      </div>
+    </section>
+
+    <div id="search-empty" class="search-empty" role="status" aria-live="polite"></div>
 
     <nav class="guide-grid" aria-label="How To topics" id="guide-grid">
       <a class="guide-card" href="#getting-started" data-icon-label="Getting Started" data-search="getting started setup farm account quick add dashboard"><span class="guide-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><use href="#i-start"></use></svg></span><strong>Getting Started</strong><span>Set up your operation and learn the fastest way around HerdHarbor.</span></a>
@@ -85,6 +114,8 @@
 
     <section class="section" id="getting-started" data-guide="getting started setup farm operation account dashboard quick add">
       <div class="section-header"><span class="section-number">01</span><div><h2>Getting Started</h2><p>Set up the operation once, then work from Dashboard, Animals, or Quick Add.</p></div></div>
+      <div class="guide-meta"><span class="meta-chip">Estimated 2–4 min</span><span class="meta-chip neutral">Basic</span><span class="meta-chip neutral">App area: Dashboard</span></div>
+      <div class="guide-actions"><a class="mini-link primary" href="https://app.herdharbor.com/#dashboard">Open this in HerdHarbor →</a></div>
       <div class="steps">
         <div class="step"><strong>Finish your operation profile.</strong> Enter the farm, rabbitry, homestead, or operation name and the adult account holder information requested during registration.</div>
         <div class="step"><strong>Add your first animals.</strong> Use Animals or Quick Add. Enter factual information you know; do not guess missing pedigree, health, or genetic information.</div>
@@ -92,20 +123,30 @@
         <div class="step"><strong>Use the animal profile for animal-specific work.</strong> Open the animal first, then choose the relevant Health, Breeding, Genetics, Pedigree, Shows, Production, or History action when available.</div>
       </div>
       <div class="tip"><strong>Tip:</strong> HerdHarbor follows an “enter once, reuse everywhere” rule. When a fact already exists in a record, downstream tools should reuse it rather than asking you to create a duplicate.</div>
-    </section>
+    
+      <div class="guide-feedback" data-feedback-guide="getting-started"><strong>Was this guide helpful?</strong><div class="feedback-actions"><button type="button" data-feedback="yes">Yes</button><button type="button" data-feedback="no">No</button></div><p class="feedback-message" aria-live="polite"></p></div>
+      <nav class="guide-nav" aria-label="Getting Started guide navigation"><a href="#animals" aria-label="Next guide: Animals & Animal Profiles">Animals & Animal Profiles →</a></nav>
+</section>
 
     <section class="section" id="animals" data-guide="animal profile add edit status sold archived active overview history">
       <div class="section-header"><span class="section-number">02</span><div><h2>Animals & Animal Profiles</h2><p>The animal profile is the normal starting point for work tied to one animal.</p></div></div>
+      <div class="guide-meta"><span class="meta-chip">Estimated 2–3 min</span><span class="meta-chip neutral">Basic</span><span class="meta-chip neutral">App area: Animals</span></div>
+      <div class="guide-actions"><a class="mini-link primary" href="https://app.herdharbor.com/#animals">Open this in HerdHarbor →</a></div>
       <div class="steps">
         <div class="step"><strong>Open Animals and choose Add Animal.</strong> Enter name/tag, species, sex, breed, birth information, and other known identifying details.</div>
         <div class="step"><strong>Save the animal before adding related records.</strong> This gives Health, Breeding, Pedigree, Genetics, Sales, and Analytics a canonical animal to reference.</div>
         <div class="step"><strong>Open the animal profile.</strong> Relevant tabs and actions appear based on species and available data. Not every animal needs every tab.</div>
         <div class="step"><strong>Change status instead of deleting history.</strong> Use Sold, Deceased, Archived, or Ancestor Only when appropriate so historical records and pedigrees remain intact.</div>
       </div>
-    </section>
+    
+      <div class="guide-feedback" data-feedback-guide="animals"><strong>Was this guide helpful?</strong><div class="feedback-actions"><button type="button" data-feedback="yes">Yes</button><button type="button" data-feedback="no">No</button></div><p class="feedback-message" aria-live="polite"></p></div>
+      <nav class="guide-nav" aria-label="Animals & Animal Profiles guide navigation"><a href="#getting-started" aria-label="Previous guide: Getting Started">← Getting Started</a><a href="#pedigrees" aria-label="Next guide: How to Create a Pedigree">How to Create a Pedigree →</a></nav>
+</section>
 
     <section class="section" id="pedigrees" data-guide="pedigree create sire dam ancestry ancestor import document review print save">
       <div class="section-header"><span class="section-number">03</span><div><h2>How to Create a Pedigree</h2><p>Build the ancestry around an existing animal and review it before saving or printing.</p></div></div>
+      <div class="guide-meta"><span class="meta-chip">Estimated 3–5 min</span><span class="meta-chip neutral">Basic</span><span class="meta-chip neutral">App area: Pedigrees</span></div>
+      <div class="guide-actions"><a class="mini-link primary" href="https://app.herdharbor.com/#pedigrees">Open this in HerdHarbor →</a></div>
       <div class="steps">
         <div class="step"><strong>Open the animal, then choose Pedigree.</strong> You can also open the Pedigrees area and select the subject animal.</div>
         <div class="step"><strong>Choose how you want to build it.</strong> Enter ancestors manually or use the pedigree document/import workflow when you have a source document.</div>
@@ -115,20 +156,30 @@
         <div class="step"><strong>Save, then print or export from the pedigree view.</strong> The saved pedigree remains tied to the subject animal and can be reused by genetics and breeding tools where supported.</div>
       </div>
       <div class="tip"><strong>Best practice:</strong> If an ancestor already exists as an active, archived, sold, or ancestor-only animal, match that record rather than typing the same animal again.</div>
-    </section>
+    
+      <div class="guide-feedback" data-feedback-guide="pedigrees"><strong>Was this guide helpful?</strong><div class="feedback-actions"><button type="button" data-feedback="yes">Yes</button><button type="button" data-feedback="no">No</button></div><p class="feedback-message" aria-live="polite"></p></div>
+      <nav class="guide-nav" aria-label="How to Create a Pedigree guide navigation"><a href="#animals" aria-label="Previous guide: Animals & Animal Profiles">← Animals & Animal Profiles</a><a href="#breeding" aria-label="Next guide: How to Record a Breeding">How to Record a Breeding →</a></nav>
+</section>
 
     <section class="section" id="breeding" data-guide="breeding record pair sire dam mating bred due date pregnancy pairing">
       <div class="section-header"><span class="section-number">04</span><div><h2>How to Record a Breeding</h2><p>Create the pairing once so later birth and offspring records inherit the correct parents.</p></div></div>
+      <div class="guide-meta"><span class="meta-chip">Estimated 1–2 min</span><span class="meta-chip neutral">Basic</span><span class="meta-chip neutral">App area: Breeding</span></div>
+      <div class="guide-actions"><a class="mini-link primary" href="https://app.herdharbor.com/#breeding">Open this in HerdHarbor →</a></div>
       <div class="steps">
         <div class="step"><strong>Open Breeding or choose Breed from an animal profile.</strong> Select the sire and dam from your existing animal records.</div>
         <div class="step"><strong>Enter the breeding date and known details.</strong> Add notes or relevant dates without inventing pregnancy results or outcomes that have not occurred.</div>
         <div class="step"><strong>Save the breeding record.</strong> HerdHarbor uses that record for breeding history, due-date workflows, reminders, and the later birth/litter flow.</div>
         <div class="step"><strong>Update the existing breeding as events happen.</strong> Use the same workflow for checks, due status, or birth rather than making unrelated duplicate records.</div>
       </div>
-    </section>
+    
+      <div class="guide-feedback" data-feedback-guide="breeding"><strong>Was this guide helpful?</strong><div class="feedback-actions"><button type="button" data-feedback="yes">Yes</button><button type="button" data-feedback="no">No</button></div><p class="feedback-message" aria-live="polite"></p></div>
+      <nav class="guide-nav" aria-label="How to Record a Breeding guide navigation"><a href="#pedigrees" aria-label="Previous guide: How to Create a Pedigree">← How to Create a Pedigree</a><a href="#litters" aria-label="Next guide: How to Enter a New Birth or Litter">How to Enter a New Birth or Litter →</a></nav>
+</section>
 
     <section class="section" id="litters" data-guide="litter birth offspring kits born weaning create animals">
       <div class="section-header"><span class="section-number">05</span><div><h2>How to Enter a New Birth or Litter</h2><p>Start from the breeding when one exists so sire and dam remain connected automatically.</p></div></div>
+      <div class="guide-meta"><span class="meta-chip">Estimated 2–4 min</span><span class="meta-chip neutral">Basic</span><span class="meta-chip neutral">App area: Births & Litters</span></div>
+      <div class="guide-actions"><a class="mini-link primary" href="https://app.herdharbor.com/#litters">Open this in HerdHarbor →</a></div>
       <div class="steps">
         <div class="step"><strong>Open Births & Litters or the breeding record.</strong> Choose the breeding that produced the birth whenever possible.</div>
         <div class="step"><strong>Record the birth date and outcome.</strong> Enter the counts and other species-appropriate birth information shown by HerdHarbor.</div>
@@ -136,10 +187,15 @@
         <div class="step"><strong>Save the litter and offspring.</strong> New individual animals become available for Health, Growth, Pedigree, Genetics, Shows, Production, and Sales as applicable.</div>
         <div class="step"><strong>Use Tasks for follow-up work.</strong> Weaning or other scheduled care can appear in Today when it is represented by existing task/follow-up data.</div>
       </div>
-    </section>
+    
+      <div class="guide-feedback" data-feedback-guide="litters"><strong>Was this guide helpful?</strong><div class="feedback-actions"><button type="button" data-feedback="yes">Yes</button><button type="button" data-feedback="no">No</button></div><p class="feedback-message" aria-live="polite"></p></div>
+      <nav class="guide-nav" aria-label="How to Enter a New Birth or Litter guide navigation"><a href="#breeding" aria-label="Previous guide: How to Record a Breeding">← How to Record a Breeding</a><a href="#health" aria-label="Next guide: How to Enter Health & Medical Data">How to Enter Health & Medical Data →</a></nav>
+</section>
 
     <section class="section" id="health" data-guide="health medical data care medication vaccine treatment episode measurement quarantine follow up recheck">
       <div class="section-header"><span class="section-number">06</span><div><h2>How to Enter Health & Medical Data</h2><p>Use routine Health records for events and Health Intelligence for ongoing episodes when available.</p></div></div>
+      <div class="guide-meta"><span class="meta-chip">Estimated 1–2 min</span><span class="meta-chip neutral">Basic</span><span class="meta-chip neutral">App area: Health</span></div>
+      <div class="guide-actions"><a class="mini-link primary" href="https://app.herdharbor.com/#health">Open this in HerdHarbor →</a></div>
       <div class="steps">
         <div class="step"><strong>Open the animal and choose Health.</strong> You can also use Health or Quick Add when recording care across the operation.</div>
         <div class="step"><strong>Choose the correct record type.</strong> Record the actual event—such as weight/measurement, routine care, medication, vaccination, treatment, observation, or other supported health entry.</div>
@@ -148,60 +204,90 @@
         <div class="step"><strong>Use a Health Episode for an ongoing problem.</strong> When Health Intelligence is available, start an episode and add care over time instead of scattering an ongoing issue across unrelated notes.</div>
       </div>
       <div class="warning"><strong>Health note:</strong> HerdHarbor is a recordkeeping and educational tool, not a substitute for veterinary diagnosis or treatment. Use the Symptom Guide for educational triage information and contact a veterinarian for medical decisions.</div>
-    </section>
+    
+      <div class="guide-feedback" data-feedback-guide="health"><strong>Was this guide helpful?</strong><div class="feedback-actions"><button type="button" data-feedback="yes">Yes</button><button type="button" data-feedback="no">No</button></div><p class="feedback-message" aria-live="polite"></p></div>
+      <nav class="guide-nav" aria-label="How to Enter Health & Medical Data guide navigation"><a href="#litters" aria-label="Previous guide: How to Enter a New Birth or Litter">← How to Enter a New Birth or Litter</a><a href="#growth" aria-label="Next guide: How to Record Weight & Use Growth Charts">How to Record Weight & Use Growth Charts →</a></nav>
+</section>
 
     <section class="section" id="growth" data-guide="weight growth chart measurement health analytics record">
       <div class="section-header"><span class="section-number">07</span><div><h2>How to Record Weight & Use Growth Charts</h2><p>Weights are health measurements first; analytics reads those records rather than maintaining a second set.</p></div></div>
+      <div class="guide-meta"><span class="meta-chip">Estimated 1–2 min</span><span class="meta-chip neutral">Basic</span><span class="meta-chip neutral">App area: Health / Measurements</span></div>
+      <div class="guide-actions"><a class="mini-link primary" href="https://app.herdharbor.com/#health">Open this in HerdHarbor →</a></div>
       <div class="steps">
         <div class="step"><strong>Open the animal and choose Add Weight/Health measurement.</strong> Enter the date and measured weight using the displayed unit.</div>
         <div class="step"><strong>Save each real measurement once.</strong> Do not duplicate a weight in Analytics; charts should derive from the health measurement history.</div>
         <div class="step"><strong>Open Analytics and use the Growth/Weight view.</strong> Select the animal/species and date range you want to review.</div>
         <div class="step"><strong>Use trends, not one data point.</strong> Growth charts are most useful when measurements are taken consistently enough for your management purpose.</div>
       </div>
-    </section>
+    
+      <div class="guide-feedback" data-feedback-guide="growth"><strong>Was this guide helpful?</strong><div class="feedback-actions"><button type="button" data-feedback="yes">Yes</button><button type="button" data-feedback="no">No</button></div><p class="feedback-message" aria-live="polite"></p></div>
+      <nav class="guide-nav" aria-label="How to Record Weight & Use Growth Charts guide navigation"><a href="#health" aria-label="Previous guide: How to Enter Health & Medical Data">← How to Enter Health & Medical Data</a><a href="#genetics" aria-label="Next guide: How to Use Genetics">How to Use Genetics →</a></nav>
+</section>
 
     <section class="section" id="genetics" data-guide="genetics rabbit color trait phenotype genotype pairing prediction species">
       <div class="section-header"><span class="section-number">08</span><div><h2>How to Use Genetics</h2><p>Open Genetics from the animal so HerdHarbor can route to the correct species engine.</p></div></div>
+      <div class="guide-meta"><span class="meta-chip">Estimated 2–4 min</span><span class="meta-chip neutral">Intermediate</span><span class="meta-chip neutral">App area: Animal Profile</span></div>
+      <div class="guide-actions"><a class="mini-link primary" href="https://app.herdharbor.com/">Open HerdHarbor →</a></div>
       <div class="steps">
         <div class="step"><strong>Open the animal profile and choose Genetics.</strong> HerdHarbor routes rabbits to the rabbit genetics tools and supported other species to the multi-species engine.</div>
         <div class="step"><strong>Enter only known phenotype/genotype information.</strong> Unknown genes should remain unknown; a prediction is not the same as a confirmed genotype.</div>
         <div class="step"><strong>Use pairing/prediction tools as planning aids.</strong> Review probabilities and compatibility information before making breeding decisions.</div>
         <div class="step"><strong>Keep pedigree and genetics distinct.</strong> Pedigree records ancestry; Genetics evaluates inherited traits using the information available.</div>
       </div>
-    </section>
+    
+      <div class="guide-feedback" data-feedback-guide="genetics"><strong>Was this guide helpful?</strong><div class="feedback-actions"><button type="button" data-feedback="yes">Yes</button><button type="button" data-feedback="no">No</button></div><p class="feedback-message" aria-live="polite"></p></div>
+      <nav class="guide-nav" aria-label="How to Use Genetics guide navigation"><a href="#growth" aria-label="Previous guide: How to Record Weight & Use Growth Charts">← How to Record Weight & Use Growth Charts</a><a href="#tasks" aria-label="Next guide: Dashboard, Today & Tasks">Dashboard, Today & Tasks →</a></nav>
+</section>
 
     <section class="section" id="tasks" data-guide="today dashboard tasks reminder follow up due queue">
       <div class="section-header"><span class="section-number">09</span><div><h2>Dashboard, Today & Tasks</h2><p>Use the operational queue to answer “What needs attention?”</p></div></div>
+      <div class="guide-meta"><span class="meta-chip">Estimated 1–2 min</span><span class="meta-chip neutral">Basic</span><span class="meta-chip neutral">App area: Tasks</span></div>
+      <div class="guide-actions"><a class="mini-link primary" href="https://app.herdharbor.com/#tasks">Open this in HerdHarbor →</a></div>
       <div class="steps">
         <div class="step"><strong>Start on Dashboard.</strong> Review Today before moving into individual modules.</div>
         <div class="step"><strong>Work from the source record.</strong> A Health recheck, show deadline, breeding/weaning task, quarantine date, or other due item comes from its canonical HerdHarbor record.</div>
         <div class="step"><strong>Create manual Tasks for work that is not already represented elsewhere.</strong> Avoid creating a duplicate task when an existing dated record already supplies the reminder.</div>
         <div class="step"><strong>Complete or update the underlying work.</strong> This keeps Dashboard useful rather than turning it into a disconnected checklist.</div>
       </div>
-    </section>
+    
+      <div class="guide-feedback" data-feedback-guide="tasks"><strong>Was this guide helpful?</strong><div class="feedback-actions"><button type="button" data-feedback="yes">Yes</button><button type="button" data-feedback="no">No</button></div><p class="feedback-message" aria-live="polite"></p></div>
+      <nav class="guide-nav" aria-label="Dashboard, Today & Tasks guide navigation"><a href="#genetics" aria-label="Previous guide: How to Use Genetics">← How to Use Genetics</a><a href="#analytics" aria-label="Next guide: Analytics, Shows & Production">Analytics, Shows & Production →</a></nav>
+</section>
 
     <section class="section" id="analytics" data-guide="analytics production revenue sales shows health growth reports charts market">
       <div class="section-header"><span class="section-number">10</span><div><h2>Analytics, Shows & Production</h2><p>Analytics summarizes records already stored in HerdHarbor.</p></div></div>
+      <div class="guide-meta"><span class="meta-chip">Estimated 2–5 min</span><span class="meta-chip neutral">Intermediate</span><span class="meta-chip neutral">App area: Analytics</span></div>
+      <div class="guide-actions"><a class="mini-link primary" href="https://app.herdharbor.com/#analytics">Open this in HerdHarbor →</a></div>
       <div class="steps">
         <div class="step"><strong>Enter operational records in their normal module.</strong> Weights belong in Health, sales in Sales, show results in Shows, and production in Production.</div>
         <div class="step"><strong>Open Analytics to review trends.</strong> Use available views for overview, breeding, sales/revenue, growth/weight, shows, production, and health measurements when relevant data exists.</div>
         <div class="step"><strong>Filter to the question you are answering.</strong> Choose animal, species, date range, or other available filters instead of mixing unrelated records.</div>
         <div class="step"><strong>Treat Market Analytics as optional.</strong> Participation remains consent-based; operational records continue to work without opting into market contribution.</div>
       </div>
-    </section>
+    
+      <div class="guide-feedback" data-feedback-guide="analytics"><strong>Was this guide helpful?</strong><div class="feedback-actions"><button type="button" data-feedback="yes">Yes</button><button type="button" data-feedback="no">No</button></div><p class="feedback-message" aria-live="polite"></p></div>
+      <nav class="guide-nav" aria-label="Analytics, Shows & Production guide navigation"><a href="#tasks" aria-label="Previous guide: Dashboard, Today & Tasks">← Dashboard, Today & Tasks</a><a href="#sales" aria-label="Next guide: Sales & Customers">Sales & Customers →</a></nav>
+</section>
 
     <section class="section" id="sales" data-guide="sales customer buyer payment sold transfer price animal">
       <div class="section-header"><span class="section-number">11</span><div><h2>Sales & Customers</h2><p>Keep the buyer, transaction, payment, and animal status connected.</p></div></div>
+      <div class="guide-meta"><span class="meta-chip">Estimated 1–2 min</span><span class="meta-chip neutral">Basic</span><span class="meta-chip neutral">App area: Sales</span></div>
+      <div class="guide-actions"><a class="mini-link primary" href="https://app.herdharbor.com/#sales">Open this in HerdHarbor →</a></div>
       <div class="steps">
         <div class="step"><strong>Create or select the customer.</strong> Use the existing buyer record when the customer has purchased from you before.</div>
         <div class="step"><strong>Create the sale and select the animal/items.</strong> Enter the real sale date, price, and payment information.</div>
         <div class="step"><strong>Record payments against the sale.</strong> This preserves the transaction history rather than replacing the original sale total.</div>
         <div class="step"><strong>Mark transferred animals Sold/Transferred through the normal workflow.</strong> Historical pedigree, health, breeding, and production data remains part of your records.</div>
       </div>
-    </section>
+    
+      <div class="guide-feedback" data-feedback-guide="sales"><strong>Was this guide helpful?</strong><div class="feedback-actions"><button type="button" data-feedback="yes">Yes</button><button type="button" data-feedback="no">No</button></div><p class="feedback-message" aria-live="polite"></p></div>
+      <nav class="guide-nav" aria-label="Sales & Customers guide navigation"><a href="#analytics" aria-label="Previous guide: Analytics, Shows & Production">← Analytics, Shows & Production</a><a href="#subscription" aria-label="Next guide: Cloud Sync & Offline Use">Cloud Sync & Offline Use →</a></nav>
+</section>
 
     <section class="section" id="subscription" data-guide="subscription member free adult junior billing stripe trial referral id credit calendar month five active animals">
       <div class="section-header"><span class="section-number">12</span><div><h2>Trial, Membership & Referrals <span class="tag">v1.8.4</span></h2><p>Current account access, billing, fallback, and referral behavior.</p></div></div>
+      <div class="guide-meta"><span class="meta-chip">Estimated 2–3 min</span><span class="meta-chip neutral">Basic</span><span class="meta-chip neutral">App area: Settings / Subscription</span></div>
+      <div class="guide-actions"><a class="mini-link primary" href="https://app.herdharbor.com/#settings">Open this in HerdHarbor →</a></div>
       <div class="steps">
         <div class="step"><strong>Eligible adult accounts receive one calendar month of Member trial access.</strong> Trial timing comes from the authenticated backend account record; browser storage cannot create or extend a trial.</div>
         <div class="step"><strong>No credit card is required to begin the trial.</strong> If you subscribe during an active trial, the remaining trusted trial period is preserved before Member billing begins.</div>
@@ -211,31 +297,46 @@
         <div class="step"><strong>Share only your public Referral ID.</strong> The Referral ID is separate from authentication/database identifiers, and qualifying referral credits follow the current referral policy shown in the subscription experience.</div>
       </div>
       <div class="tip"><strong>If Member access ends:</strong> herd records are not deleted. The trusted account state resolves the next allowed experience, with eligible adult accounts using Free Adult.</div>
-    </section>
+    
+      <div class="guide-feedback" data-feedback-guide="subscription"><strong>Was this guide helpful?</strong><div class="feedback-actions"><button type="button" data-feedback="yes">Yes</button><button type="button" data-feedback="no">No</button></div><p class="feedback-message" aria-live="polite"></p></div>
+      <nav class="guide-nav" aria-label="Cloud Sync & Offline Use guide navigation"><a href="#sales" aria-label="Previous guide: Sales & Customers">← Sales & Customers</a><a href="#sync" aria-label="Next guide: Cloud Sync & Offline Use">Cloud Sync & Offline Use →</a></nav>
+</section>
 
     <section class="section" id="sync" data-guide="cloud sync offline backup device storage account">
       <div class="section-header"><span class="section-number">13</span><div><h2>Cloud Sync & Offline Use</h2><p>HerdHarbor maintains protected account storage while preserving offline-capable app behavior.</p></div></div>
+      <div class="guide-meta"><span class="meta-chip">Estimated 2–4 min</span><span class="meta-chip neutral">Intermediate</span><span class="meta-chip neutral">App area: Settings</span></div>
+      <div class="guide-actions"><a class="mini-link primary" href="https://app.herdharbor.com/#settings">Open this in HerdHarbor →</a></div>
       <div class="steps">
         <div class="step"><strong>Watch the sync indicator.</strong> The sidebar/top bar reports whether HerdHarbor is checking, syncing, or working from protected account storage.</div>
         <div class="step"><strong>You can continue supported work offline.</strong> The app keeps an offline copy on the device and synchronizes changes when connectivity returns.</div>
         <div class="step"><strong>Allow sync to finish before switching devices when possible.</strong> This reduces the chance of creating competing edits to the same record.</div>
         <div class="step"><strong>Do not treat browser storage as your only backup.</strong> Sign in to the correct HerdHarbor account and confirm cloud sync for records you need across devices.</div>
       </div>
-    </section>
+    
+      <div class="guide-feedback" data-feedback-guide="sync"><strong>Was this guide helpful?</strong><div class="feedback-actions"><button type="button" data-feedback="yes">Yes</button><button type="button" data-feedback="no">No</button></div><p class="feedback-message" aria-live="polite"></p></div>
+      <nav class="guide-nav" aria-label="Cloud Sync & Offline Use guide navigation"><a href="#subscription" aria-label="Previous guide: Cloud Sync & Offline Use">← Cloud Sync & Offline Use</a><a href="#youth" aria-label="Next guide: Youth & Junior Use">Youth & Junior Use →</a></nav>
+</section>
 
     <section class="section" id="youth" data-guide="youth junior child parent guardian 4-h supervision adult account">
       <div class="section-header"><span class="section-number">14</span><div><h2>Youth & Junior Use</h2><p>HerdHarbor accounts are adult-managed; youth participation requires parent/legal-guardian supervision or approval.</p></div></div>
+      <div class="guide-meta"><span class="meta-chip">Estimated 2–3 min</span><span class="meta-chip neutral">Basic</span><span class="meta-chip neutral">App area: Account setup</span></div>
+      <div class="guide-actions"><a class="mini-link primary" href="https://app.herdharbor.com/">Open HerdHarbor →</a></div>
       <div class="steps">
         <div class="step"><strong>An adult account holder completes registration.</strong> New registration requires the adult account holder to self-report age 18+ and complete the required attestations.</div>
         <div class="step"><strong>Youth use stays supervised.</strong> Parents/legal guardians should review records, account access, purchases, communications, and submitted information.</div>
         <div class="step"><strong>Junior is the free plan.</strong> It retains the existing five-active-animal transition limit while previously stored records remain preserved.</div>
         <div class="step"><strong>Use youth/show educational guides as learning aids.</strong> Program rules from 4-H, FFA, breed associations, fairs, or shows remain authoritative for those programs.</div>
       </div>
-    </section>
+    
+      <div class="guide-feedback" data-feedback-guide="youth"><strong>Was this guide helpful?</strong><div class="feedback-actions"><button type="button" data-feedback="yes">Yes</button><button type="button" data-feedback="no">No</button></div><p class="feedback-message" aria-live="polite"></p></div>
+      <nav class="guide-nav" aria-label="Youth & Junior Use guide navigation"><a href="#sync" aria-label="Previous guide: Cloud Sync & Offline Use">← Cloud Sync & Offline Use</a><a href="#workflow-index" aria-label="Next guide: Workflow Guide Index">Workflow Guide Index →</a></nav>
+</section>
 
 
     <section class="section" id="workflow-index" data-guide="workflow quick guides add animal edit pedigree paper pedigree breeding pregnancy birth litter weight health sale transfer spreadsheet export qr sync retry backup compare recovery trial member free adult account">
       <div class="section-header"><span class="section-number">15</span><div><h2>Workflow Guide Index</h2><p>Direct, version-current guides for the core HerdHarbor workflows. Each guide points back to the existing app area that owns the record.</p></div></div>
+      <div class="guide-meta"><span class="meta-chip">Estimated 3–5 min</span><span class="meta-chip neutral">Basic</span><span class="meta-chip neutral">App area: Multiple areas</span></div>
+      <div class="guide-actions"><a class="mini-link primary" href="https://app.herdharbor.com/">Open HerdHarbor →</a></div>
       <div class="workflow-index">
         <article class="quick-guide" id="guide-add-animal"><h3>Add an animal</h3><p>Create the animal once, then reuse that record everywhere else.</p><ol><li>Open Animals and choose Add Animal.</li><li>Enter the known identity, species, sex, status, and optional details.</li><li>Save, then open the animal profile for health, pedigree, breeding, and history work.</li></ol><a class="route-link" href="https://app.herdharbor.com/#animals">Open Animals →</a></article>
         <article class="quick-guide" id="guide-edit-animal"><h3>Edit an animal</h3><p>Use the existing animal record instead of creating a duplicate.</p><ol><li>Open Animals and select the animal.</li><li>Choose Edit from the animal profile.</li><li>Change only the factual fields that need updating and save.</li></ol><a class="route-link" href="https://app.herdharbor.com/#animals">Open Animals →</a></article>
@@ -260,7 +361,10 @@
         <article class="quick-guide" id="guide-trial-member-free-adult"><h3>Trial, Member, and Free Adult</h3><p>Account access is resolved by the trusted membership/subscription system; changing plan status does not delete herd records.</p><ol><li>Open Settings to view the current plan, account role, subscription status, and active-animal allowance.</li><li>During an eligible Member trial, use the Member features available to the account.</li><li>When paid/trial Member access ends, eligible adult accounts fall back to Free Adult rather than deleting stored records.</li></ol><a class="route-link" href="https://app.herdharbor.com/#settings">Open Membership settings →</a></article>
         <article class="quick-guide" id="guide-account-basics"><h3>Account basics</h3><p>Profile, membership, appearance, storage, backups, privacy resources, and account deletion live in Settings.</p><ol><li>Open Settings from the profile button or sidebar.</li><li>Review the operation profile and membership details.</li><li>Use the dedicated Privacy, Terms, Support, or account-deletion links when those actions are needed.</li></ol><a class="route-link" href="https://app.herdharbor.com/#settings">Open Settings →</a></article>
       </div>
-    </section>
+    
+      <div class="guide-feedback" data-feedback-guide="workflow-index"><strong>Was this guide helpful?</strong><div class="feedback-actions"><button type="button" data-feedback="yes">Yes</button><button type="button" data-feedback="no">No</button></div><p class="feedback-message" aria-live="polite"></p></div>
+      <nav class="guide-nav" aria-label="Workflow Guide Index guide navigation"><a href="#youth" aria-label="Previous guide: Youth & Junior Use">← Youth & Junior Use</a></nav>
+</section>
 
     <section class="section" id="faq" data-guide="faq help troubleshooting common questions">
       <div class="section-header"><span class="section-number">?</span><div><h2>Common Questions</h2><p>Fast answers to the issues that usually cause confusion.</p></div></div>
@@ -279,14 +383,65 @@
 <script>
 (() => {
   const input = document.getElementById('guide-search');
-  if (!input) return;
+  const clear = document.getElementById('clear-search');
+  const count = document.getElementById('search-count');
+  const empty = document.getElementById('search-empty');
   const cards = [...document.querySelectorAll('[data-search]')];
   const sections = [...document.querySelectorAll('[data-guide]')];
+  const originals = new Map();
+
   function normalize(value){ return String(value || '').toLowerCase().trim(); }
-  input.addEventListener('input', () => {
-    const q = normalize(input.value);
-    cards.forEach(card => card.classList.toggle('hidden-guide', Boolean(q) && !normalize(card.dataset.search + ' ' + card.textContent).includes(q)));
-    sections.forEach(section => section.classList.toggle('hidden-guide', Boolean(q) && !normalize(section.dataset.guide + ' ' + section.textContent).includes(q)));
+  function searchable(el){ return normalize((el.dataset.search || el.dataset.guide || '') + ' ' + el.textContent); }
+  function clearHighlights(){
+    document.querySelectorAll('mark.hh-search-hit').forEach(mark => mark.replaceWith(document.createTextNode(mark.textContent)));
+  }
+  function highlight(el, q){
+    if (!q) return;
+    const walker = document.createTreeWalker(el, NodeFilter.SHOW_TEXT);
+    const nodes=[]; while(walker.nextNode()) nodes.push(walker.currentNode);
+    nodes.forEach(node => {
+      if (node.parentElement?.closest('script,style,button,.guide-meta,.guide-actions,.guide-feedback,.guide-nav')) return;
+      const text=node.nodeValue, lower=text.toLowerCase(), at=lower.indexOf(q);
+      if(at<0) return;
+      const frag=document.createDocumentFragment();
+      frag.append(text.slice(0,at));
+      const mark=document.createElement('mark'); mark.className='hh-search-hit'; mark.textContent=text.slice(at,at+q.length); frag.append(mark);
+      frag.append(text.slice(at+q.length)); node.replaceWith(frag);
+    });
+  }
+  function runSearch(){
+    clearHighlights();
+    const q=normalize(input?.value);
+    let visible=0;
+    cards.forEach(card => {
+      const match=!q || searchable(card).includes(q);
+      card.classList.toggle('hidden-guide',!match);
+      if(match){ visible+=1; highlight(card,q); }
+    });
+    sections.forEach(section => {
+      const match=!q || searchable(section).includes(q);
+      section.classList.toggle('hidden-guide',!match);
+      if(match) highlight(section,q);
+    });
+    if(count) count.textContent=q ? visible + (visible===1?' guide found':' guides found') : cards.length + ' guides available';
+    if(empty){
+      if(q && visible===0){ empty.textContent='No guides found for “'+input.value+'”. Try health, medical, medication, care, pedigree, litter, referral, or weight.'; empty.classList.add('show'); }
+      else { empty.textContent=''; empty.classList.remove('show'); }
+    }
+  }
+  input?.addEventListener('input', runSearch);
+  clear?.addEventListener('click', () => { if(input){ input.value=''; input.focus(); } runSearch(); });
+
+  document.querySelectorAll('[data-feedback-guide]').forEach(box => {
+    const guide=box.dataset.feedbackGuide;
+    const message=box.querySelector('.feedback-message');
+    const saved=localStorage.getItem('hh_help_feedback_'+guide);
+    if(saved && message) message.textContent='Feedback saved on this browser.';
+    box.querySelectorAll('[data-feedback]').forEach(btn => btn.addEventListener('click', () => {
+      const value=btn.dataset.feedback;
+      try{ localStorage.setItem('hh_help_feedback_'+guide,value); }catch{}
+      if(message) message.textContent=value==='yes' ? 'Thanks — glad it helped.' : 'Thanks — we’ll keep improving this guide.';
+    }));
   });
 })();
 </script>
