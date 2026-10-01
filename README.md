@@ -1,7 +1,7 @@
 # HerdHarbor website
 
 This repository contains the responsive public website at `https://herdharbor.com`.
-It describes the current HerdHarbor Alpha v1.8.4 public release and links to the live web app at
+It describes the stable HerdHarbor public experience and links to the live web app at
 `https://app.herdharbor.com`.
 
 ## Files
@@ -21,7 +21,14 @@ It describes the current HerdHarbor Alpha v1.8.4 public release and links to the
 - Eligible adults can fall back to Free Adult without deleting existing herd records.
 - A referral qualifies after the referred Member's first successful monthly renewal.
 - Every five qualified referrals earns one stackable Member-month credit.
-- AI-assisted pedigree, voice, and photo tools remain publicly described as Coming Soon while testing continues.
+- AI-assisted pedigree, voice, and photo tools remain publicly described as Coming Soon until their separate public releases.
+
+## Distribution status
+
+- The web app is live at `https://app.herdharbor.com`.
+- HerdHarbor can be installed as a web app on supported mobile and desktop devices.
+- Google Play is coming soon.
+- Apple App Store is coming soon.
 
 ## Production URL structure
 
