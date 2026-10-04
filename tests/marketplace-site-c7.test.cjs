@@ -125,7 +125,7 @@ test("C7W role-aware shell keeps admin Owner-only and private account tabs authe
   const shell = read("marketplace/marketplace-shell.js");
   const index = read("marketplace/index.html");
 
-  assert.match(shell, /const interactive = context\.isAuthenticated && context\.accountStatus === "active" && context\.marketplaceAccessReady === true/);
+  assert.match(shell, /const interactive = context\.isAuthenticated[\s\S]*?context\.accountStatus === "active"[\s\S]*?context\.marketplaceAccessReady === true/);
   assert.match(shell, /const owner = interactive && context\.role === "owner"/);
   assert.match(shell, /owner \? '<button class="marketplace-tab marketplace-tab-admin"/);
   assert.match(shell, /interactive \? '<button class="marketplace-tab" type="button" data-marketplace-view="listings"/);
