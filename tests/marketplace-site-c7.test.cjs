@@ -175,3 +175,14 @@ test("C7W incomplete registration stays browse-only instead of looping through s
   assert.match(detail, /context\.isAuthenticated \? "https:\/\/app\.herdharbor\.com\/" : accountUrl/);
   assert.match(messages, /context\.isAuthenticated \? "https:\/\/app\.herdharbor\.com\/" : accountUrl/);
 });
+
+
+test("C7W lazy Marketplace modules cannot render over a newer selected tab", () => {
+  const shell = read("marketplace/marketplace-owner-shell.js");
+  assert.match(shell, /let currentView = ""/);
+  assert.match(shell, /if \(currentView !== view\) return/);
+  assert.match(shell, /data-marketplace-module/);
+  assert.match(shell, /script\.dataset\.marketplaceModule = marker/);
+  assert.doesNotMatch(shell, /script\[data-\$\{marker\}\]/);
+  assert.match(shell, /currentView = view;[\s\S]*setCurrent\(view\)/);
+});
