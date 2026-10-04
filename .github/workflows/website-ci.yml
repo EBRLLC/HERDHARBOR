@@ -21,7 +21,7 @@ jobs:
       - name: Verify Marketplace JavaScript syntax
         run: |
           node --check marketplace/marketplace-gate.js
-          node --check marketplace/marketplace-owner-shell.js
+          node --check marketplace/marketplace-shell.js
           node --check marketplace/marketplace-profile.js
           node --check marketplace/marketplace-listings.js
           node --check marketplace/marketplace-browse.js
@@ -35,7 +35,7 @@ jobs:
           test -f marketplace/index.html
           test -f marketplace/marketplace.css
           test -f marketplace/marketplace-gate.js
-          test -f marketplace/marketplace-owner-shell.js
+          test -f marketplace/marketplace-shell.js
           test -f vendor/supabase-2.111.0.js
           test -f marketplace/listing/index.html
           test -f marketplace/seller/index.html
