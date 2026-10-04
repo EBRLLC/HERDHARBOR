@@ -119,7 +119,7 @@
   }
 
   async function mount(root, context) {
-    if (!root || !context?.client || !context?.userId || context.role !== "owner") return;
+    if (!root || !context?.client || !context?.userId || !context.isAuthenticated || context.accountStatus !== "active") return;
 
     const { client, userId } = context;
     root.innerHTML = `
@@ -144,7 +144,7 @@
     let herdAnimals = null;
 
     async function loadListings() {
-      const data = await rpc(client, "marketplace_owner_listings");
+      const data = await rpc(client, "marketplace_member_listings");
       listings = Array.isArray(data) ? data : [];
       const cards = await Promise.all(listings.map((listing) => listingCard(client, listing)));
       grid.innerHTML = cards.length
@@ -161,7 +161,7 @@
 
     async function loadHerdAnimals() {
       if (Array.isArray(herdAnimals)) return herdAnimals;
-      const data = await rpc(client, "marketplace_owner_herd_animals");
+      const data = await rpc(client, "marketplace_member_herd_animals");
       herdAnimals = Array.isArray(data) ? data : [];
       return herdAnimals;
     }
@@ -371,7 +371,7 @@
 
         let uploadedPaths = [];
         try {
-          const savedId = await rpc(client, "marketplace_owner_save_listing", {
+          const savedId = await rpc(client, "marketplace_member_save_listing", {
             listing_id_value: clean(form.elements.listing_id.value) || null,
             source_animal_id_value: clean(form.elements.source_animal_id.value) || null,
             state_value: form.elements.state.value,
@@ -399,7 +399,7 @@
           if (files.length) {
             const previousPaths = Array.isArray(listing?.photo_paths) ? listing.photo_paths.filter(Boolean) : [];
             uploadedPaths = await uploadPhotos(client, userId, savedId, files);
-            await rpc(client, "marketplace_owner_set_listing_photos", {
+            await rpc(client, "marketplace_member_set_listing_photos", {
               listing_id_value: savedId,
               paths_value: uploadedPaths
             });
@@ -431,7 +431,7 @@
         if (!globalThis.confirm("Delete this Marketplace listing? The source HerdHarbor animal will not be changed.")) return;
         setStatus("Deleting…");
         try {
-          await rpc(client, "marketplace_owner_delete_listing", { listing_id_value: listingId });
+          await rpc(client, "marketplace_member_delete_listing", { listing_id_value: listingId });
           const previousPaths = Array.isArray(listing?.photo_paths) ? listing.photo_paths.filter(Boolean) : [];
           if (previousPaths.length) await removePaths(client, previousPaths).catch(() => {});
           editor.hidden = true;
