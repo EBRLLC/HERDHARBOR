@@ -146,7 +146,8 @@
         membershipTier: "",
         sellerPublicId: "",
         marketplaceStatus: "guest",
-        marketplaceAccessReady: false
+        marketplaceAccessReady: false,
+        marketplaceSuspended: false
       });
     }
 
@@ -165,7 +166,8 @@
       membershipTier: String(account.membership_tier || ""),
       sellerPublicId: String(account.seller_public_id || ""),
       marketplaceStatus: String(account.marketplace_status || "not_created"),
-      marketplaceAccessReady: account.marketplace_access_ready === true
+      marketplaceAccessReady: account.marketplace_access_ready === true,
+      marketplaceSuspended: account.marketplace_suspended === true
     });
   }
 
@@ -174,9 +176,11 @@
       setStatus(
         context.marketplaceAccessReady
           ? "Signed in to HerdHarbor Marketplace."
-          : context.accountStatus !== "active"
-            ? "Signed in. Marketplace interaction is unavailable while this HerdHarbor account is not active."
-            : "Signed in. Finish HerdHarbor account setup in the app before using Marketplace messaging or seller tools."
+          : context.marketplaceSuspended
+            ? "Marketplace access is suspended. You can continue browsing, but messaging, favorites, reports, and seller tools are disabled."
+            : context.accountStatus !== "active"
+              ? "Signed in. Marketplace interaction is unavailable while this HerdHarbor account is not active."
+              : "Signed in. Finish HerdHarbor account setup in the app before using Marketplace messaging or seller tools."
       );
       if (accountLink) {
         accountLink.textContent = "Account";
