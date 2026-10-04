@@ -1,0 +1,84 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#0D2540">
+  <meta name="robots" content="noindex,nofollow,noarchive">
+  <meta name="description" content="HerdHarbor Marketplace private Owner preview.">
+  <link rel="canonical" href="https://herdharbor.com/marketplace/">
+  <title>Marketplace — HerdHarbor</title>
+  <link rel="stylesheet" href="../styles.css">
+  <link rel="stylesheet" href="./marketplace.css?v=1">
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+  <header class="site-header">
+    <div class="container nav-wrap">
+      <a class="brand" href="/" aria-label="HerdHarbor home">
+        <img src="../assets/herdharbor-icon.png" alt="">
+        <span>HerdHarbor</span>
+      </a>
+      <nav class="site-nav open" aria-label="Marketplace navigation">
+        <a href="/marketplace/" aria-current="page">Marketplace</a>
+        <a href="/how-to/">How To</a>
+        <a class="button button-small" href="https://app.herdharbor.com/">Open App</a>
+      </nav>
+    </div>
+  </header>
+
+  <main id="main" class="marketplace-main">
+    <div class="container marketplace-shell">
+      <section class="marketplace-heading">
+        <span class="marketplace-preview-badge">Private Owner Preview</span>
+        <p class="eyebrow">HerdHarbor Marketplace</p>
+        <h1>Marketplace</h1>
+        <p>This website route is the permanent home of HerdHarbor Marketplace. Private preview data remains locked until the protected Owner account is verified.</p>
+      </section>
+
+      <section class="marketplace-gate" id="marketplace-access-shell" aria-live="polite">
+        <h2>Secure preview access</h2>
+        <p class="marketplace-gate-status" id="marketplace-gate-status">Checking your HerdHarbor website session…</p>
+
+        <form class="marketplace-auth-form" id="marketplace-auth-form" hidden>
+          <label>
+            HerdHarbor account email
+            <input id="marketplace-email" type="email" autocomplete="username" required>
+          </label>
+          <label>
+            Password
+            <input id="marketplace-password" type="password" autocomplete="current-password" required>
+          </label>
+          <button class="button" type="submit">Sign in to private preview</button>
+        </form>
+
+        <div class="marketplace-gate-actions" id="marketplace-gate-actions" hidden>
+          <a class="button button-secondary button-small" href="https://app.herdharbor.com/">Open HerdHarbor</a>
+          <button class="button button-secondary button-small" id="marketplace-sign-out" type="button" hidden>Sign out</button>
+        </div>
+      </section>
+
+      <div id="marketplace-owner-root" hidden></div>
+    </div>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container footer-grid">
+      <div class="footer-brand">
+        <a class="brand brand-footer" href="/">HerdHarbor</a>
+        <p>Connected farm management, now extending into a dedicated Marketplace.</p>
+      </div>
+      <div class="footer-links">
+        <a href="/privacy/">Privacy</a>
+        <a href="/terms/">Terms</a>
+        <a href="/support/">Support</a>
+      </div>
+      <p class="copyright">© <span id="year"></span> HerdHarbor</p>
+    </div>
+  </footer>
+
+  <script src="../script.js"></script>
+  <script src="../vendor/supabase-2.111.0.js"></script>
+  <script src="./marketplace-gate.js?v=1"></script>
+</body>
+</html>
