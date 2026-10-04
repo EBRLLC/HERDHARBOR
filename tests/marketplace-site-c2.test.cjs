@@ -23,7 +23,7 @@ test("C2W profile form contains only approved public-facing fields", () => {
   assert.doesNotMatch(source, /name="(?:email|phone|street|exact_address|billing|subscription)"/i);
 });
 
-test("C2W avatar media is private, signed, validated, and account-prefixed", () => {
+test("C2W avatar media is private, signed, validated, and does not expose auth IDs in paths", () => {
   const source = read("marketplace/marketplace-profile.js");
   assert.match(source, /marketplace-public/);
   assert.match(source, /createSignedUrl\(path, 300\)/);
@@ -31,7 +31,8 @@ test("C2W avatar media is private, signed, validated, and account-prefixed", () 
   assert.match(source, /image\/png/);
   assert.match(source, /image\/webp/);
   assert.match(source, /5 \* 1024 \* 1024/);
-  assert.match(source, /userId.*profiles.*avatar-/s);
+  assert.match(source, /uploadedPath = `profiles\/avatar-\$\{suffix\}\.\$\{ext\}`/);
+  assert.doesNotMatch(source, /\$\{userId\}\/profiles/);
   assert.match(source, /removePath\(client, previousPath\)/);
   assert.doesNotMatch(source, /getPublicUrl/);
 });
