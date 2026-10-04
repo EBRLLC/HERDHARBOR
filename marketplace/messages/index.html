@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="en" data-marketplace-runtime="marketplace-messages.js?v=7">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#0D2540">
+  <meta name="robots" content="noindex,nofollow,noarchive">
+  <meta name="description" content="Private HerdHarbor Marketplace messages.">
+  <link rel="canonical" href="https://herdharbor.com/marketplace/messages/">
+  <title>Marketplace Messages — HerdHarbor</title>
+  <link rel="stylesheet" href="../../styles.css">
+  <link rel="stylesheet" href="../marketplace.css?v=7">
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+  <header class="site-header">
+    <div class="container nav-wrap">
+      <a class="brand" href="/" aria-label="HerdHarbor home"><img src="../../assets/herdharbor-icon.png" alt=""><span>HerdHarbor</span></a>
+      <nav class="site-nav open" aria-label="Marketplace navigation">
+        <a href="/marketplace/">Browse</a>
+        <a href="/marketplace/#my-listings">My Listings</a>
+        <a href="/marketplace/#seller-profile">Seller Profile</a>
+        <a href="/marketplace/messages/" aria-current="page">Messages</a>
+        <a class="button button-small" href="https://app.herdharbor.com/">Open HerdHarbor</a>
+      </nav>
+    </div>
+  </header>
+  <main id="main" class="marketplace-main">
+    <div class="container marketplace-shell">
+      <section class="marketplace-gate" id="marketplace-access-shell" aria-live="polite" hidden>
+        <p class="marketplace-gate-status" id="marketplace-gate-status">Checking Marketplace account…</p>
+        <div class="marketplace-gate-actions" id="marketplace-gate-actions" hidden>
+          <a id="marketplace-account-link" class="button button-secondary button-small" href="/marketplace/account/">Account</a>
+          <button class="button button-secondary button-small" id="marketplace-sign-out" type="button" hidden>Sign out</button>
+        </div>
+      </section>
+      <div id="marketplace-owner-root" hidden></div>
+    </div>
+  </main>
+  <script src="../../vendor/supabase-2.111.0.js"></script>
+  <script src="../marketplace-gate.js?v=7"></script>
+</body>
+</html>
