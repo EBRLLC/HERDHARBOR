@@ -34,7 +34,8 @@ test("C3W listing media is private signed media with strict client limits", () =
   assert.match(source, /image\/jpeg/);
   assert.match(source, /image\/png/);
   assert.match(source, /image\/webp/);
-  assert.match(source, /userId.*listings.*listingId/s);
+  assert.match(source, /`listings\/\$\{listingId\}\/photo-/);
+  assert.doesNotMatch(source, /\$\{userId\}\/listings/);
   assert.doesNotMatch(source, /getPublicUrl/);
 });
 
