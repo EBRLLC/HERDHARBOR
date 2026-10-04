@@ -330,7 +330,6 @@
       refresh();
     });
 
-    window.addEventListener("popstate", refresh);
 
     try {
       await Promise.all([loadFacets(), loadFavorites()]);
