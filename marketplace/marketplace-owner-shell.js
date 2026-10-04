@@ -17,6 +17,7 @@
         <button class="marketplace-tab" type="button" data-marketplace-view="browse" aria-current="page">Browse</button>
         <button class="marketplace-tab" type="button" data-marketplace-view="listings">My Listings</button>
         <button class="marketplace-tab" type="button" data-marketplace-view="profile">Seller Profile</button>
+        <button class="marketplace-tab marketplace-tab-admin" type="button" data-marketplace-view="admin">Admin</button>
         <a class="button button-secondary button-small" href="https://app.herdharbor.com/">Open HerdHarbor</a>
       </nav>
     </section>
@@ -87,6 +88,26 @@
     document.body.appendChild(script);
   }
 
+  function loadAdmin() {
+    if (window.HerdHarborMarketplaceAdmin?.mount) {
+      window.HerdHarborMarketplaceAdmin.mount(viewRoot, context);
+      return;
+    }
+
+    const existing = document.querySelector("script[data-marketplace-admin]");
+    if (existing) return;
+
+    const script = document.createElement("script");
+    script.src = "./marketplace-admin.js?v=6";
+    script.async = true;
+    script.dataset.marketplaceAdmin = "true";
+    script.addEventListener("load", () => window.HerdHarborMarketplaceAdmin?.mount?.(viewRoot, context), { once: true });
+    script.addEventListener("error", () => {
+      viewRoot.innerHTML = '<div class="marketplace-notice error">Marketplace Admin could not load.</div>';
+    }, { once: true });
+    document.body.appendChild(script);
+  }
+
   function loadProfile() {
     if (window.HerdHarborMarketplaceProfile?.mount) {
       window.HerdHarborMarketplaceProfile.mount(viewRoot, context);
@@ -112,18 +133,20 @@
     if (view === "browse") loadBrowse();
     else if (view === "profile") loadProfile();
     else if (view === "listings") loadListings();
+    else if (view === "admin") loadAdmin();
     else renderPlaceholder(view);
   }
 
   function viewFromLocation() {
     if (window.location.hash === "#my-listings") return "listings";
     if (window.location.hash === "#seller-profile") return "profile";
+    if (window.location.hash === "#admin") return "admin";
     return "browse";
   }
 
   function urlForView(view) {
     const url = new URL(window.location.href);
-    url.hash = view === "listings" ? "my-listings" : view === "profile" ? "seller-profile" : "";
+    url.hash = view === "listings" ? "my-listings" : view === "profile" ? "seller-profile" : view === "admin" ? "admin" : "";
     return url.pathname + url.search + url.hash;
   }
 
