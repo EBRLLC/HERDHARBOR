@@ -121,7 +121,7 @@
   }
 
   async function mount(root, context) {
-    if (!root || !context?.client || !context?.userId || !context.isAuthenticated || context.accountStatus !== "active") return;
+    if (!root || !context?.client || !context?.userId || !context.isAuthenticated || context.accountStatus !== "active" || context.marketplaceAccessReady !== true) return;
 
     const { client, userId } = context;
     root.innerHTML = `
