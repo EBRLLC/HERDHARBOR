@@ -379,8 +379,20 @@
         setStatus("Saving…");
 
         let uploadedPaths = [];
+        let listingRecordSaved = false;
+        let savedId = clean(form.elements.listing_id.value);
+
         try {
-          const savedId = await rpc(client, "marketplace_member_save_listing", {
+          const files = [...(form.elements.photos.files || [])];
+          if (files.length > MAX_PHOTOS) throw new Error("Choose no more than six listing photos.");
+          for (const file of files) {
+            const ext = ALLOWED_IMAGE_TYPES.get(file.type);
+            if (!ext || file.size <= 0 || file.size > MAX_PHOTO_BYTES) {
+              throw new Error("Listing photos must be JPG, PNG, or WebP and no larger than 8 MB each.");
+            }
+          }
+
+          savedId = await rpc(client, "marketplace_member_save_listing", {
             listing_id_value: clean(form.elements.listing_id.value) || null,
             source_animal_id_value: clean(form.elements.source_animal_id.value) || null,
             state_value: form.elements.state.value,
@@ -401,9 +413,8 @@
             listing_kind_value: form.elements.listing_kind.value,
             available_from_value: form.elements.available_from.value || null
           });
-
-          const files = [...(form.elements.photos.files || [])];
-          if (files.length > MAX_PHOTOS) throw new Error("Choose no more than six listing photos.");
+          listingRecordSaved = true;
+          form.elements.listing_id.value = String(savedId || "");
 
           if (files.length) {
             const previousPaths = Array.isArray(listing?.photo_paths) ? listing.photo_paths.filter(Boolean) : [];
@@ -430,7 +441,12 @@
           await loadListings();
         } catch (error) {
           if (uploadedPaths.length) await removePaths(client, uploadedPaths).catch(() => {});
-          setStatus(error?.message || "Listing could not be saved.", "error");
+          if (listingRecordSaved) {
+            setStatus("Listing details were saved, but a follow-up Marketplace update failed. Reopen the listing and retry the failed step.", "error");
+            await loadListings().catch(() => {});
+          } else {
+            setStatus(error?.message || "Listing could not be saved.", "error");
+          }
         } finally {
           submit.disabled = false;
         }
