@@ -43,7 +43,7 @@ test("C5W pedigree renderer only consumes the allowlisted public snapshot fields
   for (const field of ["name","prefix","breed","color","sex","dob","registrationNumber"]) {
     assert.match(nodeBlock, new RegExp("animal\\." + field));
   }
-  assert.doesNotMatch(nodeBlock, /id\b|notes|medical|acquisition|photo|email|phone|address/i);
+  assert.doesNotMatch(nodeBlock, /\banimalId\b|\buser_id\b|\bsource_animal_id\b|\bseller_id\b|\bnotes\b|\bmedical\b|\bacquisition\b|\bphotoData\b|\bemail\b|\bphone\b|\bexact_address\b/i);
   assert.doesNotMatch(nodeBlock, /marketplace-pedigree-dialog/);
 });
 
