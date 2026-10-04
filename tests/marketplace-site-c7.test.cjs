@@ -217,3 +217,13 @@ test("C7W public media upload paths do not expose auth user IDs", () => {
   assert.doesNotMatch(profile, /\$\{userId\}\/profiles|const \{ client, userId \} = context/);
   assert.doesNotMatch(listings, /\$\{userId\}\/listings|const \{ client, userId \} = context/);
 });
+
+
+test("C7W registers fragment fallback before waiting on opener SSO", () => {
+  const gate = read("marketplace/marketplace-gate.js");
+  const listener = gate.indexOf('window.addEventListener("hashchange"');
+  const handoff = gate.indexOf("const fragmentRedeemed = await redeemFragmentTicket()");
+  assert.ok(listener >= 0, "hashchange listener missing");
+  assert.ok(handoff >= 0, "fragment redemption bootstrap missing");
+  assert.ok(listener < handoff, "fragment fallback listener must exist before opener handshake wait");
+});
