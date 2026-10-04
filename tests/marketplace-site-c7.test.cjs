@@ -17,7 +17,7 @@ test("C7W Marketplace browsing no longer requires authentication", () => {
   assert.match(shell, /show\(viewFromLocation\(\)\)/);
   assert.match(browse, /marketplace_public_search_v2/);
   assert.match(browse, /marketplace_public_facets_v2/);
-  assert.match(browse, /marketplace_public_listing_media_v2/);
+  assert.match(browse, /functions\.invoke\("marketplace-public-media"/);
   assert.doesNotMatch(browse, /if \(!root \|\| !context\?\.client \|\| context\.role !== "owner"\)/);
 });
 
@@ -26,7 +26,7 @@ test("C7W listing and seller pages use public read-only contracts", () => {
   const seller = read("marketplace/marketplace-seller.js");
 
   assert.match(detail, /marketplace_public_listing_v2/);
-  assert.match(detail, /marketplace_public_listing_media_v2/);
+  assert.match(detail, /functions\.invoke\("marketplace-public-media"/);
   assert.match(detail, /marketplace_public_pedigree_v2/);
   assert.match(seller, /marketplace_public_seller_v2/);
   assert.match(seller, /marketplace_public_search_v2/);
@@ -144,7 +144,7 @@ test("C7W shared and nested Marketplace assets are consistently versioned", () =
     read("marketplace/account/index.html")
   ].join("\n");
 
-  assert.match(gate, /marketplace-owner-shell\.js\?v=7/);
+  assert.match(gate, /marketplace-shell\.js\?v=7/);
   assert.match(shell, /marketplace-browse\.js\?v=7/);
   assert.match(shell, /marketplace-listings\.js\?v=7/);
   assert.match(shell, /marketplace-profile\.js\?v=7/);
