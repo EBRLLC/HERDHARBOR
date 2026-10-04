@@ -510,6 +510,70 @@
       await load();
     }
 
+    async function renderSuspensions() {
+      viewNode.innerHTML = \`
+        <div class="marketplace-admin-toolbar">
+          <div>
+            <p class="eyebrow">Marketplace access</p>
+            <h3>Suspended accounts</h3>
+          </div>
+        </div>
+        <div id="marketplace-admin-suspension-list" class="marketplace-admin-list" aria-busy="true"></div>
+      \`;
+
+      const list = viewNode.querySelector("#marketplace-admin-suspension-list");
+      try {
+        const rows = await rpc(client, "marketplace_owner_admin_suspensions");
+        const suspensions = Array.isArray(rows) ? rows : [];
+        list.removeAttribute("aria-busy");
+
+        if (!suspensions.length) {
+          list.innerHTML = '<div class="marketplace-empty-state"><h3>No suspended accounts</h3><p>Marketplace account suspensions will appear here.</p></div>';
+          return;
+        }
+
+        list.innerHTML = suspensions.map((item) => {
+          const name = item.rabbitry_name || item.display_name || "Marketplace member";
+          return \`
+            <article class="marketplace-admin-card">
+              <div class="marketplace-admin-card-heading">
+                <div>
+                  <span class="marketplace-admin-status" data-state="suspended">Suspended</span>
+                  <h3>\${esc(name)}</h3>
+                  <p>\${esc(dateTime(item.suspended_at))}</p>
+                </div>
+              </div>
+              <div class="marketplace-admin-report-copy">
+                <strong>Reason</strong>
+                <p>\${esc(item.reason || "No moderation reason recorded.")}</p>
+              </div>
+              <div class="marketplace-admin-actions">
+                <button type="button" class="button button-secondary button-small" data-reactivate-suspension="\${esc(item.suspension_id)}">Reactivate Marketplace account</button>
+              </div>
+            </article>
+          \`;
+        }).join("");
+
+        list.querySelectorAll("[data-reactivate-suspension]").forEach((button) => {
+          button.addEventListener("click", () => {
+            requestAction({
+              title: "Reactivate Marketplace account",
+              description: "Restore Marketplace interaction for this account. This does not alter the main HerdHarbor account.",
+              confirmLabel: "Reactivate account",
+              trigger: button,
+              run: (reason) => rpc(client, "marketplace_owner_admin_reactivate_account", {
+                suspension_id_value: button.dataset.reactivateSuspension,
+                reason_value: reason
+              })
+            });
+          });
+        });
+      } catch {
+        list.removeAttribute("aria-busy");
+        list.innerHTML = '<div class="marketplace-notice error">Marketplace suspensions could not be loaded.</div>';
+      }
+    }
+
     async function renderHistory() {
       viewNode.innerHTML = `
         <div class="marketplace-admin-toolbar">
@@ -555,6 +619,7 @@
       if (view === "reports") await renderReports();
       else if (view === "sellers") await renderSellers();
       else if (view === "listings") await renderListings();
+      else if (view === "suspensions") await renderSuspensions();
       else await renderHistory();
     }
 
