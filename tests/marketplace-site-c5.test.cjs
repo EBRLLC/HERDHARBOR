@@ -82,3 +82,55 @@ test("C5W pedigree UI is responsive and accessible", () => {
   assert.match(css, /\.marketplace-pedigree-generation-grid/);
   assert.match(css, /@media \(max-width: 640px\)/);
 });
+
+
+test("C5W keeps one history coordinator so Browse cannot overwrite another tab on back/forward", () => {
+  const shell = read("marketplace/marketplace-owner-shell.js");
+  const browse = read("marketplace/marketplace-browse.js");
+  assert.equal((shell.match(/addEventListener\("popstate"/g) || []).length, 1);
+  assert.doesNotMatch(browse, /addEventListener\("popstate"/);
+  assert.match(shell, /show\(viewFromLocation\(\)\)/);
+});
+
+test("C5W signed Marketplace media recovers once and then falls back safely", () => {
+  const browse = read("marketplace/marketplace-browse.js");
+  const detail = read("marketplace/marketplace-detail.js");
+  const seller = read("marketplace/marketplace-seller.js");
+  for (const source of [browse, detail, seller]) {
+    assert.match(source, /mediaRecoveryAttempted/);
+    assert.match(source, /addEventListener\("error"/);
+  }
+  assert.match(browse, /browse-card-fallback/);
+  assert.match(detail, /marketplace-gallery-fallback/);
+  assert.match(seller, /browse-card-fallback/);
+});
+
+test("C5W has no duplicate pedigree website runtime", () => {
+  assert.equal(fs.existsSync(path.join(root, "marketplace/marketplace-pedigree.js")), false);
+  const detail = read("marketplace/marketplace-detail.js");
+  assert.equal((detail.match(/function renderPedigreeSnapshot/g) || []).length, 1);
+  assert.equal((detail.match(/function pedigreeNodeCard/g) || []).length, 1);
+});
+
+test("C5W private routes remain noindex and load website assets only", () => {
+  for (const page of [
+    read("marketplace/index.html"),
+    read("marketplace/listing/index.html"),
+    read("marketplace/seller/index.html")
+  ]) {
+    assert.match(page, /name="robots" content="noindex,nofollow,noarchive"/);
+    assert.doesNotMatch(page, /app\.herdharbor\.com\/[^"']+\.(?:js|css)/i);
+  }
+
+  const listing = read("marketplace/listing/index.html");
+  const seller = read("marketplace/seller/index.html");
+  assert.match(listing, /data-marketplace-runtime="marketplace-detail\.js\?v=5"/);
+  assert.match(seller, /data-marketplace-runtime="marketplace-seller\.js\?v=5"/);
+});
+
+test("C5W final accessibility hardening includes focus and reduced-motion handling", () => {
+  const css = read("marketplace/marketplace.css");
+  assert.match(css, /:focus-visible/);
+  assert.match(css, /prefers-reduced-motion:\s*reduce/);
+  assert.match(css, /marketplace-placeholder-card\[aria-busy="true"\]/);
+});
