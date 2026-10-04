@@ -77,7 +77,7 @@ test("C7W account page supports sign-in and account creation with a local Market
   assert.match(source, /signInWithPassword/);
   assert.match(source, /auth\.signUp/);
   assert.match(source, /value\.startsWith\("\/marketplace\/"\)/);
-  assert.match(source, /value\.startsWith\("\/" + "\/"\)/);
+  assert.match(source, /value\.startsWith\("\/\/"\)/);
   assert.doesNotMatch(source, /service_role|SUPABASE_SERVICE_ROLE_KEY|auth\.admin/i);
 });
 
