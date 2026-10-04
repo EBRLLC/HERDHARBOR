@@ -143,4 +143,6 @@ test("C7C listing delete respects moderation denial before Storage cleanup", () 
   const denial = source.indexOf("if (deleted !== true)");
   const cleanup = source.indexOf("await removePaths(client, previousPaths)", denial);
   assert.ok(denial >= 0 && cleanup > denial);
+  assert.match(source, /let cleanupFailed = false/);
+  assert.match(source, /Listing deleted, but one or more stored photos could not be cleaned up/);
 });
