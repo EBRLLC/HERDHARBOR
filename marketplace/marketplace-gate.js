@@ -17,26 +17,36 @@
   const ownerRoot = document.getElementById("marketplace-owner-root");
 
   let client = null;
+  let authSubscription = null;
+  let verificationRunning = false;
 
   function setStatus(message) {
     if (statusNode) statusNode.textContent = message;
   }
 
+  function clearPrivatePreview() {
+    window.HerdHarborMarketplaceContext = undefined;
+    if (ownerRoot) {
+      ownerRoot.replaceChildren();
+      ownerRoot.hidden = true;
+    }
+  }
+
   function showSignedOut(message) {
+    clearPrivatePreview();
     setStatus(message);
     if (formNode) formNode.hidden = false;
     if (actionsNode) actionsNode.hidden = false;
     if (signOutNode) signOutNode.hidden = true;
-    if (ownerRoot) ownerRoot.hidden = true;
     document.documentElement.dataset.marketplaceAccess = "signed-out";
   }
 
   function deny(message) {
+    clearPrivatePreview();
     setStatus(message);
     if (formNode) formNode.hidden = true;
     if (actionsNode) actionsNode.hidden = false;
     if (signOutNode) signOutNode.hidden = false;
-    if (ownerRoot) ownerRoot.hidden = true;
     document.documentElement.dataset.marketplaceAccess = "denied";
   }
 
@@ -57,7 +67,10 @@
   }
 
   async function verifyOwnerSession() {
-    const { data: sessionData, error: sessionError } = await client.auth.getSession();
+    if (verificationRunning) return false;
+    verificationRunning = true;
+    try {
+      const { data: sessionData, error: sessionError } = await client.auth.getSession();
     const session = sessionData?.session || null;
     if (sessionError || !session?.user?.id) {
       showSignedOut("Sign in with the protected HerdHarbor Owner account to open this private preview.");
@@ -79,8 +92,11 @@
     if (formNode) formNode.hidden = true;
     if (actionsNode) actionsNode.hidden = true;
     document.documentElement.dataset.marketplaceAccess = "owner";
-    await loadOwnerShell();
-    return true;
+      await loadOwnerShell();
+      return true;
+    } finally {
+      verificationRunning = false;
+    }
   }
 
   async function signIn(event) {
