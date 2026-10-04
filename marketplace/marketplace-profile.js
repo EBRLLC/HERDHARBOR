@@ -181,6 +181,7 @@
       setStatus("Saving…");
 
       let uploadedPath = "";
+      let profileSaved = false;
       const previousPath = currentAvatarPath;
 
       try {
@@ -221,6 +222,7 @@
           species_breeds_value: speciesBreeds
         });
         if (saveError) throw new Error("Seller profile could not be saved.");
+        profileSaved = true;
 
         if (uploadedPath && previousPath && previousPath !== uploadedPath) {
           await removePath(client, previousPath).catch(() => {});
@@ -231,8 +233,13 @@
         setStatus("Seller profile saved.", "success");
         await refresh();
       } catch (error) {
-        if (uploadedPath) await removePath(client, uploadedPath);
-        setStatus(error?.message || "Seller profile could not be saved.", "error");
+        if (uploadedPath && !profileSaved) await removePath(client, uploadedPath).catch(() => {});
+        setStatus(
+          profileSaved
+            ? "Seller profile was saved, but the preview could not refresh. Reload the page to try again."
+            : (error?.message || "Seller profile could not be saved."),
+          "error"
+        );
       } finally {
         submit.disabled = false;
       }
