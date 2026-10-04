@@ -460,9 +460,16 @@
         if (!globalThis.confirm("Delete this Marketplace listing? The source HerdHarbor animal will not be changed.")) return;
         setStatus("Deleting…");
         try {
-          await rpc(client, "marketplace_member_delete_listing", { listing_id_value: listingId });
+          const deleted = await rpc(client, "marketplace_member_delete_listing", { listing_id_value: listingId });
+          if (deleted !== true) {
+            throw new Error("This listing cannot be deleted while it is under Marketplace moderation.");
+          }
           const previousPaths = Array.isArray(listing?.photo_paths) ? listing.photo_paths.filter(Boolean) : [];
-          if (previousPaths.length) await removePaths(client, previousPaths).catch(() => {});
+          if (previousPaths.length) {
+            await removePaths(client, previousPaths).catch(() => {
+              throw new Error("Listing was deleted, but one or more stored photos could not be cleaned up.");
+            });
+          }
           editor.hidden = true;
           await loadListings();
         } catch (error) {
