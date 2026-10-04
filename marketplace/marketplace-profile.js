@@ -86,7 +86,7 @@
   }
 
   async function mount(root, context) {
-    if (!root || !context?.client || context.role !== "owner") return;
+    if (!root || !context?.client || !context?.userId || !context.isAuthenticated || context.accountStatus !== "active") return;
     const { client, userId } = context;
 
     root.innerHTML = `
@@ -122,7 +122,7 @@
             </label>
             <label>Avatar or rabbitry logo
               <input name="avatar" type="file" accept="image/jpeg,image/png,image/webp">
-              <span class="marketplace-help">JPG, PNG, or WebP. Maximum 5 MB. Media stays private during Owner preview.</span>
+              <span class="marketplace-help">JPG, PNG, or WebP. Maximum 5 MB. Media is stored privately and only public profile media is exposed through signed Marketplace URLs.</span>
             </label>
             <div class="seller-profile-actions">
               <button class="button" type="submit">Save Seller Profile</button>
@@ -150,8 +150,8 @@
 
     async function refresh() {
       const [{ data: editorData, error: editorError }, { data: previewData, error: previewError }] = await Promise.all([
-        client.rpc("marketplace_owner_profile_editor"),
-        client.rpc("marketplace_owner_profile_preview")
+        client.rpc("marketplace_member_profile_editor"),
+        client.rpc("marketplace_member_profile_preview")
       ]);
 
       if (editorError || previewError) {
@@ -211,7 +211,7 @@
           throw new Error("Each species or breed entry must be 80 characters or fewer.");
         }
 
-        const { error: saveError } = await client.rpc("marketplace_owner_save_profile", {
+        const { error: saveError } = await client.rpc("marketplace_member_save_profile", {
           display_name_value: safeText(form.elements.display_name.value),
           rabbitry_name_value: safeText(form.elements.rabbitry_name.value),
           avatar_path_value: uploadedPath || previousPath,
