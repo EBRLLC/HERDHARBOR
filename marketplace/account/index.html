@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#0D2540">
+  <meta name="robots" content="noindex,nofollow,noarchive">
+  <meta name="description" content="Sign in to or create a HerdHarbor account for Marketplace messaging and account features.">
+  <link rel="canonical" href="https://herdharbor.com/marketplace/account/">
+  <title>Marketplace Account — HerdHarbor</title>
+  <link rel="stylesheet" href="../../styles.css">
+  <link rel="stylesheet" href="../marketplace.css?v=7">
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+  <header class="site-header">
+    <div class="container nav-wrap">
+      <a class="brand" href="/" aria-label="HerdHarbor home"><img src="../../assets/herdharbor-icon.png" alt=""><span>HerdHarbor</span></a>
+      <nav class="site-nav open" aria-label="Marketplace navigation">
+        <a href="/marketplace/">Browse</a>
+        <a class="button button-small" href="https://app.herdharbor.com/">Open HerdHarbor</a>
+      </nav>
+    </div>
+  </header>
+  <main id="main" class="marketplace-main">
+    <div class="container marketplace-shell">
+      <section class="marketplace-account-card" aria-labelledby="marketplace-account-title">
+        <div>
+          <p class="eyebrow">HerdHarbor Marketplace</p>
+          <h1 id="marketplace-account-title">Sign in or create an account</h1>
+          <p class="marketplace-help">Browsing listings is public. A HerdHarbor account is required to message sellers, save favorites, post listings, and manage Marketplace activity.</p>
+        </div>
+
+        <div class="marketplace-account-tabs" role="tablist" aria-label="Account action">
+          <button class="marketplace-account-tab" id="marketplace-signin-tab" type="button" role="tab" aria-selected="true">Sign in</button>
+          <button class="marketplace-account-tab" id="marketplace-signup-tab" type="button" role="tab" aria-selected="false">Create account</button>
+        </div>
+
+        <form id="marketplace-signin-form" class="marketplace-auth-form">
+          <label>Email<input name="email" type="email" autocomplete="username" required></label>
+          <label>Password<input name="password" type="password" autocomplete="current-password" minlength="8" required></label>
+          <button class="button" type="submit">Sign in</button>
+        </form>
+
+        <form id="marketplace-signup-form" class="marketplace-auth-form" hidden>
+          <label>Email<input name="email" type="email" autocomplete="email" required></label>
+          <label>Password<input name="password" type="password" autocomplete="new-password" minlength="8" required></label>
+          <label>Confirm password<input name="confirm_password" type="password" autocomplete="new-password" minlength="8" required></label>
+          <button class="button" type="submit">Create account</button>
+        </form>
+
+        <p id="marketplace-account-status" class="marketplace-form-status" role="status"></p>
+        <a class="button button-secondary" href="/marketplace/">Continue browsing without an account</a>
+      </section>
+    </div>
+  </main>
+  <script src="../../vendor/supabase-2.111.0.js"></script>
+  <script src="./marketplace-account.js?v=7"></script>
+</body>
+</html>
