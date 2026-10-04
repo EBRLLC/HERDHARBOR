@@ -61,7 +61,8 @@ test("C7W app SSO accepts credentials only from exact app origin, matching nonce
   assert.match(gate, /event\.origin !== APP_ORIGIN/);
   assert.match(gate, /event\.source !== window\.opener/);
   assert.match(gate, /String\(event\.data\?\.nonce \|\| ""\) !== nonce/);
-  assert.match(gate, /client\.auth\.setSession/);
+  assert.match(gate, /client\.auth\.verifyOtp/);
+  assert.match(gate, /type: "magiclink"/);
   assert.match(gate, /SSO_TIMEOUT_MS = 5000/);
   assert.match(gate, /history\.replaceState/);
   assert.doesNotMatch(gate, /searchParams\.get\(["'](?:access_token|refresh_token)|searchParams\.set\(["'](?:access_token|refresh_token)/i);
@@ -100,8 +101,8 @@ test("C7W member listing and seller profile editors use only self-owned member R
 
   assert.doesNotMatch(listings, /marketplace_owner_(?:listings|herd_animals|save_listing|set_listing_photos|delete_listing)/);
   assert.doesNotMatch(profile, /marketplace_owner_(?:profile_editor|profile_preview|save_profile)/);
-  assert.match(listings, /context\.accountStatus !== "active"/);
-  assert.match(profile, /context\.accountStatus !== "active"/);
+  assert.match(listings, /context\.marketplaceAccessReady !== true/);
+  assert.match(profile, /context\.marketplaceAccessReady !== true/);
 });
 
 test("C7W Messages page never reads Marketplace tables directly", () => {
@@ -124,7 +125,7 @@ test("C7W role-aware shell keeps admin Owner-only and private account tabs authe
   const shell = read("marketplace/marketplace-owner-shell.js");
   const index = read("marketplace/index.html");
 
-  assert.match(shell, /const interactive = context\.isAuthenticated && context\.accountStatus === "active"/);
+  assert.match(shell, /const interactive = context\.isAuthenticated && context\.accountStatus === "active" && context\.marketplaceAccessReady === true/);
   assert.match(shell, /const owner = interactive && context\.role === "owner"/);
   assert.match(shell, /owner \? '<button class="marketplace-tab marketplace-tab-admin"/);
   assert.match(shell, /interactive \? '<button class="marketplace-tab" type="button" data-marketplace-view="listings"/);
@@ -160,4 +161,17 @@ test("C7W public browse remains noindex until explicit production launch authori
   ]) {
     assert.match(page, /name="robots" content="noindex,nofollow,noarchive"/);
   }
+});
+
+
+test("C7W incomplete registration stays browse-only instead of looping through sign-in", () => {
+  const gate = read("marketplace/marketplace-gate.js");
+  const detail = read("marketplace/marketplace-detail.js");
+  const messages = read("marketplace/messages/marketplace-messages.js");
+
+  assert.match(gate, /marketplaceAccessReady: account\.marketplace_access_ready === true/);
+  assert.match(gate, /Finish HerdHarbor account setup in the app/);
+  assert.match(detail, /context\.marketplaceAccessReady === true/);
+  assert.match(detail, /context\.isAuthenticated \? "https:\/\/app\.herdharbor\.com\/" : accountUrl/);
+  assert.match(messages, /context\.isAuthenticated \? "https:\/\/app\.herdharbor\.com\/" : accountUrl/);
 });
