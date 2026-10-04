@@ -111,7 +111,7 @@
             <p>${esc(details || row.species || "Animal")}</p>
             <p>${esc(location || "Location not listed")}</p>
             <div class="browse-card-seller">
-              <span>${esc(seller)}</span>
+              <a href="/marketplace/seller/?id=${encodeURIComponent(row.seller_public_id || "")}">${esc(seller)}</a>
               ${verified ? '<span class="marketplace-verified" aria-label="Verified seller">Verified</span>' : ""}
             </div>
           </div>
