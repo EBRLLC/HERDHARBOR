@@ -57,16 +57,31 @@
     const selector = 'script[data-marketplace-module="' + marker + '"]';
     const existing = document.querySelector(selector);
     if (existing) {
-      existing.addEventListener("load", mountIfCurrent, { once: true });
-      return;
+      if (existing.dataset.marketplaceReady === "true" && !window[globalName]?.mount) {
+        existing.remove();
+      } else {
+        existing.addEventListener("load", mountIfCurrent, { once: true });
+        return;
+      }
     }
 
     const script = document.createElement("script");
     script.src = src;
     script.async = true;
     script.dataset.marketplaceModule = marker;
-    script.addEventListener("load", mountIfCurrent, { once: true });
+    script.addEventListener("load", () => {
+      script.dataset.marketplaceReady = "true";
+      if (!window[globalName]?.mount) {
+        script.remove();
+        if (currentView === view) {
+          viewRoot.innerHTML = '<div class="marketplace-notice error">' + failure + '</div>';
+        }
+        return;
+      }
+      mountIfCurrent();
+    }, { once: true });
     script.addEventListener("error", () => {
+      script.remove();
       if (currentView !== view) return;
       viewRoot.innerHTML = '<div class="marketplace-notice error">' + failure + '</div>';
     }, { once: true });
