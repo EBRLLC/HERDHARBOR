@@ -7,7 +7,7 @@
   if (!root || !context?.client) return;
 
   const { client } = context;
-  const interactive = context.isAuthenticated && context.accountStatus === "active";
+  const interactive = context.isAuthenticated && context.accountStatus === "active" && context.marketplaceAccessReady === true;
   let mediaRecoveryAttempted = false;
 
   const clean = (value) => String(value ?? "").trim();
@@ -176,7 +176,7 @@
   async function openConversation(listingId) {
     if (!interactive) {
       const next = "/marketplace/listing/?id=" + encodeURIComponent(listingId) + "&message=1";
-      window.location.assign(accountUrl(next));
+      window.location.assign(context.isAuthenticated ? "https://app.herdharbor.com/" : accountUrl(next));
       return;
     }
 
@@ -189,7 +189,7 @@
   async function reportListing(listingId) {
     if (!interactive) {
       const next = "/marketplace/listing/?id=" + encodeURIComponent(listingId);
-      window.location.assign(accountUrl(next));
+      window.location.assign(context.isAuthenticated ? "https://app.herdharbor.com/" : accountUrl(next));
       return;
     }
 
