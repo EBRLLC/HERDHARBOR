@@ -18,6 +18,12 @@ jobs:
           node-version: 22
       - name: Run website tests
         run: npm test
+      - name: Verify Marketplace JavaScript syntax
+        run: |
+          node --check marketplace/marketplace-gate.js
+          node --check marketplace/marketplace-owner-shell.js
+          node --check marketplace/marketplace-profile.js
+          node --check marketplace/marketplace-listings.js
       - name: Verify no broken internal Marketplace asset references
         run: |
           test -f marketplace/index.html
