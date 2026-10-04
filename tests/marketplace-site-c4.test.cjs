@@ -37,7 +37,7 @@ test("C4W browse cards are image-led and expose no private herd/contact fields",
   assert.doesNotMatch(source, /email|phone/i);
 });
 
-test("C4W direct listing route uses only privacy-safe detail and private media RPCs", () => {
+test("C4W direct listing route uses privacy-safe detail plus Edge-signed media", () => {
   const html = read("marketplace/listing/index.html");
   const source = read("marketplace/marketplace-detail.js");
 
@@ -45,7 +45,7 @@ test("C4W direct listing route uses only privacy-safe detail and private media R
   assert.match(html, /noindex,nofollow,noarchive/);
   assert.match(html, /https:\/\/herdharbor\.com\/marketplace\/listing\//);
   assert.match(source, /marketplace_public_listing_v2/);
-  assert.match(source, /marketplace_public_listing_media_v2/);
+  assert.match(source, /functions\.invoke\("marketplace-public-media"/);
   assert.match(source, /marketplace_member_favorite_ids/);
   assert.doesNotMatch(source, /createSignedUrl|storage\.from\("marketplace-public"\)/);
   assert.match(source, /View HerdHarbor Pedigree/);
@@ -62,8 +62,8 @@ test("C4W direct seller route uses public-shaped seller/search contracts", () =>
   assert.match(source, /marketplace_public_seller_v2/);
   assert.match(source, /marketplace_public_search_v2/);
   assert.match(source, /seller_public_id_value: sellerId/);
-  assert.match(source, /marketplace_public_seller_media_v2/);
-  assert.match(source, /createSignedUrl\(path, 300\)/);
+  assert.match(source, /functions\.invoke\("marketplace-public-media"/);
+  assert.doesNotMatch(source, /marketplace_public_seller_media_v2|createSignedUrl/);
   assert.doesNotMatch(source, /exact_address|billing|subscription|medical|acquisition/i);
   assert.doesNotMatch(source, /name="(?:email|phone|street)"/i);
 });
