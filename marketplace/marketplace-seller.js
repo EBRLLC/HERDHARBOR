@@ -7,7 +7,7 @@
   if (!root || !context?.client) return;
 
   const { client } = context;
-  const interactive = context.isAuthenticated && context.accountStatus === "active";
+  const interactive = context.isAuthenticated && context.accountStatus === "active" && context.marketplaceAccessReady === true;
   let mediaRecoveryAttempted = false;
 
   const clean = (value) => String(value ?? "").trim();
@@ -70,7 +70,9 @@
 
   async function reportSeller(sellerId) {
     if (!interactive) {
-      window.location.assign("/marketplace/account/?next=" + encodeURIComponent(window.location.pathname + window.location.search));
+      window.location.assign(context.isAuthenticated
+        ? "https://app.herdharbor.com/"
+        : "/marketplace/account/?next=" + encodeURIComponent(window.location.pathname + window.location.search));
       return;
     }
 
