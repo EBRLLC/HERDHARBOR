@@ -58,6 +58,7 @@
           <button type="button" class="marketplace-admin-tab" data-admin-view="reports" aria-current="page">Reports</button>
           <button type="button" class="marketplace-admin-tab" data-admin-view="sellers">Sellers</button>
           <button type="button" class="marketplace-admin-tab" data-admin-view="listings">Listings</button>
+          <button type="button" class="marketplace-admin-tab" data-admin-view="suspensions">Suspensions</button>
           <button type="button" class="marketplace-admin-tab" data-admin-view="history">Audit Log</button>
         </nav>
 
@@ -166,10 +167,11 @@
 
     async function refreshSummary() {
       try {
-        const summary = normalizeRow(await rpc(client, "marketplace_owner_admin_summary"));
+        const summary = normalizeRow(await rpc(client, "marketplace_owner_admin_summary_v2"));
         const cards = [
           ["Open reports", summary.open_reports || 0, "Reports awaiting review"],
-          ["Suspended sellers", summary.suspended_sellers || 0, "Marketplace access suspended"],
+          ["Suspended sellers", summary.suspended_sellers || 0, "Seller profiles hidden"],
+          ["Suspended accounts", summary.suspended_accounts || 0, "Marketplace interaction blocked"],
           ["Removed listings", summary.removed_listings || 0, "Listings removed by moderation"],
           ["Available listings", summary.available_listings || 0, "Currently discoverable listings"]
         ];
@@ -212,7 +214,7 @@
         list.setAttribute("aria-busy", "true");
         list.innerHTML = '<div class="marketplace-notice">Loading reports…</div>';
         try {
-          const rows = await rpc(client, "marketplace_owner_admin_reports", { status_value: status.value });
+          const rows = await rpc(client, "marketplace_owner_admin_reports_v2", { status_value: status.value });
           const reports = Array.isArray(rows) ? rows : [];
           list.removeAttribute("aria-busy");
           if (!reports.length) {
@@ -264,7 +266,7 @@
                 description,
                 confirmLabel,
                 trigger: button,
-                run: (reason) => rpc(client, "marketplace_owner_admin_resolve_report", {
+                run: (reason) => rpc(client, "marketplace_owner_admin_resolve_report_v2", {
                   report_id_value: button.dataset.reportId,
                   resolution_value: action,
                   reason_value: reason
