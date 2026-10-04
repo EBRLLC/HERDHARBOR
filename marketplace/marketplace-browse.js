@@ -90,7 +90,7 @@
     ].join("");
   }
 
-  function listingCard(row, photoUrl, favorite, interactive) {
+  function listingCard(row, photoUrl, favorite, interactive, suspended) {
     const location = [row.location_city, row.location_region].filter(Boolean).join(", ");
     const details = [row.breed, row.variety_color, row.sex].filter(Boolean).join(" · ");
     const seller = row.rabbitry_name || row.seller_display_name || "HerdHarbor seller";
@@ -120,7 +120,7 @@
         <button class="marketplace-favorite" type="button"
           data-favorite-listing="${esc(row.listing_id)}"
           aria-pressed="${favorite ? "true" : "false"}"
-          aria-label="${interactive ? (favorite ? "Remove from favorites" : "Add to favorites") : "Sign in to save this listing"}">
+          aria-label="${interactive ? (favorite ? "Remove from favorites" : "Add to favorites") : suspended ? "Marketplace access suspended" : "Sign in to save this listing"}">
           <span aria-hidden="true">${favorite ? "♥" : "♡"}</span>
         </button>
       </article>
@@ -273,7 +273,8 @@
               row,
               media.get(String(row.listing_id)) || "",
               favoriteIds.has(String(row.listing_id)),
-              interactive
+              interactive,
+              context.marketplaceSuspended === true
             )).join("")
           : '<article class="marketplace-empty-state"><h3>No matching listings</h3><p>Try widening the filters or clearing the search.</p></article>';
 
@@ -292,6 +293,10 @@
         results.querySelectorAll("[data-favorite-listing]").forEach((button) => {
           button.addEventListener("click", async () => {
             if (!interactive) {
+              if (context.marketplaceSuspended) {
+                globalThis.alert("Your Marketplace access is suspended. You can continue browsing, but favorites and other Marketplace interaction are disabled.");
+                return;
+              }
               window.location.assign(context.isAuthenticated
                 ? "https://app.herdharbor.com/"
                 : accountUrl(stateUrl(currentState())));
