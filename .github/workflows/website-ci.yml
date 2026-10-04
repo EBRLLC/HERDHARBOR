@@ -1,0 +1,27 @@
+name: HerdHarbor Website CI
+
+on:
+  pull_request:
+    branches: [main, 'marketplace-site/site-*']
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  website-tests:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Run website tests
+        run: npm test
+      - name: Verify no broken internal Marketplace asset references
+        run: |
+          test -f marketplace/index.html
+          test -f marketplace/marketplace.css
+          test -f marketplace/marketplace-gate.js
+          test -f marketplace/marketplace-owner-shell.js
+          test -f vendor/supabase-2.111.0.js
