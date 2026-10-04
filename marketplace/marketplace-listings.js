@@ -49,6 +49,15 @@
     await client.storage.from(BUCKET).remove(safe);
   }
 
+  async function refreshPedigreeSnapshot(client, listingId, visibility, sourceAnimalId) {
+    if (!listingId || visibility === "hidden" || !sourceAnimalId) return { available: false, skipped: true };
+    const { data, error } = await client.functions.invoke("marketplace-pedigree-snapshot", {
+      body: { listingId }
+    });
+    if (error) return { available: false, error };
+    return data && typeof data === "object" ? data : { available: false };
+  }
+
   async function uploadPhotos(client, userId, listingId, files) {
     const uploaded = [];
     try {
@@ -397,7 +406,16 @@
             if (previousPaths.length) await removePaths(client, previousPaths).catch(() => {});
           }
 
-          setStatus("Listing saved.", "success");
+          const visibility = form.elements.pedigree_visibility.value;
+          const sourceAnimalId = clean(form.elements.source_animal_id.value);
+          const pedigreeRefresh = await refreshPedigreeSnapshot(client, savedId, visibility, sourceAnimalId);
+
+          if (visibility !== "hidden" && sourceAnimalId && pedigreeRefresh?.error) {
+            setStatus("Listing saved. Pedigree preview needs to be refreshed.", "error");
+          } else {
+            setStatus("Listing saved.", "success");
+          }
+
           editor.hidden = true;
           herdAnimals = null;
           await loadListings();
