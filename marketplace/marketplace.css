@@ -1,0 +1,137 @@
+.marketplace-main {
+  min-height: 72vh;
+  padding: 56px 0 88px;
+}
+
+.marketplace-shell {
+  display: grid;
+  gap: 24px;
+}
+
+.marketplace-heading {
+  max-width: 760px;
+}
+
+.marketplace-heading h1 {
+  margin-bottom: 14px;
+  font-size: clamp(2.5rem, 6vw, 5rem);
+}
+
+.marketplace-heading > p:not(.eyebrow) {
+  max-width: 700px;
+  color: #566372;
+  font-size: 1.05rem;
+}
+
+.marketplace-preview-badge {
+  display: inline-flex;
+  width: fit-content;
+  padding: 7px 11px;
+  color: var(--navy);
+  background: rgba(46, 125, 123, 0.12);
+  border: 1px solid rgba(46, 125, 123, 0.24);
+  border-radius: 999px;
+  font-size: .76rem;
+  font-weight: 900;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+}
+
+.marketplace-gate,
+.marketplace-owner-panel {
+  padding: clamp(22px, 4vw, 34px);
+  background: rgba(255, 255, 255, .72);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: 0 18px 42px rgba(13, 37, 64, .08);
+}
+
+.marketplace-gate {
+  max-width: 620px;
+}
+
+.marketplace-gate h2 {
+  margin-bottom: 10px;
+  font-size: clamp(1.7rem, 4vw, 2.4rem);
+}
+
+.marketplace-gate-status {
+  color: #566372;
+}
+
+.marketplace-auth-form {
+  display: grid;
+  gap: 14px;
+  margin-top: 22px;
+}
+
+.marketplace-auth-form .button {
+  width: fit-content;
+}
+
+.marketplace-gate-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 20px;
+}
+
+.marketplace-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 8px;
+}
+
+.marketplace-tab {
+  min-height: 44px;
+  padding: 10px 15px;
+  color: var(--navy);
+  background: #fff;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  font-weight: 800;
+}
+
+.marketplace-tab[aria-current="page"] {
+  color: white;
+  background: var(--teal);
+  border-color: var(--teal);
+}
+
+.marketplace-placeholder-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.marketplace-placeholder-card {
+  min-height: 180px;
+  padding: 22px;
+  background: rgba(255,255,255,.62);
+  border: 1px solid var(--border);
+  border-radius: 18px;
+}
+
+.marketplace-placeholder-card p {
+  margin-bottom: 0;
+  color: #5c6977;
+}
+
+[hidden] {
+  display: none !important;
+}
+
+@media (max-width: 760px) {
+  .marketplace-main {
+    padding-top: 36px;
+  }
+
+  .marketplace-placeholder-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .marketplace-auth-form .button {
+    width: 100%;
+  }
+}
