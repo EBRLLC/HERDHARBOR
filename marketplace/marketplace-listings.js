@@ -379,6 +379,7 @@
         setStatus("Saving…");
 
         let uploadedPaths = [];
+        let photosCommitted = false;
         let listingRecordSaved = false;
         let savedId = clean(form.elements.listing_id.value);
 
@@ -423,6 +424,7 @@
               listing_id_value: savedId,
               paths_value: uploadedPaths
             });
+            photosCommitted = true;
             if (previousPaths.length) await removePaths(client, previousPaths).catch(() => {});
           }
 
@@ -440,7 +442,9 @@
           herdAnimals = null;
           await loadListings();
         } catch (error) {
-          if (uploadedPaths.length) await removePaths(client, uploadedPaths).catch(() => {});
+          if (uploadedPaths.length && !photosCommitted) {
+            await removePaths(client, uploadedPaths).catch(() => {});
+          }
           if (listingRecordSaved) {
             setStatus("Listing details were saved, but a follow-up Marketplace update failed. Reopen the listing and retry the failed step.", "error");
             await loadListings().catch(() => {});
