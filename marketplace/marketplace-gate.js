@@ -240,6 +240,19 @@
 
     signOutNode?.addEventListener("click", signOut);
 
+    // Register before waiting on the opener handshake. The app's fallback can
+    // switch #app-sso to #sso-ticket while that handshake is still pending.
+    window.addEventListener("hashchange", async () => {
+      if (!ssoTicketFromHash()) return;
+      const redeemed = await redeemFragmentTicket().catch(() => false);
+      if (!redeemed) return;
+
+      const { data: refreshedSession } = await client.auth.getSession();
+      const refreshedContext = await contextForSession(refreshedSession?.session || null);
+      window.HerdHarborMarketplaceContext = refreshedContext;
+      window.location.reload();
+    });
+
     const fragmentRedeemed = await redeemFragmentTicket();
     if (!fragmentRedeemed) {
       await acceptAppSessionHandoff();
@@ -258,17 +271,6 @@
         window.HerdHarborMarketplaceContext = undefined;
         window.location.assign("/marketplace/");
       }
-    });
-
-    window.addEventListener("hashchange", async () => {
-      if (!ssoTicketFromHash()) return;
-      const redeemed = await redeemFragmentTicket().catch(() => false);
-      if (!redeemed) return;
-
-      const { data: refreshedSession } = await client.auth.getSession();
-      const refreshedContext = await contextForSession(refreshedSession?.session || null);
-      window.HerdHarborMarketplaceContext = refreshedContext;
-      window.location.reload();
     });
   }
 
