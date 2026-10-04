@@ -40,8 +40,24 @@
   }
 
   function clearSsoHash() {
-    if (!window.location.hash.startsWith("#app-sso=")) return;
+    if (
+      !window.location.hash.startsWith("#app-sso=")
+      && !window.location.hash.startsWith("#sso-ticket=")
+    ) return;
     history.replaceState(history.state, "", window.location.pathname + window.location.search);
+  }
+
+  async function redeemFragmentTicket() {
+    if (!window.location.hash.startsWith("#sso-ticket=")) return false;
+    const tokenHash = decodeURIComponent(window.location.hash.slice("#sso-ticket=".length));
+    clearSsoHash();
+    if (!tokenHash) return false;
+
+    const { data, error } = await client.auth.verifyOtp({
+      token_hash: tokenHash,
+      type: "magiclink"
+    });
+    return !error && Boolean(data?.session?.user?.id);
   }
 
   async function acceptAppSessionHandoff() {
@@ -218,7 +234,8 @@
 
     signOutNode?.addEventListener("click", signOut);
 
-    await acceptAppSessionHandoff();
+    const fragmentSignedIn = await redeemFragmentTicket();
+    if (!fragmentSignedIn) await acceptAppSessionHandoff();
 
     const { data: sessionData } = await client.auth.getSession();
     const context = await contextForSession(sessionData?.session || null);
