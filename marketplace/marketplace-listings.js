@@ -97,9 +97,10 @@
     const firstPath = Array.isArray(listing.photo_paths) ? listing.photo_paths[0] : "";
     const photo = await signedUrl(client, firstPath);
     const location = [listing.location_city, listing.location_region].filter(Boolean).join(", ");
+    const removed = clean(listing.state).toLowerCase() === "removed";
 
     return `
-      <article class="marketplace-listing-card" data-listing-id="${esc(listing.id)}">
+      <article class="marketplace-listing-card ${removed ? "is-moderation-removed" : ""}" data-listing-id="${esc(listing.id)}">
         <div class="marketplace-listing-photo">
           ${photo ? `<img src="${esc(photo)}" alt="">` : '<div class="marketplace-listing-photo-empty">HH</div>'}
           <span class="marketplace-state-pill">${esc(listing.state || "draft")}</span>
@@ -109,9 +110,10 @@
           <h3>${esc(listing.animal_name || "Unnamed listing")}</h3>
           <p class="marketplace-card-meta">${esc([listing.breed, listing.variety_color, listing.sex].filter(Boolean).join(" · ") || listing.species || "Animal")}</p>
           <p class="marketplace-card-meta">${esc(location || "Location not set")}</p>
+          ${removed ? '<div class="marketplace-notice error">Removed by Marketplace moderation. This listing is locked until the Owner restores it to draft.</div>' : ""}
           <div class="marketplace-card-footer">
             <strong>${esc(priceLabel(listing))}</strong>
-            <button type="button" class="button button-secondary button-small" data-edit-listing="${esc(listing.id)}">Edit</button>
+            ${removed ? '<span class="marketplace-help">Locked</span>' : `<button type="button" class="button button-secondary button-small" data-edit-listing="${esc(listing.id)}">Edit</button>`}
           </div>
         </div>
       </article>
@@ -227,6 +229,13 @@
     }
 
     function openEditor(listing, sourceAnimal) {
+      if (clean(listing?.state).toLowerCase() === "removed") {
+        editor.hidden = false;
+        editor.innerHTML = '<div class="marketplace-notice error">This listing was removed by Marketplace moderation and cannot be edited or deleted by the seller. The Owner must restore it to draft first.</div>';
+        editor.scrollIntoView({ behavior: "smooth", block: "start" });
+        return;
+      }
+
       const listingId = clean(listing?.id);
       const sourceId = clean(listing?.source_animal_id || sourceAnimal?.source_animal_id);
       const asking = listing ? centsToMoney(listing.price_cents) : clean(sourceAnimal?.asking_price);
