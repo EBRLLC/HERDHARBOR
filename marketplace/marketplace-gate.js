@@ -39,9 +39,31 @@
     return decodeURIComponent(window.location.hash.slice("#app-sso=".length));
   }
 
+  function ssoTicketFromHash() {
+    if (!window.location.hash.startsWith("#sso-ticket=")) return "";
+    return decodeURIComponent(window.location.hash.slice("#sso-ticket=".length));
+  }
+
   function clearSsoHash() {
-    if (!window.location.hash.startsWith("#app-sso=")) return;
+    if (
+      !window.location.hash.startsWith("#app-sso=")
+      && !window.location.hash.startsWith("#sso-ticket=")
+    ) return;
     history.replaceState(history.state, "", window.location.pathname + window.location.search);
+  }
+
+  async function redeemFragmentTicket() {
+    const tokenHash = ssoTicketFromHash();
+    if (!tokenHash) return false;
+
+    clearSsoHash();
+
+    const { data, error } = await client.auth.verifyOtp({
+      token_hash: tokenHash,
+      type: "magiclink"
+    });
+
+    return !error && Boolean(data?.session?.user?.id);
   }
 
   async function acceptAppSessionHandoff() {
@@ -218,7 +240,10 @@
 
     signOutNode?.addEventListener("click", signOut);
 
-    await acceptAppSessionHandoff();
+    const fragmentRedeemed = await redeemFragmentTicket();
+    if (!fragmentRedeemed) {
+      await acceptAppSessionHandoff();
+    }
 
     const { data: sessionData } = await client.auth.getSession();
     const context = await contextForSession(sessionData?.session || null);
@@ -233,6 +258,13 @@
         window.HerdHarborMarketplaceContext = undefined;
         window.location.assign("/marketplace/");
       }
+    });
+
+    window.addEventListener("hashchange", async () => {
+      if (!ssoTicketFromHash()) return;
+      const redeemed = await redeemFragmentTicket().catch(() => false);
+      if (!redeemed) return;
+      window.location.replace(window.location.pathname + window.location.search);
     });
   }
 
