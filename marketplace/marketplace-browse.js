@@ -136,7 +136,7 @@
   async function mount(root, context) {
     if (!root || !context?.client) return;
     const { client } = context;
-    const interactive = context.isAuthenticated && context.accountStatus === "active";
+    const interactive = context.isAuthenticated && context.accountStatus === "active" && context.marketplaceAccessReady === true;
     let facets = {};
     let favoriteIds = new Set();
     let requestToken = 0;
@@ -298,7 +298,9 @@
         results.querySelectorAll("[data-favorite-listing]").forEach((button) => {
           button.addEventListener("click", async () => {
             if (!interactive) {
-              window.location.assign(accountUrl(stateUrl(currentState())));
+              window.location.assign(context.isAuthenticated
+                ? "https://app.herdharbor.com/"
+                : accountUrl(stateUrl(currentState())));
               return;
             }
 
