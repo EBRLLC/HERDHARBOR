@@ -14,27 +14,69 @@
         <p>Browse animals, manage listings, and build a seller profile from one clean HerdHarbor marketplace destination.</p>
       </div>
       <nav class="marketplace-tabs" aria-label="Marketplace">
-        <button class="marketplace-tab" type="button" aria-current="page">Browse</button>
-        <button class="marketplace-tab" type="button">My Listings</button>
-        <button class="marketplace-tab" type="button">Seller Profile</button>
+        <button class="marketplace-tab" type="button" data-marketplace-view="browse" aria-current="page">Browse</button>
+        <button class="marketplace-tab" type="button" data-marketplace-view="listings">My Listings</button>
+        <button class="marketplace-tab" type="button" data-marketplace-view="profile">Seller Profile</button>
         <a class="button button-secondary button-small" href="https://app.herdharbor.com/">Open HerdHarbor</a>
       </nav>
     </section>
-    <section class="marketplace-placeholder-grid" aria-label="Private Marketplace preview">
-      <article class="marketplace-placeholder-card">
-        <h2>Browse</h2>
-        <p>The secure browse experience will activate after the dedicated Marketplace read APIs are added in later Stack C phases.</p>
-      </article>
-      <article class="marketplace-placeholder-card">
-        <h2>My Listings</h2>
-        <p>Listing creation and herd import remain unavailable until the detached listing API phase is complete.</p>
-      </article>
-      <article class="marketplace-placeholder-card">
-        <h2>Seller Profile</h2>
-        <p>Seller profile management will use privacy-safe server contracts and private media during preview.</p>
-      </article>
-    </section>
+    <section id="marketplace-view-root" aria-live="polite"></section>
   `;
 
+  const viewRoot = document.getElementById("marketplace-view-root");
+  const buttons = [...root.querySelectorAll("[data-marketplace-view]")];
+
+  function setCurrent(view) {
+    for (const button of buttons) {
+      if (button.dataset.marketplaceView === view) button.setAttribute("aria-current", "page");
+      else button.removeAttribute("aria-current");
+    }
+  }
+
+  function renderPlaceholder(view) {
+    const copy = view === "listings"
+      ? ["My Listings", "Listing management activates in Stack C3 after the detached listing and herd-import APIs are verified."]
+      : ["Browse", "The image-led search and discovery experience activates in Stack C4 after the privacy-safe browse APIs are verified."];
+    viewRoot.innerHTML = `
+      <section class="marketplace-placeholder-grid">
+        <article class="marketplace-placeholder-card">
+          <h2>${copy[0]}</h2>
+          <p>${copy[1]}</p>
+        </article>
+      </section>
+    `;
+  }
+
+  function loadProfile() {
+    if (window.HerdHarborMarketplaceProfile?.mount) {
+      window.HerdHarborMarketplaceProfile.mount(viewRoot, context);
+      return;
+    }
+
+    const existing = document.querySelector("script[data-marketplace-profile]");
+    if (existing) return;
+
+    const script = document.createElement("script");
+    script.src = "./marketplace-profile.js?v=1";
+    script.async = true;
+    script.dataset.marketplaceProfile = "true";
+    script.addEventListener("load", () => window.HerdHarborMarketplaceProfile?.mount?.(viewRoot, context), { once: true });
+    script.addEventListener("error", () => {
+      viewRoot.innerHTML = '<div class="marketplace-notice error">Seller Profile could not load.</div>';
+    }, { once: true });
+    document.body.appendChild(script);
+  }
+
+  function show(view) {
+    setCurrent(view);
+    if (view === "profile") loadProfile();
+    else renderPlaceholder(view);
+  }
+
+  for (const button of buttons) {
+    button.addEventListener("click", () => show(button.dataset.marketplaceView));
+  }
+
+  show("browse");
   root.hidden = false;
 })();
