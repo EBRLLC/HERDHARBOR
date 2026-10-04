@@ -6,7 +6,7 @@
   if (!root || !context?.client) return;
 
   const { client } = context;
-  const interactive = context.isAuthenticated && context.accountStatus === "active";
+  const interactive = context.isAuthenticated && context.accountStatus === "active" && context.marketplaceAccessReady === true;
   const clean = (value) => String(value ?? "").trim();
   const esc = (value) => String(value ?? "")
     .replaceAll("&", "&amp;")
@@ -39,7 +39,7 @@
   }
 
   if (!interactive) {
-    window.location.assign(accountUrl());
+    window.location.assign(context.isAuthenticated ? "https://app.herdharbor.com/" : accountUrl());
     return;
   }
 
