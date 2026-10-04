@@ -82,7 +82,7 @@ test("C5W pedigree UI is responsive and accessible", () => {
 
 
 test("C5W keeps one history coordinator so Browse cannot overwrite another tab on back/forward", () => {
-  const shell = read("marketplace/marketplace-owner-shell.js");
+  const shell = read("marketplace/marketplace-shell.js");
   const browse = read("marketplace/marketplace-browse.js");
   assert.equal((shell.match(/addEventListener\("popstate"/g) || []).length, 1);
   assert.doesNotMatch(browse, /addEventListener\("popstate"/);
