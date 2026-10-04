@@ -6,8 +6,7 @@
   const APP_ORIGIN = "https://app.herdharbor.com";
   const SSO_TIMEOUT_MS = 5000;
 
-  const gateScript = document.currentScript;
-  const MARKETPLACE_BASE = new URL("./", gateScript?.src || new URL("./", window.location.href));
+  const MARKETPLACE_BASE = new URL("./", window.location.href);
   const runtimeFile = document.documentElement.dataset.marketplaceRuntime || "marketplace-shell.js?v=7";
   const RUNTIME_URL = new URL(runtimeFile, MARKETPLACE_BASE).href;
 

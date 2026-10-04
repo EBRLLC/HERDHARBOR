@@ -245,3 +245,17 @@ test("C7W Marketplace suspension is distinct from incomplete registration", () =
   assert.match(messages, /Marketplace access suspended/);
   assert.doesNotMatch(messages, /if \(context\.marketplaceSuspended\)[\s\S]{0,250}app\.herdharbor\.com/);
 });
+
+
+test("C7W nested Marketplace pages resolve their runtime from the current page directory", () => {
+  const gate = read("marketplace/marketplace-gate.js");
+  const listing = read("marketplace/listing/index.html");
+  const seller = read("marketplace/seller/index.html");
+  const messages = read("marketplace/messages/index.html");
+
+  assert.match(gate, /const MARKETPLACE_BASE = new URL\("\.\/", window\.location\.href\)/);
+  assert.doesNotMatch(gate, /gateScript\?\.src/);
+  assert.match(listing, /data-marketplace-runtime="marketplace-detail\.js\?v=7"/);
+  assert.match(seller, /data-marketplace-runtime="marketplace-seller\.js\?v=7"/);
+  assert.match(messages, /data-marketplace-runtime="marketplace-messages\.js\?v=7"/);
+});
