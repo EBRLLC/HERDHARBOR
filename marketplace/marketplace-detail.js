@@ -75,20 +75,6 @@
           <strong>${status === "repeat" ? "Repeated ancestor" : "Unknown"}</strong>
         </article>
 
-        <dialog id="marketplace-pedigree-dialog" class="marketplace-pedigree-dialog" aria-labelledby="marketplace-pedigree-title">
-          <div class="marketplace-pedigree-dialog-shell">
-            <div class="marketplace-detail-section-heading">
-              <div>
-                <p class="eyebrow">Read-only preview</p>
-                <h2 id="marketplace-pedigree-title">HerdHarbor Pedigree</h2>
-              </div>
-              <button class="button button-secondary button-small" type="button" data-close-pedigree>Close</button>
-            </div>
-            <div data-pedigree-body aria-live="polite">
-              <div class="marketplace-notice">Loading pedigree…</div>
-            </div>
-          </div>
-        </dialog>
       `;
     }
 
@@ -235,6 +221,21 @@
             </aside>
           </section>
         </article>
+
+        <dialog id="marketplace-pedigree-dialog" class="marketplace-pedigree-dialog" aria-labelledby="marketplace-pedigree-title">
+          <div class="marketplace-pedigree-dialog-shell">
+            <div class="marketplace-detail-section-heading">
+              <div>
+                <p class="eyebrow">Read-only preview</p>
+                <h2 id="marketplace-pedigree-title">HerdHarbor Pedigree</h2>
+              </div>
+              <button class="button button-secondary button-small" type="button" data-close-pedigree>Close</button>
+            </div>
+            <div data-pedigree-body aria-live="polite">
+              <div class="marketplace-notice">Loading pedigree…</div>
+            </div>
+          </div>
+        </dialog>
       `;
 
       const pedigreeButton = root.querySelector("#view-marketplace-pedigree");
