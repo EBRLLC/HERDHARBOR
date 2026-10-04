@@ -179,6 +179,7 @@
       const messages = Array.isArray(rows) ? rows.slice().reverse() : [];
       let blockedByMe = blockState?.blocked_by_me === true;
       const blockedByPeer = blockState?.blocked_by_peer === true;
+      const peerSuspended = blockState?.peer_suspended === true;
       let messagingBlocked = blockState?.messaging_blocked === true;
       const inboxRow = inboxRows.find((row) => String(row.conversation_id) === conversationId) || {};
       const name = otherName(inboxRow);
@@ -206,13 +207,15 @@
           `).join("") : '<div class="marketplace-empty-state"><h3>No messages yet</h3><p>Send the first message about this listing.</p></div>'}
         </div>
 
-        <div id="marketplace-block-status" class="marketplace-notice" ${messagingBlocked ? "" : "hidden"}>${blockedByMe && blockedByPeer
-          ? "Both accounts have blocked this conversation. Messaging remains unavailable until both blocks are cleared."
-          : blockedByMe
-            ? "You blocked this Marketplace account. Unblock them to send another message."
-            : blockedByPeer
-              ? "This Marketplace account has blocked this conversation. Messaging is unavailable."
-              : ""}</div>
+        <div id="marketplace-block-status" class="marketplace-notice" ${messagingBlocked ? "" : "hidden"}>${peerSuspended
+          ? "This Marketplace account is currently unavailable. Messaging is disabled."
+          : blockedByMe && blockedByPeer
+            ? "Both accounts have blocked this conversation. Messaging remains unavailable until both blocks are cleared."
+            : blockedByMe
+              ? "You blocked this Marketplace account. Unblock them to send another message."
+              : blockedByPeer
+                ? "This Marketplace account has blocked this conversation. Messaging is unavailable."
+                : ""}</div>
         <form id="marketplace-message-form" class="marketplace-message-form" ${messagingBlocked ? "hidden" : ""}>
           <label>
             Message
@@ -245,18 +248,20 @@
             conversation_id_value: conversationId,
             blocked_value: nextBlocked
           }) === true;
-          messagingBlocked = blockedByMe || blockedByPeer;
+          messagingBlocked = blockedByMe || blockedByPeer || peerSuspended;
 
           blockButton.textContent = blockedByMe ? "Unblock account" : "Block account";
           if (blockNotice) {
             blockNotice.hidden = !messagingBlocked;
-            blockNotice.textContent = blockedByMe && blockedByPeer
-              ? "Both accounts have blocked this conversation. Messaging remains unavailable until both blocks are cleared."
-              : blockedByMe
-                ? "You blocked this Marketplace account. Unblock them to send another message."
-                : blockedByPeer
-                  ? "This Marketplace account has blocked this conversation. Messaging is unavailable."
-                  : "";
+            blockNotice.textContent = peerSuspended
+              ? "This Marketplace account is currently unavailable. Messaging is disabled."
+              : blockedByMe && blockedByPeer
+                ? "Both accounts have blocked this conversation. Messaging remains unavailable until both blocks are cleared."
+                : blockedByMe
+                  ? "You blocked this Marketplace account. Unblock them to send another message."
+                  : blockedByPeer
+                    ? "This Marketplace account has blocked this conversation. Messaging is unavailable."
+                    : "";
           }
           if (messageForm) messageForm.hidden = messagingBlocked;
         } catch {
