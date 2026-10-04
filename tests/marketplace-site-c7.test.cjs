@@ -191,6 +191,8 @@ test("C7W lazy Marketplace modules cannot render over a newer selected tab", () 
   assert.match(shell, /script\.dataset\.marketplaceModule = marker/);
   assert.doesNotMatch(shell, /script\[data-\$\{marker\}\]/);
   assert.match(shell, /currentView = view;[\s\S]*setCurrent\(view\)/);
+  assert.match(shell, /script\.remove\(\)/);
+  assert.match(shell, /dataset\.marketplaceReady = "true"/);
 });
 
 
@@ -204,18 +206,6 @@ test("C7W public Marketplace media paths do not expose auth user IDs", () => {
   assert.doesNotMatch(profile, /\$\{userId\}\/profiles\//);
   assert.doesNotMatch(listings, /const \{ client, userId \} = context/);
   assert.doesNotMatch(profile, /const \{ client, userId \} = context/);
-});
-
-
-test("C7W public media upload paths do not expose auth user IDs", () => {
-  const profile = read("marketplace/marketplace-profile.js");
-  const listings = read("marketplace/marketplace-listings.js");
-
-  assert.match(profile, /uploadedPath = `profiles\/avatar-\$\{suffix\}\.\$\{ext\}`/);
-  assert.match(listings, /const path = `listings\/\$\{listingId\}\/photo-/);
-
-  assert.doesNotMatch(profile, /\$\{userId\}\/profiles|const \{ client, userId \} = context/);
-  assert.doesNotMatch(listings, /\$\{userId\}\/listings|const \{ client, userId \} = context/);
 });
 
 
