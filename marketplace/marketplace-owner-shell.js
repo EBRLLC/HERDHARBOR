@@ -3,22 +3,27 @@
 
   const root = document.getElementById("marketplace-owner-root");
   const context = window.HerdHarborMarketplaceContext;
-  if (!root || !context?.client || context.role !== "owner") return;
+  if (!root || !context?.client) return;
+
+  const interactive = context.isAuthenticated && context.accountStatus === "active";
+  const owner = interactive && context.role === "owner";
 
   root.innerHTML = `
     <section class="marketplace-owner-panel">
-      <span class="marketplace-preview-badge">Owner Preview</span>
       <div class="marketplace-heading">
         <p class="eyebrow">HerdHarbor Marketplace</p>
         <h1>Marketplace</h1>
-        <p>Browse animals, manage listings, and build a seller profile from one clean HerdHarbor marketplace destination.</p>
+        <p>Browse animals for sale publicly. Sign in to message sellers, save favorites, create listings, and manage your Marketplace account.</p>
       </div>
       <nav class="marketplace-tabs" aria-label="Marketplace">
         <button class="marketplace-tab" type="button" data-marketplace-view="browse" aria-current="page">Browse</button>
-        <button class="marketplace-tab" type="button" data-marketplace-view="listings">My Listings</button>
-        <button class="marketplace-tab" type="button" data-marketplace-view="profile">Seller Profile</button>
-        <button class="marketplace-tab marketplace-tab-admin" type="button" data-marketplace-view="admin">Admin</button>
-        <a class="button button-secondary button-small" href="https://app.herdharbor.com/">Open HerdHarbor</a>
+        ${interactive ? '<button class="marketplace-tab" type="button" data-marketplace-view="listings">My Listings</button>' : ""}
+        ${interactive ? '<button class="marketplace-tab" type="button" data-marketplace-view="profile">Seller Profile</button>' : ""}
+        ${interactive ? '<a class="marketplace-tab marketplace-tab-link" href="/marketplace/messages/">Messages</a>' : ""}
+        ${owner ? '<button class="marketplace-tab marketplace-tab-admin" type="button" data-marketplace-view="admin">Admin</button>' : ""}
+        ${context.isAuthenticated
+          ? '<a class="button button-secondary button-small" href="https://app.herdharbor.com/">Open HerdHarbor</a>'
+          : '<a class="button button-small" href="/marketplace/account/?next=%2Fmarketplace%2F">Sign in / Create account</a>'}
       </nav>
     </section>
     <section id="marketplace-view-root" aria-live="polite"></section>
@@ -34,119 +39,100 @@
     }
   }
 
-  function renderPlaceholder(view) {
-    const copy = view === "listings"
-      ? ["My Listings", "Listing management activates in Stack C3 after the detached listing and herd-import APIs are verified."]
-      : ["Browse", "The image-led search and discovery experience activates in Stack C4 after the privacy-safe browse APIs are verified."];
-    viewRoot.innerHTML = `
-      <section class="marketplace-placeholder-grid">
-        <article class="marketplace-placeholder-card">
-          <h2>${copy[0]}</h2>
-          <p>${copy[1]}</p>
-        </article>
-      </section>
-    `;
+  function loadModule({ globalName, marker, src, failure }) {
+    const globalApi = window[globalName];
+    if (globalApi?.mount) {
+      globalApi.mount(viewRoot, context);
+      return;
+    }
+
+    const existing = document.querySelector(`script[data-${marker}]`);
+    if (existing) return;
+
+    const script = document.createElement("script");
+    script.src = src;
+    script.async = true;
+    script.dataset[marker] = "true";
+    script.addEventListener("load", () => window[globalName]?.mount?.(viewRoot, context), { once: true });
+    script.addEventListener("error", () => {
+      viewRoot.innerHTML = '<div class="marketplace-notice error">' + failure + '</div>';
+    }, { once: true });
+    document.body.appendChild(script);
   }
 
   function loadBrowse() {
-    if (window.HerdHarborMarketplaceBrowse?.mount) {
-      window.HerdHarborMarketplaceBrowse.mount(viewRoot, context);
-      return;
-    }
-
-    const existing = document.querySelector("script[data-marketplace-browse]");
-    if (existing) return;
-
-    const script = document.createElement("script");
-    script.src = "./marketplace-browse.js?v=5";
-    script.async = true;
-    script.dataset.marketplaceBrowse = "true";
-    script.addEventListener("load", () => window.HerdHarborMarketplaceBrowse?.mount?.(viewRoot, context), { once: true });
-    script.addEventListener("error", () => {
-      viewRoot.innerHTML = '<div class="marketplace-notice error">Marketplace Browse could not load.</div>';
-    }, { once: true });
-    document.body.appendChild(script);
+    loadModule({
+      globalName: "HerdHarborMarketplaceBrowse",
+      marker: "marketplaceBrowse",
+      src: "./marketplace-browse.js?v=7",
+      failure: "Marketplace Browse could not load."
+    });
   }
 
   function loadListings() {
-    if (window.HerdHarborMarketplaceListings?.mount) {
-      window.HerdHarborMarketplaceListings.mount(viewRoot, context);
+    if (!interactive) {
+      window.location.assign("/marketplace/account/?next=" + encodeURIComponent("/marketplace/#my-listings"));
       return;
     }
-
-    const existing = document.querySelector("script[data-marketplace-listings]");
-    if (existing) return;
-
-    const script = document.createElement("script");
-    script.src = "./marketplace-listings.js?v=5";
-    script.async = true;
-    script.dataset.marketplaceListings = "true";
-    script.addEventListener("load", () => window.HerdHarborMarketplaceListings?.mount?.(viewRoot, context), { once: true });
-    script.addEventListener("error", () => {
-      viewRoot.innerHTML = '<div class="marketplace-notice error">Listing management could not load.</div>';
-    }, { once: true });
-    document.body.appendChild(script);
-  }
-
-  function loadAdmin() {
-    if (window.HerdHarborMarketplaceAdmin?.mount) {
-      window.HerdHarborMarketplaceAdmin.mount(viewRoot, context);
-      return;
-    }
-
-    const existing = document.querySelector("script[data-marketplace-admin]");
-    if (existing) return;
-
-    const script = document.createElement("script");
-    script.src = "./marketplace-admin.js?v=6";
-    script.async = true;
-    script.dataset.marketplaceAdmin = "true";
-    script.addEventListener("load", () => window.HerdHarborMarketplaceAdmin?.mount?.(viewRoot, context), { once: true });
-    script.addEventListener("error", () => {
-      viewRoot.innerHTML = '<div class="marketplace-notice error">Marketplace Admin could not load.</div>';
-    }, { once: true });
-    document.body.appendChild(script);
+    loadModule({
+      globalName: "HerdHarborMarketplaceListings",
+      marker: "marketplaceListings",
+      src: "./marketplace-listings.js?v=7",
+      failure: "Listing management could not load."
+    });
   }
 
   function loadProfile() {
-    if (window.HerdHarborMarketplaceProfile?.mount) {
-      window.HerdHarborMarketplaceProfile.mount(viewRoot, context);
+    if (!interactive) {
+      window.location.assign("/marketplace/account/?next=" + encodeURIComponent("/marketplace/#seller-profile"));
       return;
     }
+    loadModule({
+      globalName: "HerdHarborMarketplaceProfile",
+      marker: "marketplaceProfile",
+      src: "./marketplace-profile.js?v=7",
+      failure: "Seller Profile could not load."
+    });
+  }
 
-    const existing = document.querySelector("script[data-marketplace-profile]");
-    if (existing) return;
-
-    const script = document.createElement("script");
-    script.src = "./marketplace-profile.js?v=1";
-    script.async = true;
-    script.dataset.marketplaceProfile = "true";
-    script.addEventListener("load", () => window.HerdHarborMarketplaceProfile?.mount?.(viewRoot, context), { once: true });
-    script.addEventListener("error", () => {
-      viewRoot.innerHTML = '<div class="marketplace-notice error">Seller Profile could not load.</div>';
-    }, { once: true });
-    document.body.appendChild(script);
+  function loadAdmin() {
+    if (!owner) {
+      viewRoot.innerHTML = '<div class="marketplace-notice error">Marketplace administration is available only to the protected Owner account.</div>';
+      return;
+    }
+    loadModule({
+      globalName: "HerdHarborMarketplaceAdmin",
+      marker: "marketplaceAdmin",
+      src: "./marketplace-admin.js?v=7",
+      failure: "Marketplace Admin could not load."
+    });
   }
 
   function show(view) {
     setCurrent(view);
     if (view === "browse") loadBrowse();
-    else if (view === "profile") loadProfile();
     else if (view === "listings") loadListings();
+    else if (view === "profile") loadProfile();
     else if (view === "admin") loadAdmin();
-    else renderPlaceholder(view);
+    else loadBrowse();
   }
 
   function viewFromLocation() {
-    if (window.location.hash === "#my-listings") return "listings";
-    if (window.location.hash === "#seller-profile") return "profile";
-    if (window.location.hash === "#admin") return "admin";
+    if (window.location.hash === "#my-listings" && interactive) return "listings";
+    if (window.location.hash === "#seller-profile" && interactive) return "profile";
+    if (window.location.hash === "#admin" && owner) return "admin";
     return "browse";
   }
 
   function urlForView(view) {
     const url = new URL(window.location.href);
-    url.hash = view === "listings" ? "my-listings" : view === "profile" ? "seller-profile" : view === "admin" ? "admin" : "";
+    url.hash = view === "listings"
+      ? "my-listings"
+      : view === "profile"
+        ? "seller-profile"
+        : view === "admin"
+          ? "admin"
+          : "";
     return url.pathname + url.search + url.hash;
   }
 
@@ -161,5 +147,4 @@
   window.addEventListener("popstate", () => show(viewFromLocation()));
 
   show(viewFromLocation());
-  root.hidden = false;
 })();
