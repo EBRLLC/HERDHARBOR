@@ -4,6 +4,17 @@
   const navToggle = document.querySelector(".nav-toggle");
   const nav = document.querySelector(".site-nav");
 
+  function ensureMarketplaceLink() {
+    if (!nav || nav.querySelector('a[href="/marketplace/"]')) return;
+    const link = document.createElement("a");
+    link.href = "/marketplace/";
+    link.textContent = "Marketplace";
+
+    const appButton = nav.querySelector(".button");
+    if (appButton) nav.insertBefore(link, appButton);
+    else nav.appendChild(link);
+  }
+
   function ensureSweepstakesLink() {
     if (!nav || nav.querySelector('a[href="/sweepstakes/"]')) return;
     const link = document.createElement("a");
@@ -20,6 +31,7 @@
     else nav.appendChild(link);
   }
 
+  ensureMarketplaceLink();
   ensureSweepstakesLink();
 
   if (navToggle && nav) {

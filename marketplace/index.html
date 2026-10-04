@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#0D2540">
+  <meta name="robots" content="noindex,nofollow,noarchive">
+  <meta name="description" content="Browse HerdHarbor Marketplace animal listings. Sign in only when you want to message sellers or manage Marketplace activity.">
+  <link rel="canonical" href="https://herdharbor.com/marketplace/">
+  <title>Marketplace — HerdHarbor</title>
+  <link rel="stylesheet" href="../styles.css">
+  <link rel="stylesheet" href="./marketplace.css?v=7">
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+  <header class="site-header">
+    <div class="container nav-wrap">
+      <a class="brand" href="/" aria-label="HerdHarbor home"><img src="../assets/herdharbor-icon.png" alt=""><span>HerdHarbor</span></a>
+      <nav class="site-nav open" aria-label="Marketplace navigation">
+        <a href="/marketplace/" aria-current="page">Marketplace</a>
+        <a href="/how-to/">How To</a>
+        <a class="button button-small" href="https://app.herdharbor.com/">Open App</a>
+      </nav>
+    </div>
+  </header>
+  <main id="main" class="marketplace-main">
+    <div class="container marketplace-shell">
+      <section class="marketplace-heading">
+        <p class="eyebrow">HerdHarbor Marketplace</p>
+        <h1>Browse animals for sale</h1>
+        <p>Marketplace listings are open to everyone. Sign in only when you want to message a seller, save favorites, post a listing, or manage your Marketplace account.</p>
+      </section>
+
+      <section class="marketplace-gate marketplace-session-strip" id="marketplace-access-shell" aria-live="polite" hidden>
+        <p class="marketplace-gate-status" id="marketplace-gate-status">Checking Marketplace account…</p>
+        <div class="marketplace-gate-actions" id="marketplace-gate-actions" hidden>
+          <a id="marketplace-account-link" class="button button-secondary button-small" href="/marketplace/account/">Sign in / Create account</a>
+          <button class="button button-secondary button-small" id="marketplace-sign-out" type="button" hidden>Sign out</button>
+        </div>
+      </section>
+
+      <div id="marketplace-root" hidden></div>
+    </div>
+  </main>
+  <footer class="site-footer">
+    <div class="container footer-grid">
+      <div class="footer-brand"><a class="brand brand-footer" href="/">HerdHarbor</a><p>Connected farm management with a public animal Marketplace.</p></div>
+      <div class="footer-links"><a href="/privacy/">Privacy</a><a href="/terms/">Terms</a><a href="/support/">Support</a></div>
+      <p class="copyright">© <span id="year"></span> HerdHarbor</p>
+    </div>
+  </footer>
+  <script src="../script.js"></script>
+  <script src="../vendor/supabase-2.111.0.js"></script>
+  <script src="./marketplace-gate.js?v=7"></script>
+</body>
+</html>
