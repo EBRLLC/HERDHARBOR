@@ -511,7 +511,7 @@
     }
 
     async function renderSuspensions() {
-      viewNode.innerHTML = \`
+      viewNode.innerHTML = `
         <div class="marketplace-admin-toolbar">
           <div>
             <p class="eyebrow">Marketplace access</p>
@@ -519,7 +519,7 @@
           </div>
         </div>
         <div id="marketplace-admin-suspension-list" class="marketplace-admin-list" aria-busy="true"></div>
-      \`;
+      `;
 
       const list = viewNode.querySelector("#marketplace-admin-suspension-list");
       try {
@@ -534,24 +534,24 @@
 
         list.innerHTML = suspensions.map((item) => {
           const name = item.rabbitry_name || item.display_name || "Marketplace member";
-          return \`
+          return `
             <article class="marketplace-admin-card">
               <div class="marketplace-admin-card-heading">
                 <div>
                   <span class="marketplace-admin-status" data-state="suspended">Suspended</span>
-                  <h3>\${esc(name)}</h3>
-                  <p>\${esc(dateTime(item.suspended_at))}</p>
+                  <h3>${esc(name)}</h3>
+                  <p>${esc(dateTime(item.suspended_at))}</p>
                 </div>
               </div>
               <div class="marketplace-admin-report-copy">
                 <strong>Reason</strong>
-                <p>\${esc(item.reason || "No moderation reason recorded.")}</p>
+                <p>${esc(item.reason || "No moderation reason recorded.")}</p>
               </div>
               <div class="marketplace-admin-actions">
-                <button type="button" class="button button-secondary button-small" data-reactivate-suspension="\${esc(item.suspension_id)}">Reactivate Marketplace account</button>
+                <button type="button" class="button button-secondary button-small" data-reactivate-suspension="${esc(item.suspension_id)}">Reactivate Marketplace account</button>
               </div>
             </article>
-          \`;
+          `;
         }).join("");
 
         list.querySelectorAll("[data-reactivate-suspension]").forEach((button) => {
