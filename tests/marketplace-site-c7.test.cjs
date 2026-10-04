@@ -186,3 +186,16 @@ test("C7W lazy Marketplace modules cannot render over a newer selected tab", () 
   assert.doesNotMatch(shell, /script\[data-\$\{marker\}\]/);
   assert.match(shell, /currentView = view;[\s\S]*setCurrent\(view\)/);
 });
+
+
+test("C7W public Marketplace media paths do not expose auth user IDs", () => {
+  const listings = read("marketplace/marketplace-listings.js");
+  const profile = read("marketplace/marketplace-profile.js");
+
+  assert.match(listings, /const path = `listings\/\$\{listingId\}\/photo-/);
+  assert.match(profile, /uploadedPath = `profiles\/avatar-/);
+  assert.doesNotMatch(listings, /\$\{userId\}\/listings\//);
+  assert.doesNotMatch(profile, /\$\{userId\}\/profiles\//);
+  assert.doesNotMatch(listings, /const \{ client, userId \} = context/);
+  assert.doesNotMatch(profile, /const \{ client, userId \} = context/);
+});
