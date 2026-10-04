@@ -65,6 +65,7 @@ test("C7W app SSO accepts credentials only from exact app origin, matching nonce
   assert.match(gate, /type: "magiclink"/);
   assert.match(gate, /SSO_TIMEOUT_MS = 5000/);
   assert.match(gate, /history\.replaceState/);
+  assert.doesNotMatch(gate, /#sso-ticket=|redeemFragmentTicket/);
   assert.doesNotMatch(gate, /searchParams\.get\(["'](?:access_token|refresh_token)|searchParams\.set\(["'](?:access_token|refresh_token)/i);
   assert.doesNotMatch(gate, /service_role|SUPABASE_SERVICE_ROLE_KEY/i);
 });
