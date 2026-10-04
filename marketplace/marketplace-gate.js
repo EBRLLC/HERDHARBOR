@@ -65,19 +65,19 @@
       const onMessage = async (event) => {
         if (event.origin !== APP_ORIGIN) return;
         if (event.source !== window.opener) return;
-        if (event.data?.type !== "herdharbor:marketplace-sso-session") return;
+        if (event.data?.type !== "herdharbor:marketplace-sso-ticket") return;
         if (String(event.data?.nonce || "") !== nonce) return;
 
-        const accessToken = String(event.data?.accessToken || "");
-        const refreshToken = String(event.data?.refreshToken || "");
-        if (!accessToken || !refreshToken) {
+        const tokenHash = String(event.data?.tokenHash || "");
+        const verificationType = String(event.data?.verificationType || "");
+        if (!tokenHash || verificationType !== "magiclink") {
           finish(false);
           return;
         }
 
-        const { data, error } = await client.auth.setSession({
-          access_token: accessToken,
-          refresh_token: refreshToken
+        const { data, error } = await client.auth.verifyOtp({
+          token_hash: tokenHash,
+          type: "magiclink"
         });
 
         if (error || !data?.session?.user?.id) {
@@ -123,7 +123,8 @@
         accountStatus: "guest",
         membershipTier: "",
         sellerPublicId: "",
-        marketplaceStatus: "guest"
+        marketplaceStatus: "guest",
+        marketplaceAccessReady: false
       });
     }
 
@@ -141,16 +142,19 @@
       accountStatus,
       membershipTier: String(account.membership_tier || ""),
       sellerPublicId: String(account.seller_public_id || ""),
-      marketplaceStatus: String(account.marketplace_status || "not_created")
+      marketplaceStatus: String(account.marketplace_status || "not_created"),
+      marketplaceAccessReady: account.marketplace_access_ready === true
     });
   }
 
   function renderSession(context) {
     if (context.isAuthenticated) {
       setStatus(
-        context.accountStatus === "active"
+        context.marketplaceAccessReady
           ? "Signed in to HerdHarbor Marketplace."
-          : "Signed in. Marketplace interaction is unavailable while this HerdHarbor account is not active."
+          : context.accountStatus !== "active"
+            ? "Signed in. Marketplace interaction is unavailable while this HerdHarbor account is not active."
+            : "Signed in. Finish HerdHarbor account setup in the app before using Marketplace messaging or seller tools."
       );
       if (accountLink) {
         accountLink.textContent = "Account";
