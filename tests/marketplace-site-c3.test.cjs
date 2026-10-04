@@ -55,7 +55,7 @@ test("C3W listing delete is explicitly isolated from source herd record", () => 
 });
 
 test("C3W listing runtime remains lazy-loaded behind active account authorization", () => {
-  const shell = read("marketplace/marketplace-owner-shell.js");
+  const shell = read("marketplace/marketplace-shell.js");
   const html = read("marketplace/index.html");
   assert.match(shell, /const interactive = context\.isAuthenticated && context\.accountStatus === "active" && context\.marketplaceAccessReady === true/);
   assert.match(shell, /marketplace-listings\.js\?v=7/);
