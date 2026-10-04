@@ -28,7 +28,7 @@ test("C3W uses Marketplace RPCs only and never private herd sync storage directl
 test("C3W listing media is private signed media with strict client limits", () => {
   const source = read("marketplace/marketplace-listings.js");
   assert.match(source, /marketplace-public/);
-  assert.match(source, /createSignedUrl\(path, 900\)/);
+  assert.match(source, /createSignedUrl\(path, 300\)/);
   assert.match(source, /MAX_PHOTOS = 6/);
   assert.match(source, /8 \* 1024 \* 1024/);
   assert.match(source, /image\/jpeg/);
@@ -56,7 +56,7 @@ test("C3W listing delete is explicitly isolated from source herd record", () => 
 test("C3W listing runtime remains lazy-loaded behind active account authorization", () => {
   const shell = read("marketplace/marketplace-owner-shell.js");
   const html = read("marketplace/index.html");
-  assert.match(shell, /const interactive = context\.isAuthenticated && context\.accountStatus === "active"/);
+  assert.match(shell, /const interactive = context\.isAuthenticated && context\.accountStatus === "active" && context\.marketplaceAccessReady === true/);
   assert.match(shell, /marketplace-listings\.js\?v=7/);
   assert.match(shell, /data-marketplace-view="listings"/);
   assert.doesNotMatch(html, /marketplace-listings\.js/);
