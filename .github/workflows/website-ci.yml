@@ -24,6 +24,9 @@ jobs:
           node --check marketplace/marketplace-owner-shell.js
           node --check marketplace/marketplace-profile.js
           node --check marketplace/marketplace-listings.js
+          node --check marketplace/marketplace-browse.js
+          node --check marketplace/marketplace-detail.js
+          node --check marketplace/marketplace-seller.js
       - name: Verify no broken internal Marketplace asset references
         run: |
           test -f marketplace/index.html
@@ -31,3 +34,8 @@ jobs:
           test -f marketplace/marketplace-gate.js
           test -f marketplace/marketplace-owner-shell.js
           test -f vendor/supabase-2.111.0.js
+          test -f marketplace/listing/index.html
+          test -f marketplace/seller/index.html
+          test -f marketplace/marketplace-browse.js
+          test -f marketplace/marketplace-detail.js
+          test -f marketplace/marketplace-seller.js
