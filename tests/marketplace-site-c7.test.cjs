@@ -54,7 +54,7 @@ test("C7W guest message/report/favorite actions go to account entry rather than 
   assert.match(browse, /marketplace_member_toggle_favorite/);
 });
 
-test("C7W app SSO accepts credentials only from exact app origin, matching nonce and opener", () => {
+test("C7W app SSO supports exact-origin opener handoff plus one-time fragment fallback", () => {
   const gate = read("marketplace/marketplace-gate.js");
 
   assert.match(gate, /APP_ORIGIN = "https:\/\/app\.herdharbor\.com"/);
@@ -65,7 +65,12 @@ test("C7W app SSO accepts credentials only from exact app origin, matching nonce
   assert.match(gate, /type: "magiclink"/);
   assert.match(gate, /SSO_TIMEOUT_MS = 5000/);
   assert.match(gate, /history\.replaceState/);
-  assert.doesNotMatch(gate, /#sso-ticket=|redeemFragmentTicket/);
+  assert.match(gate, /ssoTicketFromHash/);
+  assert.match(gate, /#sso-ticket=/);
+  assert.match(gate, /redeemFragmentTicket/);
+  assert.match(gate, /window\.addEventListener\("hashchange"/);
+  assert.match(gate, /window\.location\.replace\(window\.location\.pathname \+ window\.location\.search\)/);
+  assert.match(gate, /history\.replaceState/);
   assert.doesNotMatch(gate, /searchParams\.get\(["'](?:access_token|refresh_token)|searchParams\.set\(["'](?:access_token|refresh_token)/i);
   assert.doesNotMatch(gate, /service_role|SUPABASE_SERVICE_ROLE_KEY/i);
 });
