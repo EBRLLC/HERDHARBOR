@@ -64,6 +64,89 @@
     return '<div class="listing-fact"><dt>' + esc(label) + '</dt><dd>' + esc(value) + '</dd></div>';
   }
 
+  function pedigreeNodeCard(node) {
+    const animal = node?.animal && typeof node.animal === "object" ? node.animal : null;
+    const status = clean(node?.status || "unknown");
+    const label = clean(node?.relation || node?.key || "Pedigree slot");
+    if (!animal) {
+      return `
+        <article class="marketplace-pedigree-node is-empty" data-status="${esc(status)}">
+          <span class="marketplace-pedigree-relation">${esc(label)}</span>
+          <strong>${status === "repeat" ? "Repeated ancestor" : "Unknown"}</strong>
+        </article>
+
+        <dialog id="marketplace-pedigree-dialog" class="marketplace-pedigree-dialog" aria-labelledby="marketplace-pedigree-title">
+          <div class="marketplace-pedigree-dialog-shell">
+            <div class="marketplace-detail-section-heading">
+              <div>
+                <p class="eyebrow">Read-only preview</p>
+                <h2 id="marketplace-pedigree-title">HerdHarbor Pedigree</h2>
+              </div>
+              <button class="button button-secondary button-small" type="button" data-close-pedigree>Close</button>
+            </div>
+            <div data-pedigree-body aria-live="polite">
+              <div class="marketplace-notice">Loading pedigree…</div>
+            </div>
+          </div>
+        </dialog>
+      `;
+    }
+
+    const details = [
+      animal.prefix,
+      animal.breed,
+      animal.color,
+      animal.sex,
+      animal.dob,
+      animal.registrationNumber ? "Reg. " + animal.registrationNumber : ""
+    ].filter(Boolean);
+
+    return `
+      <article class="marketplace-pedigree-node" data-status="${esc(status)}">
+        <span class="marketplace-pedigree-relation">${esc(label)}</span>
+        <strong>${esc(animal.name || "Unnamed ancestor")}</strong>
+        ${details.length ? `<span>${esc(details.join(" · "))}</span>` : ""}
+        ${status === "repeat" && node.repeatOf ? `<span class="marketplace-pedigree-repeat">Repeated from ${esc(node.repeatOf)}</span>` : ""}
+      </article>
+    `;
+  }
+
+  function renderPedigreeSnapshot(dialog, payload) {
+    const snapshot = payload?.snapshot && typeof payload.snapshot === "object" ? payload.snapshot : null;
+    const nodes = Array.isArray(snapshot?.nodes) ? snapshot.nodes : [];
+    if (!payload?.available || !snapshot || !nodes.length) {
+      dialog.querySelector("[data-pedigree-body]").innerHTML =
+        '<div class="marketplace-notice">Pedigree preview is not available for this listing.</div>';
+      return;
+    }
+
+    const grouped = new Map();
+    for (const node of nodes) {
+      const generation = Number(node?.generation) || 0;
+      if (!grouped.has(generation)) grouped.set(generation, []);
+      grouped.get(generation).push(node);
+    }
+
+    const rows = [...grouped.entries()]
+      .sort((a, b) => a[0] - b[0])
+      .map(([generation, generationNodes]) => `
+        <section class="marketplace-pedigree-generation">
+          <h3>Generation ${generation + 1}</h3>
+          <div class="marketplace-pedigree-generation-grid">
+            ${generationNodes.map(pedigreeNodeCard).join("")}
+          </div>
+        </section>
+      `).join("");
+
+    dialog.querySelector("[data-pedigree-body]").innerHTML = `
+      <div class="marketplace-pedigree-meta">
+        <span>${esc(String(snapshot.generations || ""))} generations</span>
+        <span>Engine ${esc(snapshot.engineVersion || "")}</span>
+      </div>
+      ${rows}
+    `;
+  }
+
   async function start() {
     const listingId = new URLSearchParams(window.location.search).get("id") || "";
     if (!validUuid(listingId)) {
@@ -140,7 +223,7 @@
                 <h2>Recorded lineage preview</h2>
                 <p>Pedigree preview is connected to HerdHarbor's canonical lineage system in the final Marketplace phase.</p>
               </div>
-              <button class="button button-secondary" type="button" disabled aria-disabled="true">View HerdHarbor Pedigree</button>
+              <button class="button button-secondary" type="button" id="view-marketplace-pedigree">View HerdHarbor Pedigree</button>
             </section>
 
             <aside class="marketplace-seller-card">
@@ -153,6 +236,48 @@
           </section>
         </article>
       `;
+
+      const pedigreeButton = root.querySelector("#view-marketplace-pedigree");
+      const pedigreeDialog = root.querySelector("#marketplace-pedigree-dialog");
+      const closePedigree = root.querySelector("[data-close-pedigree]");
+
+      async function loadPedigree() {
+        const body = pedigreeDialog?.querySelector("[data-pedigree-body]");
+        if (!pedigreeDialog || !body) return;
+        body.innerHTML = '<div class="marketplace-notice">Loading pedigree…</div>';
+
+        try {
+          let payload = await rpc("marketplace_owner_listing_pedigree_preview", {
+            listing_id_value: listingId
+          });
+
+          if (payload?.reason === "refresh_required") {
+            const { data, error } = await context.client.functions.invoke("marketplace-pedigree-snapshot", {
+              body: { listingId }
+            });
+            if (!error && data?.available) {
+              payload = await rpc("marketplace_owner_listing_pedigree_preview", {
+                listing_id_value: listingId
+              });
+            }
+          }
+
+          renderPedigreeSnapshot(pedigreeDialog, payload);
+        } catch {
+          body.innerHTML = '<div class="marketplace-notice error">Pedigree preview could not be loaded. No private herd data was exposed.</div>';
+        }
+      }
+
+      pedigreeButton?.addEventListener("click", async () => {
+        if (!pedigreeDialog) return;
+        pedigreeDialog.showModal();
+        await loadPedigree();
+      });
+
+      closePedigree?.addEventListener("click", () => pedigreeDialog?.close());
+      pedigreeDialog?.addEventListener("click", (event) => {
+        if (event.target === pedigreeDialog) pedigreeDialog.close();
+      });
 
       const favoriteButton = root.querySelector("#listing-favorite");
       favoriteButton.addEventListener("click", async () => {
