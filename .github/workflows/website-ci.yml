@@ -28,6 +28,8 @@ jobs:
           node --check marketplace/marketplace-detail.js
           node --check marketplace/marketplace-seller.js
           node --check marketplace/marketplace-admin.js
+          node --check marketplace/account/marketplace-account.js
+          node --check marketplace/messages/marketplace-messages.js
       - name: Verify no broken internal Marketplace asset references
         run: |
           test -f marketplace/index.html
@@ -41,3 +43,7 @@ jobs:
           test -f marketplace/marketplace-detail.js
           test -f marketplace/marketplace-seller.js
           test -f marketplace/marketplace-admin.js
+          test -f marketplace/account/index.html
+          test -f marketplace/account/marketplace-account.js
+          test -f marketplace/messages/index.html
+          test -f marketplace/messages/marketplace-messages.js
