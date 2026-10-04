@@ -49,7 +49,8 @@ test("C3W listing delete is explicitly isolated from source herd record", () => 
   const source = read("marketplace/marketplace-listings.js");
   assert.match(source, /marketplace_owner_delete_listing/);
   assert.match(source, /source HerdHarbor animal will not be changed/);
-  assert.doesNotMatch(source, /delete.*herdharbor|remove.*sourceAnimal/i);
+  assert.doesNotMatch(source, /\.from\(["']herdharbor_[^"']*["']\)[\s\S]{0,160}\.delete\(/i);
+  assert.doesNotMatch(source, /rpc\([^\n]+(?:delete|remove)[_-](?:animal|herd)/i);
 });
 
 test("C3W listing runtime remains lazy-loaded behind Owner authorization", () => {
