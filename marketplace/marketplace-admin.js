@@ -48,7 +48,7 @@
             <span class="marketplace-admin-badge">Owner Administration</span>
             <p class="eyebrow">Marketplace Safety</p>
             <h2>Admin & Moderation</h2>
-            <p class="marketplace-help">Review reports, remove abusive listings, suspend Marketplace sellers, and audit every moderation action. These controls affect Marketplace access only; they do not disable a HerdHarbor account.</p>
+            <p class="marketplace-help">Review reports, remove abusive listings, suspend seller profiles, suspend Marketplace accounts when necessary, and audit every moderation action. None of these controls disable the main HerdHarbor account.</p>
           </div>
         </div>
 
@@ -58,6 +58,7 @@
           <button type="button" class="marketplace-admin-tab" data-admin-view="reports" aria-current="page">Reports</button>
           <button type="button" class="marketplace-admin-tab" data-admin-view="sellers">Sellers</button>
           <button type="button" class="marketplace-admin-tab" data-admin-view="listings">Listings</button>
+          <button type="button" class="marketplace-admin-tab" data-admin-view="suspensions">Suspensions</button>
           <button type="button" class="marketplace-admin-tab" data-admin-view="history">Audit Log</button>
         </nav>
 
@@ -152,24 +153,33 @@
 
       dialogConfirm.disabled = true;
       dialogError.textContent = "";
+
       try {
         await pendingAction(reason);
-        closeDialog();
+      } catch {
+        dialogError.textContent = "The moderation action could not be completed.";
+        dialogConfirm.disabled = false;
+        return;
+      }
+
+      dialogConfirm.disabled = false;
+      closeDialog();
+
+      try {
         await refreshSummary();
         await renderView(currentView);
       } catch {
-        dialogError.textContent = "The moderation action could not be completed.";
-      } finally {
-        dialogConfirm.disabled = false;
+        viewNode.innerHTML = '<div class="marketplace-notice error">The moderation action was completed, but the Admin view could not refresh. Reload Marketplace before taking another action.</div>';
       }
     });
 
     async function refreshSummary() {
       try {
-        const summary = normalizeRow(await rpc(client, "marketplace_owner_admin_summary"));
+        const summary = normalizeRow(await rpc(client, "marketplace_owner_admin_summary_v2"));
         const cards = [
           ["Open reports", summary.open_reports || 0, "Reports awaiting review"],
-          ["Suspended sellers", summary.suspended_sellers || 0, "Marketplace access suspended"],
+          ["Suspended sellers", summary.suspended_sellers || 0, "Seller profiles hidden"],
+          ["Suspended accounts", summary.suspended_accounts || 0, "Marketplace interaction blocked"],
           ["Removed listings", summary.removed_listings || 0, "Listings removed by moderation"],
           ["Available listings", summary.available_listings || 0, "Currently discoverable listings"]
         ];
@@ -212,7 +222,7 @@
         list.setAttribute("aria-busy", "true");
         list.innerHTML = '<div class="marketplace-notice">Loading reports…</div>';
         try {
-          const rows = await rpc(client, "marketplace_owner_admin_reports", { status_value: status.value });
+          const rows = await rpc(client, "marketplace_owner_admin_reports_v2", { status_value: status.value });
           const reports = Array.isArray(rows) ? rows : [];
           list.removeAttribute("aria-busy");
           if (!reports.length) {
@@ -236,11 +246,14 @@
                 <div class="marketplace-admin-report-copy">
                   <strong>${esc(report.reason || "No reason supplied")}</strong>
                   ${clean(report.details) ? `<p>${esc(report.details)}</p>` : ""}
+                  ${clean(report.target_excerpt) ? `<p><strong>Reported content:</strong> ${esc(report.target_excerpt)}</p>` : ""}
+                  ${clean(report.reported_label) ? `<p><strong>Reported account:</strong> ${esc(report.reported_label)}</p>` : ""}
                 </div>
                 ${open ? `
                   <div class="marketplace-admin-actions">
                     ${targetType === "listing" && targetState !== "removed" ? `<button type="button" class="button button-danger button-small" data-report-action="remove_listing" data-report-id="${esc(report.report_id)}">Remove listing</button>` : ""}
                     ${targetType === "user" && targetState !== "suspended" ? `<button type="button" class="button button-danger button-small" data-report-action="suspend_seller" data-report-id="${esc(report.report_id)}">Suspend seller</button>` : ""}
+                    ${report.can_suspend_account && !report.account_suspended ? `<button type="button" class="button button-danger button-small" data-report-action="suspend_account" data-report-id="${esc(report.report_id)}">Suspend Marketplace account</button>` : ""}
                     <button type="button" class="button button-secondary button-small" data-report-action="resolve" data-report-id="${esc(report.report_id)}">Resolve</button>
                     <button type="button" class="button button-secondary button-small" data-report-action="dismiss" data-report-id="${esc(report.report_id)}">Dismiss</button>
                   </div>
@@ -255,6 +268,7 @@
               const labels = {
                 remove_listing: ["Remove reported listing", "The listing will immediately leave Marketplace discovery.", "Remove listing"],
                 suspend_seller: ["Suspend reported seller", "The seller and their available listings will be hidden from Marketplace. Their HerdHarbor account remains active.", "Suspend seller"],
+                suspend_account: ["Suspend Marketplace account", "Block this account from Marketplace messaging, favorites, seller tools, and other interaction. Their main HerdHarbor account stays active.", "Suspend Marketplace account"],
                 resolve: ["Resolve report", "Close this report as resolved without changing the target.", "Resolve report"],
                 dismiss: ["Dismiss report", "Close this report as dismissed without changing the target.", "Dismiss report"]
               };
@@ -264,7 +278,7 @@
                 description,
                 confirmLabel,
                 trigger: button,
-                run: (reason) => rpc(client, "marketplace_owner_admin_resolve_report", {
+                run: (reason) => rpc(client, "marketplace_owner_admin_resolve_report_v2", {
                   report_id_value: button.dataset.reportId,
                   resolution_value: action,
                   reason_value: reason
@@ -348,8 +362,8 @@
                   <span><strong>${esc(seller.removed_listing_count || 0)}</strong> removed listings</span>
                 </div>
                 <div class="marketplace-admin-actions">
-                  ${sellerStatus === "active" ? `<button type="button" class="button button-danger button-small" data-seller-action="suspend" data-seller-id="${esc(seller.public_id)}">Suspend Marketplace</button>` : ""}
-                  ${sellerStatus !== "active" ? `<button type="button" class="button button-secondary button-small" data-seller-action="reactivate" data-seller-id="${esc(seller.public_id)}">Reactivate Marketplace</button>` : ""}
+                  ${sellerStatus === "active" ? `<button type="button" class="button button-danger button-small" data-seller-action="suspend" data-seller-id="${esc(seller.public_id)}">Suspend selling</button>` : ""}
+                  ${sellerStatus !== "active" ? `<button type="button" class="button button-secondary button-small" data-seller-action="reactivate" data-seller-id="${esc(seller.public_id)}">Reactivate selling</button>` : ""}
                   ${sellerStatus !== "closed" ? `<button type="button" class="button button-secondary button-small" data-seller-action="close" data-seller-id="${esc(seller.public_id)}">Close Marketplace profile</button>` : ""}
                 </div>
               </article>
@@ -360,8 +374,8 @@
             button.addEventListener("click", () => {
               const action = button.dataset.sellerAction;
               const labels = {
-                suspend: ["Suspend Marketplace seller", "The seller and their available listings will immediately disappear from Marketplace. Their HerdHarbor account will remain active.", "Suspend seller"],
-                reactivate: ["Reactivate Marketplace seller", "Restore this seller's Marketplace status to active. Listings still retain their own existing state.", "Reactivate seller"],
+                suspend: ["Suspend selling", "Hide this seller profile and its available listings. The account can still browse and message unless you use a full Marketplace account suspension.", "Suspend selling"],
+                reactivate: ["Reactivate selling", "Restore this seller profile to active. This does not lift a separate Marketplace account suspension, and listings keep their existing state.", "Reactivate selling"],
                 close: ["Close Marketplace seller profile", "Close this seller's Marketplace profile. This does not delete their HerdHarbor account.", "Close Marketplace profile"]
               };
               const [title, description, confirmLabel] = labels[action];
@@ -504,6 +518,70 @@
       await load();
     }
 
+    async function renderSuspensions() {
+      viewNode.innerHTML = `
+        <div class="marketplace-admin-toolbar">
+          <div>
+            <p class="eyebrow">Marketplace access</p>
+            <h3>Suspended accounts</h3>
+          </div>
+        </div>
+        <div id="marketplace-admin-suspension-list" class="marketplace-admin-list" aria-busy="true"></div>
+      `;
+
+      const list = viewNode.querySelector("#marketplace-admin-suspension-list");
+      try {
+        const rows = await rpc(client, "marketplace_owner_admin_suspensions");
+        const suspensions = Array.isArray(rows) ? rows : [];
+        list.removeAttribute("aria-busy");
+
+        if (!suspensions.length) {
+          list.innerHTML = '<div class="marketplace-empty-state"><h3>No suspended accounts</h3><p>Marketplace account suspensions will appear here.</p></div>';
+          return;
+        }
+
+        list.innerHTML = suspensions.map((item) => {
+          const name = item.rabbitry_name || item.display_name || "Marketplace member";
+          return `
+            <article class="marketplace-admin-card">
+              <div class="marketplace-admin-card-heading">
+                <div>
+                  <span class="marketplace-admin-status" data-state="suspended">Suspended</span>
+                  <h3>${esc(name)}</h3>
+                  <p>${esc(dateTime(item.suspended_at))}</p>
+                </div>
+              </div>
+              <div class="marketplace-admin-report-copy">
+                <strong>Reason</strong>
+                <p>${esc(item.reason || "No moderation reason recorded.")}</p>
+              </div>
+              <div class="marketplace-admin-actions">
+                <button type="button" class="button button-secondary button-small" data-reactivate-suspension="${esc(item.suspension_id)}">Reactivate Marketplace account</button>
+              </div>
+            </article>
+          `;
+        }).join("");
+
+        list.querySelectorAll("[data-reactivate-suspension]").forEach((button) => {
+          button.addEventListener("click", () => {
+            requestAction({
+              title: "Reactivate Marketplace account",
+              description: "Restore Marketplace interaction for this account. This does not alter the main HerdHarbor account.",
+              confirmLabel: "Reactivate account",
+              trigger: button,
+              run: (reason) => rpc(client, "marketplace_owner_admin_reactivate_account", {
+                suspension_id_value: button.dataset.reactivateSuspension,
+                reason_value: reason
+              })
+            });
+          });
+        });
+      } catch {
+        list.removeAttribute("aria-busy");
+        list.innerHTML = '<div class="marketplace-notice error">Marketplace suspensions could not be loaded.</div>';
+      }
+    }
+
     async function renderHistory() {
       viewNode.innerHTML = `
         <div class="marketplace-admin-toolbar">
@@ -549,6 +627,7 @@
       if (view === "reports") await renderReports();
       else if (view === "sellers") await renderSellers();
       else if (view === "listings") await renderListings();
+      else if (view === "suspensions") await renderSuspensions();
       else await renderHistory();
     }
 

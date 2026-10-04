@@ -23,7 +23,7 @@
 
   async function signedAvatar(client, path) {
     if (!path) return "";
-    const { data, error } = await client.storage.from(BUCKET).createSignedUrl(path, 900);
+    const { data, error } = await client.storage.from(BUCKET).createSignedUrl(path, 300);
     if (error) return "";
     return data?.signedUrl || "";
   }
@@ -86,8 +86,8 @@
   }
 
   async function mount(root, context) {
-    if (!root || !context?.client || context.role !== "owner") return;
-    const { client, userId } = context;
+    if (!root || !context?.client || !context?.userId || !context.isAuthenticated || context.accountStatus !== "active" || context.marketplaceAccessReady !== true) return;
+    const { client } = context;
 
     root.innerHTML = `
       <section class="seller-profile-layout">
@@ -122,7 +122,7 @@
             </label>
             <label>Avatar or rabbitry logo
               <input name="avatar" type="file" accept="image/jpeg,image/png,image/webp">
-              <span class="marketplace-help">JPG, PNG, or WebP. Maximum 5 MB. Media stays private during Owner preview.</span>
+              <span class="marketplace-help">JPG, PNG, or WebP. Maximum 5 MB. Media is stored privately and only public profile media is exposed through signed Marketplace URLs.</span>
             </label>
             <div class="seller-profile-actions">
               <button class="button" type="submit">Save Seller Profile</button>
@@ -150,8 +150,8 @@
 
     async function refresh() {
       const [{ data: editorData, error: editorError }, { data: previewData, error: previewError }] = await Promise.all([
-        client.rpc("marketplace_owner_profile_editor"),
-        client.rpc("marketplace_owner_profile_preview")
+        client.rpc("marketplace_member_profile_editor"),
+        client.rpc("marketplace_member_profile_preview")
       ]);
 
       if (editorError || previewError) {
@@ -181,6 +181,7 @@
       setStatus("Saving…");
 
       let uploadedPath = "";
+      let profileSaved = false;
       const previousPath = currentAvatarPath;
 
       try {
@@ -192,7 +193,7 @@
           }
 
           const suffix = globalThis.crypto?.randomUUID?.() || String(Date.now());
-          uploadedPath = `${userId}/profiles/avatar-${suffix}.${ext}`;
+          uploadedPath = `profiles/avatar-${suffix}.${ext}`;
           const { error: uploadError } = await client.storage.from(BUCKET).upload(uploadedPath, file, {
             cacheControl: "3600",
             contentType: file.type,
@@ -211,7 +212,7 @@
           throw new Error("Each species or breed entry must be 80 characters or fewer.");
         }
 
-        const { error: saveError } = await client.rpc("marketplace_owner_save_profile", {
+        const { error: saveError } = await client.rpc("marketplace_member_save_profile", {
           display_name_value: safeText(form.elements.display_name.value),
           rabbitry_name_value: safeText(form.elements.rabbitry_name.value),
           avatar_path_value: uploadedPath || previousPath,
@@ -221,9 +222,10 @@
           species_breeds_value: speciesBreeds
         });
         if (saveError) throw new Error("Seller profile could not be saved.");
+        profileSaved = true;
 
         if (uploadedPath && previousPath && previousPath !== uploadedPath) {
-          await removePath(client, previousPath);
+          await removePath(client, previousPath).catch(() => {});
         }
 
         currentAvatarPath = uploadedPath || previousPath;
@@ -231,8 +233,13 @@
         setStatus("Seller profile saved.", "success");
         await refresh();
       } catch (error) {
-        if (uploadedPath) await removePath(client, uploadedPath);
-        setStatus(error?.message || "Seller profile could not be saved.", "error");
+        if (uploadedPath && !profileSaved) await removePath(client, uploadedPath).catch(() => {});
+        setStatus(
+          profileSaved
+            ? "Seller profile was saved, but the preview could not refresh. Reload the page to try again."
+            : (error?.message || "Seller profile could not be saved."),
+          "error"
+        );
       } finally {
         submit.disabled = false;
       }

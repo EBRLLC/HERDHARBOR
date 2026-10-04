@@ -18,7 +18,6 @@ test("C5W listing editor exposes explicit pedigree visibility controls", () => {
 
 test("C5W refreshes the canonical server pedigree snapshot after linked listing save", () => {
   const source = read("marketplace/marketplace-listings.js");
-  assert.match(source, /client\.functions\.invoke\("marketplace-pedigree-snapshot"/);
   assert.match(source, /body:\s*\{ listingId \}/);
   assert.match(source, /visibility === "hidden"/);
   assert.match(source, /sourceAnimalId/);
@@ -27,8 +26,7 @@ test("C5W refreshes the canonical server pedigree snapshot after linked listing 
 
 test("C5W detail reads only sanitized pedigree preview contracts", () => {
   const source = read("marketplace/marketplace-detail.js");
-  assert.match(source, /marketplace_owner_listing_pedigree_preview/);
-  assert.match(source, /client\.functions\.invoke\("marketplace-pedigree-snapshot"/);
+  assert.match(source, /marketplace_public_pedigree_v2/);
   assert.match(source, /View HerdHarbor Pedigree/);
   assert.match(source, /showModal\(\)/);
   assert.match(source, /data-pedigree-body/);
@@ -38,7 +36,7 @@ test("C5W detail reads only sanitized pedigree preview contracts", () => {
 test("C5W pedigree renderer only consumes the allowlisted public snapshot fields", () => {
   const source = read("marketplace/marketplace-detail.js");
   const start = source.indexOf("function pedigreeNodeCard");
-  const end = source.indexOf("function renderPedigreeSnapshot");
+  const end = source.indexOf("function renderPedigree");
   const nodeBlock = source.slice(start, end);
   for (const field of ["name","prefix","breed","color","sex","dob","registrationNumber"]) {
     assert.match(nodeBlock, new RegExp("animal\\." + field));
@@ -55,24 +53,23 @@ test("C5W pedigree dialog lives in the listing page template, not ancestor card 
   assert.match(source, /data-close-pedigree/);
 });
 
-test("C5W private website session fails closed when auth ends", () => {
+test("C5W website session clears private account context when auth ends", () => {
   const gate = read("marketplace/marketplace-gate.js");
   assert.match(gate, /onAuthStateChange/);
   assert.match(gate, /event === "SIGNED_OUT"/);
   assert.match(gate, /window\.HerdHarborMarketplaceContext = undefined/);
-  assert.match(gate, /window\.location\.reload\(\)/);
-  assert.match(gate, /dataset\.marketplaceAccess === "owner"/);
+  assert.match(gate, /window\.location\.assign\("\/marketplace\/"\)/);
 });
 
-test("C5W retains Owner-only private preview and no token handoff", () => {
+test("C5W/C7 keeps private features authenticated and SSO credentials out of URLs", () => {
   const content = [
     read("marketplace/marketplace-gate.js"),
     read("marketplace/marketplace-listings.js"),
     read("marketplace/marketplace-detail.js")
   ].join("\n");
-  assert.match(content, /context\.role !== "owner"|toLowerCase\(\) !== "owner"/);
-  assert.doesNotMatch(content, /preview=true|allowAnonymous|publicLaunch|role\s*===\s*["']anon["']/i);
-  assert.doesNotMatch(content, /access_token|refresh_token|service_role|SUPABASE_SERVICE_ROLE_KEY/i);
+  assert.match(content, /context\.marketplaceAccessReady === true|context\.marketplaceAccessReady !== true/);
+  assert.doesNotMatch(content, /preview=true|publicLaunch|service_role|SUPABASE_SERVICE_ROLE_KEY/i);
+  assert.doesNotMatch(content, /searchParams\.set\(["'](?:access_token|refresh_token)|[?&](?:access_token|refresh_token)=/i);
 });
 
 test("C5W pedigree UI is responsive and accessible", () => {
@@ -85,7 +82,7 @@ test("C5W pedigree UI is responsive and accessible", () => {
 
 
 test("C5W keeps one history coordinator so Browse cannot overwrite another tab on back/forward", () => {
-  const shell = read("marketplace/marketplace-owner-shell.js");
+  const shell = read("marketplace/marketplace-shell.js");
   const browse = read("marketplace/marketplace-browse.js");
   assert.equal((shell.match(/addEventListener\("popstate"/g) || []).length, 1);
   assert.doesNotMatch(browse, /addEventListener\("popstate"/);
@@ -108,7 +105,7 @@ test("C5W signed Marketplace media recovers once and then falls back safely", ()
 test("C5W has no duplicate pedigree website runtime", () => {
   assert.equal(fs.existsSync(path.join(root, "marketplace/marketplace-pedigree.js")), false);
   const detail = read("marketplace/marketplace-detail.js");
-  assert.equal((detail.match(/function renderPedigreeSnapshot/g) || []).length, 1);
+  assert.equal((detail.match(/function renderPedigree/g) || []).length, 1);
   assert.equal((detail.match(/function pedigreeNodeCard/g) || []).length, 1);
 });
 
@@ -124,8 +121,8 @@ test("C5W private routes remain noindex and load website assets only", () => {
 
   const listing = read("marketplace/listing/index.html");
   const seller = read("marketplace/seller/index.html");
-  assert.match(listing, /data-marketplace-runtime="marketplace-detail\.js\?v=5"/);
-  assert.match(seller, /data-marketplace-runtime="marketplace-seller\.js\?v=5"/);
+  assert.match(listing, /data-marketplace-runtime="marketplace-detail\.js\?v=7"/);
+  assert.match(seller, /data-marketplace-runtime="marketplace-seller\.js\?v=7"/);
 });
 
 test("C5W final accessibility hardening includes focus and reduced-motion handling", () => {

@@ -1,11 +1,12 @@
 (() => {
   "use strict";
 
-  const BUCKET = "marketplace-public";
-  const root = document.getElementById("marketplace-owner-root");
+  const root = document.getElementById("marketplace-root");
   const context = window.HerdHarborMarketplaceContext;
-  if (!root || !context?.client || context.role !== "owner") return;
+  if (!root || !context?.client) return;
 
+  const { client } = context;
+  const interactive = context.isAuthenticated && context.accountStatus === "active" && context.marketplaceAccessReady === true;
   let mediaRecoveryAttempted = false;
 
   const clean = (value) => String(value ?? "").trim();
@@ -25,9 +26,23 @@
   }
 
   async function rpc(name, args) {
-    const { data, error } = await context.client.rpc(name, args);
+    const { data, error } = await client.rpc(name, args);
     if (error) throw error;
     return data;
+  }
+
+  function accountUrl(next) {
+    return "/marketplace/account/?next=" + encodeURIComponent(next);
+  }
+
+  function blockUnavailableInteraction(next) {
+    if (interactive) return false;
+    if (context.marketplaceSuspended) {
+      globalThis.alert("Your Marketplace access is suspended. You can continue browsing, but messaging, favorites, reports, and seller tools are disabled.");
+      return true;
+    }
+    window.location.assign(context.isAuthenticated ? "https://app.herdharbor.com/" : accountUrl(next));
+    return true;
   }
 
   function money(cents, currency = "USD") {
@@ -51,14 +66,12 @@
   }
 
   async function gallery(listingId) {
-    const rows = await rpc("marketplace_owner_preview_media", { listing_ids_value: [listingId] });
-    const paths = Array.isArray(rows) && Array.isArray(rows[0]?.photo_paths) ? rows[0].photo_paths : [];
-    const urls = [];
-    for (const path of paths.slice(0, 6)) {
-      const { data, error } = await context.client.storage.from(BUCKET).createSignedUrl(path, 900);
-      if (!error && data?.signedUrl) urls.push(data.signedUrl);
-    }
-    return urls;
+    const { data, error } = await client.functions.invoke("marketplace-public-media", {
+      body: { action: "listing", listingIds: [listingId], maxPerListing: 6 }
+    });
+    if (error) throw error;
+    const urls = data?.listings?.[listingId];
+    return Array.isArray(urls) ? urls.filter(Boolean).slice(0, 6) : [];
   }
 
   function fact(label, value) {
@@ -87,7 +100,6 @@
           : status === "malformed-reference"
             ? "Invalid linked ancestor"
             : "Unknown ancestor";
-
       return `
         <article class="marketplace-pedigree-node is-empty" data-status="${esc(status)}">
           <span class="marketplace-pedigree-relation">${esc(relation)}</span>
@@ -115,30 +127,13 @@
     `;
   }
 
-  function unavailablePedigreeMessage(reason) {
-    switch (clean(reason)) {
-      case "hidden":
-        return "The seller has not shared a pedigree preview for this listing.";
-      case "no_linked_source":
-        return "This manual listing is not linked to a HerdHarbor animal pedigree.";
-      case "source_missing":
-        return "The linked HerdHarbor animal is no longer available for pedigree preview.";
-      case "source_unavailable":
-        return "The linked pedigree source is temporarily unavailable.";
-      case "not_available":
-        return "This listing is not currently available for pedigree preview.";
-      default:
-        return "Pedigree preview is not available for this listing.";
-    }
-  }
-
-  function renderPedigreeSnapshot(dialog, payload) {
+  function renderPedigree(dialog, payload) {
     const body = dialog.querySelector("[data-pedigree-body]");
     const snapshot = payload?.snapshot && typeof payload.snapshot === "object" ? payload.snapshot : null;
     const nodes = Array.isArray(snapshot?.nodes) ? snapshot.nodes : [];
 
     if (!payload?.available || !snapshot || !nodes.length) {
-      body.innerHTML = '<div class="marketplace-notice">' + esc(unavailablePedigreeMessage(payload?.reason)) + '</div>';
+      body.innerHTML = '<div class="marketplace-notice">This seller has not shared a pedigree preview for this listing.</div>';
       return;
     }
 
@@ -149,50 +144,23 @@
       grouped.get(generation).push(node);
     }
 
-    const sections = [...grouped.entries()]
-      .sort((a, b) => a[0] - b[0])
-      .map(([generation, generationNodes]) => `
-        <section class="marketplace-pedigree-generation" aria-labelledby="marketplace-pedigree-generation-${generation}">
-          <h3 id="marketplace-pedigree-generation-${generation}">${esc(generationLabel(generation))}</h3>
-          <div class="marketplace-pedigree-generation-grid">
-            ${generationNodes.map(pedigreeNodeCard).join("")}
-          </div>
-        </section>
-      `).join("");
-
     body.innerHTML = `
       <div class="marketplace-pedigree-meta">
         <span>${esc(String(snapshot.generations || ""))} generations</span>
-        <span>Canonical engine ${esc(snapshot.engineVersion || "")}</span>
+        <span>HerdHarbor pedigree</span>
       </div>
-      <p class="marketplace-help">Read-only sanitized lineage snapshot. Private notes, health data, contact details, photos, internal IDs, and sync metadata are not included.</p>
-      <div class="marketplace-pedigree-scroll">${sections}</div>
+      <p class="marketplace-help">Read-only public pedigree snapshot. Private herd notes, health data, contact details, photos, internal IDs, and sync metadata are not included.</p>
+      <div class="marketplace-pedigree-scroll">
+        ${[...grouped.entries()].sort((a,b) => a[0]-b[0]).map(([generation,nodesForGeneration]) => `
+          <section class="marketplace-pedigree-generation" aria-labelledby="marketplace-pedigree-generation-${generation}">
+            <h3 id="marketplace-pedigree-generation-${generation}">${esc(generationLabel(generation))}</h3>
+            <div class="marketplace-pedigree-generation-grid">
+              ${nodesForGeneration.map(pedigreeNodeCard).join("")}
+            </div>
+          </section>
+        `).join("")}
+      </div>
     `;
-  }
-
-  async function loadPedigree(dialog, listingId) {
-    const body = dialog.querySelector("[data-pedigree-body]");
-    body.innerHTML = '<div class="marketplace-notice">Loading pedigree…</div>';
-
-    try {
-      let payload = await rpc("marketplace_owner_listing_pedigree_preview", {
-        listing_id_value: listingId
-      });
-
-      if (payload?.reason === "refresh_required") {
-        const { data, error } = await context.client.functions.invoke("marketplace-pedigree-snapshot", {
-          body: { listingId }
-        });
-        if (error) {
-          throw new Error("Pedigree snapshot service unavailable.");
-        }
-        payload = data && typeof data === "object" ? data : payload;
-      }
-
-      renderPedigreeSnapshot(dialog, payload);
-    } catch {
-      body.innerHTML = '<div class="marketplace-notice error">Pedigree preview could not be loaded. No private herd data was exposed.</div>';
-    }
   }
 
   function bindSignedImageRecovery() {
@@ -203,19 +171,48 @@
           start();
           return;
         }
-
         const primary = img.closest(".marketplace-gallery-primary");
-        if (primary) {
-          primary.outerHTML = '<div class="marketplace-gallery-fallback">HH</div>';
-        } else {
-          img.remove();
-        }
+        if (primary) primary.outerHTML = '<div class="marketplace-gallery-fallback">HH</div>';
+        else img.remove();
       }, { once: true });
     });
   }
 
+  async function openConversation(listingId) {
+    const next = "/marketplace/listing/?id=" + encodeURIComponent(listingId) + "&message=1";
+    if (blockUnavailableInteraction(next)) return;
+
+    const conversationId = await rpc("marketplace_member_open_listing_conversation", {
+      listing_id_value: listingId
+    });
+    window.location.assign("/marketplace/messages/?id=" + encodeURIComponent(conversationId));
+  }
+
+  async function reportListing(listingId) {
+    const next = "/marketplace/listing/?id=" + encodeURIComponent(listingId);
+    if (blockUnavailableInteraction(next)) return;
+
+    const reason = clean(globalThis.prompt("Why are you reporting this listing?") || "");
+    if (!reason) return;
+    const details = clean(globalThis.prompt("Add details for the Marketplace admin (optional):") || "");
+
+    try {
+      await rpc("marketplace_member_submit_report", {
+        target_type_value: "listing",
+        target_id_value: listingId,
+        reason_value: reason,
+        details_value: details
+      });
+      globalThis.alert("Report submitted for review.");
+    } catch {
+      globalThis.alert("The report could not be submitted.");
+    }
+  }
+
   async function start() {
-    const listingId = new URLSearchParams(window.location.search).get("id") || "";
+    const params = new URLSearchParams(window.location.search);
+    const listingId = params.get("id") || "";
+
     if (!validUuid(listingId)) {
       root.innerHTML = '<section class="marketplace-empty-state"><h1>Listing not found</h1><p>This Marketplace link is invalid.</p><a class="button" href="/marketplace/">Back to Browse</a></section>';
       root.hidden = false;
@@ -226,12 +223,12 @@
     root.hidden = false;
 
     try {
-      const [detailData, photos, favoriteData] = await Promise.all([
-        rpc("marketplace_owner_listing_preview", { listing_id_value: listingId }),
-        gallery(listingId),
-        rpc("marketplace_owner_favorite_ids")
+      const [detailData, photos] = await Promise.all([
+        rpc("marketplace_public_listing_v2", { listing_id_value: listingId }),
+        gallery(listingId)
       ]);
       const listing = firstRow(detailData);
+
       if (!listing) {
         root.innerHTML = '<section class="marketplace-empty-state"><h1>Listing unavailable</h1><p>This listing is not currently available.</p><a class="button" href="/marketplace/">Back to Browse</a></section>';
         return;
@@ -239,13 +236,14 @@
 
       document.title = (clean(listing.animal_name) || "Marketplace Listing") + " — HerdHarbor";
 
-      const favorites = new Set(Array.isArray(favoriteData) ? favoriteData.map(String) : []);
-      const favorite = favorites.has(listingId);
       const sellerName = listing.rabbitry_name || listing.seller_display_name || "HerdHarbor seller";
       const location = [listing.location_city, listing.location_region].filter(Boolean).join(", ");
       const sellerLocation = [listing.seller_city, listing.seller_region].filter(Boolean).join(", ");
       const age = ageLabel(listing.dob);
       const verified = clean(listing.seller_verification_status).toLowerCase() === "verified";
+      const ownListing = context.isAuthenticated
+        && context.sellerPublicId
+        && String(context.sellerPublicId) === String(listing.seller_public_id);
 
       root.innerHTML = `
         <nav class="marketplace-detail-breadcrumb" aria-label="Breadcrumb">
@@ -267,7 +265,6 @@
                 <h1>${esc(listing.animal_name || "Unnamed listing")}</h1>
                 <p class="marketplace-detail-price">${esc(money(listing.price_cents, listing.currency))}</p>
               </div>
-              <button class="marketplace-favorite detail-favorite" type="button" id="listing-favorite" aria-pressed="${favorite ? "true" : "false"}" aria-label="${favorite ? "Remove from favorites" : "Add to favorites"}"><span aria-hidden="true">${favorite ? "♥" : "♡"}</span></button>
             </div>
 
             <dl class="listing-facts">
@@ -287,11 +284,19 @@
               <p>${esc(listing.description || "No description has been added.")}</p>
             </section>
 
+            <div class="marketplace-listing-contact-actions">
+              ${ownListing
+                ? '<span class="marketplace-notice">This is your listing.</span>'
+                : `<button class="button" type="button" id="marketplace-message-seller">${interactive ? "Message seller" : context.marketplaceSuspended ? "Marketplace suspended" : "Sign in to message seller"}</button>`}
+              <button class="button button-secondary button-small" type="button" id="marketplace-favorite-listing">♡ ${interactive ? "Save listing" : context.marketplaceSuspended ? "Marketplace suspended" : "Sign in to save"}</button>
+              <button class="button button-secondary button-small" type="button" id="marketplace-report-listing">${interactive ? "Report listing" : context.marketplaceSuspended ? "Marketplace suspended" : "Sign in to report"}</button>
+            </div>
+
             <section class="listing-pedigree-callout">
               <div>
                 <p class="eyebrow">HerdHarbor Pedigree</p>
                 <h2>Recorded lineage preview</h2>
-                <p>View a read-only sanitized snapshot generated from HerdHarbor's canonical pedigree engine.</p>
+                <p>View the public read-only pedigree snapshot the seller chose to share.</p>
               </div>
               <button class="button button-secondary" type="button" id="view-marketplace-pedigree">View HerdHarbor Pedigree</button>
             </section>
@@ -324,6 +329,48 @@
 
       bindSignedImageRecovery();
 
+      const messageButton = root.querySelector("#marketplace-message-seller");
+      messageButton?.addEventListener("click", () => {
+        openConversation(listingId).catch(() => {
+          globalThis.alert("The seller conversation could not be opened.");
+        });
+      });
+
+      const favoriteButton = root.querySelector("#marketplace-favorite-listing");
+      let favorite = false;
+      if (interactive && favoriteButton) {
+        try {
+          const ids = await rpc("marketplace_member_favorite_ids");
+          favorite = Array.isArray(ids) && ids.map(String).includes(String(listingId));
+          favoriteButton.textContent = favorite ? "♥ Saved" : "♡ Save listing";
+          favoriteButton.setAttribute("aria-pressed", String(favorite));
+        } catch {}
+      }
+
+      favoriteButton?.addEventListener("click", async () => {
+        const next = "/marketplace/listing/?id=" + encodeURIComponent(listingId);
+        if (blockUnavailableInteraction(next)) return;
+
+        favoriteButton.disabled = true;
+        try {
+          favorite = !favorite;
+          await rpc("marketplace_member_toggle_favorite", {
+            listing_id_value: listingId,
+            favorite_value: favorite
+          });
+          favoriteButton.textContent = favorite ? "♥ Saved" : "♡ Save listing";
+          favoriteButton.setAttribute("aria-pressed", String(favorite));
+        } catch {
+          favorite = !favorite;
+        } finally {
+          favoriteButton.disabled = false;
+        }
+      });
+
+      root.querySelector("#marketplace-report-listing")?.addEventListener("click", () => {
+        reportListing(listingId);
+      });
+
       const pedigreeButton = root.querySelector("#view-marketplace-pedigree");
       const pedigreeDialog = root.querySelector("#marketplace-pedigree-dialog");
       const closePedigree = root.querySelector("[data-close-pedigree]");
@@ -333,7 +380,15 @@
         if (typeof pedigreeDialog.showModal === "function") pedigreeDialog.showModal();
         else pedigreeDialog.setAttribute("open", "");
         closePedigree?.focus();
-        await loadPedigree(pedigreeDialog, listingId);
+
+        const body = pedigreeDialog.querySelector("[data-pedigree-body]");
+        body.innerHTML = '<div class="marketplace-notice">Loading pedigree…</div>';
+        try {
+          const payload = await rpc("marketplace_public_pedigree_v2", { listing_id_value: listingId });
+          renderPedigree(pedigreeDialog, payload);
+        } catch {
+          body.innerHTML = '<div class="marketplace-notice error">Pedigree preview could not be loaded.</div>';
+        }
       });
 
       closePedigree?.addEventListener("click", () => {
@@ -349,22 +404,9 @@
         pedigreeButton?.focus();
       });
 
-      const favoriteButton = root.querySelector("#listing-favorite");
-      favoriteButton?.addEventListener("click", async () => {
-        const next = favoriteButton.getAttribute("aria-pressed") !== "true";
-        favoriteButton.disabled = true;
-        try {
-          await rpc("marketplace_owner_toggle_favorite", {
-            listing_id_value: listingId,
-            favorite_value: next
-          });
-          favoriteButton.setAttribute("aria-pressed", String(next));
-          favoriteButton.setAttribute("aria-label", next ? "Remove from favorites" : "Add to favorites");
-          favoriteButton.querySelector("span").textContent = next ? "♥" : "♡";
-        } finally {
-          favoriteButton.disabled = false;
-        }
-      });
+      if (params.get("message") === "1" && interactive && !ownListing) {
+        await openConversation(listingId);
+      }
     } catch {
       root.innerHTML = '<section class="marketplace-empty-state"><h1>Listing unavailable</h1><p>The listing could not be loaded. Try again.</p><a class="button" href="/marketplace/">Back to Browse</a></section>';
     }

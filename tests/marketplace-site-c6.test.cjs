@@ -7,11 +7,11 @@ const root = path.resolve(__dirname, "..");
 const read = (file) => fs.readFileSync(path.join(root, file), "utf8");
 
 test("C6W Admin tab is injected only inside the verified Owner shell", () => {
-  const shell = read("marketplace/marketplace-owner-shell.js");
+  const shell = read("marketplace/marketplace-shell.js");
   const index = read("marketplace/index.html");
-  assert.match(shell, /context\.role !== "owner"/);
+  assert.match(shell, /const owner = interactive && context\.role === "owner"/);
   assert.match(shell, /data-marketplace-view="admin"/);
-  assert.match(shell, /marketplace-admin\.js\?v=6/);
+  assert.match(shell, /marketplace-admin\.js\?v=7/);
   assert.match(shell, /#admin/);
   assert.doesNotMatch(index, />Admin</);
   assert.doesNotMatch(index, /marketplace-admin\.js/);
@@ -20,13 +20,13 @@ test("C6W Admin tab is injected only inside the verified Owner shell", () => {
 test("C6W admin browser code uses Owner RPCs only and never reads moderation tables directly", () => {
   const source = read("marketplace/marketplace-admin.js");
   for (const fn of [
-    "marketplace_owner_admin_summary",
-    "marketplace_owner_admin_reports",
+    "marketplace_owner_admin_summary_v2",
+    "marketplace_owner_admin_reports_v2",
     "marketplace_owner_admin_sellers",
     "marketplace_owner_admin_listings",
     "marketplace_owner_admin_moderate_listing",
     "marketplace_owner_admin_moderate_seller",
-    "marketplace_owner_admin_resolve_report",
+    "marketplace_owner_admin_resolve_report_v2",
     "marketplace_owner_admin_history"
   ]) assert.match(source, new RegExp(fn));
 
@@ -51,19 +51,21 @@ test("C6W listing moderation restores only to draft and never directly republish
   assert.doesNotMatch(source, /data-listing-action="available"/);
 });
 
-test("C6W seller suspension explicitly preserves the HerdHarbor account", () => {
+test("C6/C7 moderation preserves the main HerdHarbor account while separating seller and account suspension", () => {
   const source = read("marketplace/marketplace-admin.js");
-  assert.match(source, /Their HerdHarbor account remains active/);
-  assert.match(source, /Marketplace access only/);
+  assert.match(source, /None of these controls disable the main HerdHarbor account/);
+  assert.match(source, /The account can still browse and message unless you use a full Marketplace account suspension/);
+  assert.match(source, /Block this account from Marketplace messaging, favorites, seller tools/);
+  assert.match(source, /Their main HerdHarbor account stays active/);
   assert.doesNotMatch(source, /deleteUser|banUser|auth\.admin|account_access/i);
 });
 
 test("C6W report queue supports remove listing, suspend seller, resolve, and dismiss", () => {
   const source = read("marketplace/marketplace-admin.js");
-  for (const action of ["remove_listing","suspend_seller","resolve","dismiss"]) {
+  for (const action of ["remove_listing","suspend_seller","suspend_account","resolve","dismiss"]) {
     assert.match(source, new RegExp('data-report-action="' + action + '"'));
   }
-  assert.match(source, /marketplace_owner_admin_resolve_report/);
+  assert.match(source, /marketplace_owner_admin_resolve_report_v2/);
 });
 
 test("C6W audit log is read-only in the browser", () => {
@@ -86,13 +88,13 @@ test("C6W changed shared assets have new identities", () => {
   const index = read("marketplace/index.html");
   const listing = read("marketplace/listing/index.html");
   const seller = read("marketplace/seller/index.html");
-  assert.match(gate, /marketplace-owner-shell\.js\?v=6/);
-  assert.match(index, /marketplace\.css\?v=6/);
-  assert.match(index, /marketplace-gate\.js\?v=6/);
-  assert.match(listing, /marketplace\.css\?v=6/);
-  assert.match(listing, /marketplace-gate\.js\?v=6/);
-  assert.match(seller, /marketplace\.css\?v=6/);
-  assert.match(seller, /marketplace-gate\.js\?v=6/);
+  assert.match(gate, /marketplace-shell\.js\?v=7/);
+  assert.match(index, /marketplace\.css\?v=7/);
+  assert.match(index, /marketplace-gate\.js\?v=7/);
+  assert.match(listing, /marketplace\.css\?v=7/);
+  assert.match(listing, /marketplace-gate\.js\?v=7/);
+  assert.match(seller, /marketplace\.css\?v=7/);
+  assert.match(seller, /marketplace-gate\.js\?v=7/);
 });
 
 test("C6W admin remains responsive and keyboard accessible", () => {
