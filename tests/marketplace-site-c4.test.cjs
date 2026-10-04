@@ -15,7 +15,7 @@ test("C4W Browse is the default real Marketplace experience with required filter
   assert.match(shell, /marketplace-browse\.js\?v=\d+/);
   assert.match(source, /marketplace_public_search_v2/);
   assert.match(source, /marketplace_public_facets_v2/);
-  assert.match(source, /marketplace_public_listing_media_v2/);
+  assert.match(source, /functions\.invoke\("marketplace-public-media"/);
   assert.match(source, /marketplace_member_favorite_ids/);
   assert.match(source, /marketplace_member_toggle_favorite/);
 
@@ -47,7 +47,7 @@ test("C4W direct listing route uses only privacy-safe detail and private media R
   assert.match(source, /marketplace_public_listing_v2/);
   assert.match(source, /marketplace_public_listing_media_v2/);
   assert.match(source, /marketplace_member_favorite_ids/);
-  assert.match(source, /createSignedUrl\(path, 300\)/);
+  assert.doesNotMatch(source, /createSignedUrl|storage\.from\("marketplace-public"\)/);
   assert.match(source, /View HerdHarbor Pedigree/);
   assert.match(source, /\/marketplace\/seller\/\?id=/);
   assert.doesNotMatch(source, /source_animal_id|seller_id\b|user_id\b|exact_address|email|phone|medical|acquisition/i);
