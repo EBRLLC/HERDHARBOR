@@ -39,6 +39,11 @@
   }
 
   if (!interactive) {
+    if (context.marketplaceSuspended) {
+      root.innerHTML = '<section class="marketplace-empty-state"><h1>Marketplace access suspended</h1><p>You can continue browsing Marketplace, but private messages and other Marketplace interaction are disabled while this suspension is active.</p><a class="button" href="/marketplace/">Back to Browse</a></section>';
+      root.hidden = false;
+      return;
+    }
     window.location.assign(context.isAuthenticated ? "https://app.herdharbor.com/" : accountUrl());
     return;
   }
