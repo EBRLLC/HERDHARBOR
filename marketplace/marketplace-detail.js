@@ -6,6 +6,8 @@
   const context = window.HerdHarborMarketplaceContext;
   if (!root || !context?.client || context.role !== "owner") return;
 
+  let mediaRecoveryAttempted = false;
+
   const clean = (value) => String(value ?? "").trim();
   const esc = (value) => String(value ?? "")
     .replaceAll("&", "&amp;")
@@ -64,17 +66,33 @@
     return '<div class="listing-fact"><dt>' + esc(label) + '</dt><dd>' + esc(value) + '</dd></div>';
   }
 
+  function generationLabel(index) {
+    if (index === 0) return "Animal";
+    if (index === 1) return "Parents";
+    if (index === 2) return "Grandparents";
+    if (index === 3) return "Great-grandparents";
+    return "Generation " + (index + 1);
+  }
+
   function pedigreeNodeCard(node) {
     const animal = node?.animal && typeof node.animal === "object" ? node.animal : null;
     const status = clean(node?.status || "unknown");
-    const label = clean(node?.relation || node?.key || "Pedigree slot");
+    const relation = clean(node?.relation || node?.key || "Pedigree slot");
+
     if (!animal) {
+      const statusText = status === "cycle"
+        ? "Circular reference"
+        : status === "missing-reference"
+          ? "Missing linked ancestor"
+          : status === "malformed-reference"
+            ? "Invalid linked ancestor"
+            : "Unknown ancestor";
+
       return `
         <article class="marketplace-pedigree-node is-empty" data-status="${esc(status)}">
-          <span class="marketplace-pedigree-relation">${esc(label)}</span>
-          <strong>${status === "repeat" ? "Repeated ancestor" : "Unknown"}</strong>
+          <span class="marketplace-pedigree-relation">${esc(relation)}</span>
+          <strong>${esc(statusText)}</strong>
         </article>
-
       `;
     }
 
@@ -89,7 +107,7 @@
 
     return `
       <article class="marketplace-pedigree-node" data-status="${esc(status)}">
-        <span class="marketplace-pedigree-relation">${esc(label)}</span>
+        <span class="marketplace-pedigree-relation">${esc(relation)}</span>
         <strong>${esc(animal.name || "Unnamed ancestor")}</strong>
         ${details.length ? `<span>${esc(details.join(" · "))}</span>` : ""}
         ${status === "repeat" && node.repeatOf ? `<span class="marketplace-pedigree-repeat">Repeated from ${esc(node.repeatOf)}</span>` : ""}
@@ -97,40 +115,103 @@
     `;
   }
 
+  function unavailablePedigreeMessage(reason) {
+    switch (clean(reason)) {
+      case "hidden":
+        return "The seller has not shared a pedigree preview for this listing.";
+      case "no_linked_source":
+        return "This manual listing is not linked to a HerdHarbor animal pedigree.";
+      case "source_missing":
+        return "The linked HerdHarbor animal is no longer available for pedigree preview.";
+      case "source_unavailable":
+        return "The linked pedigree source is temporarily unavailable.";
+      case "not_available":
+        return "This listing is not currently available for pedigree preview.";
+      default:
+        return "Pedigree preview is not available for this listing.";
+    }
+  }
+
   function renderPedigreeSnapshot(dialog, payload) {
+    const body = dialog.querySelector("[data-pedigree-body]");
     const snapshot = payload?.snapshot && typeof payload.snapshot === "object" ? payload.snapshot : null;
     const nodes = Array.isArray(snapshot?.nodes) ? snapshot.nodes : [];
+
     if (!payload?.available || !snapshot || !nodes.length) {
-      dialog.querySelector("[data-pedigree-body]").innerHTML =
-        '<div class="marketplace-notice">Pedigree preview is not available for this listing.</div>';
+      body.innerHTML = '<div class="marketplace-notice">' + esc(unavailablePedigreeMessage(payload?.reason)) + '</div>';
       return;
     }
 
     const grouped = new Map();
     for (const node of nodes) {
-      const generation = Number(node?.generation) || 0;
+      const generation = Math.max(0, Number(node?.generation) || 0);
       if (!grouped.has(generation)) grouped.set(generation, []);
       grouped.get(generation).push(node);
     }
 
-    const rows = [...grouped.entries()]
+    const sections = [...grouped.entries()]
       .sort((a, b) => a[0] - b[0])
       .map(([generation, generationNodes]) => `
-        <section class="marketplace-pedigree-generation">
-          <h3>Generation ${generation + 1}</h3>
+        <section class="marketplace-pedigree-generation" aria-labelledby="marketplace-pedigree-generation-${generation}">
+          <h3 id="marketplace-pedigree-generation-${generation}">${esc(generationLabel(generation))}</h3>
           <div class="marketplace-pedigree-generation-grid">
             ${generationNodes.map(pedigreeNodeCard).join("")}
           </div>
         </section>
       `).join("");
 
-    dialog.querySelector("[data-pedigree-body]").innerHTML = `
+    body.innerHTML = `
       <div class="marketplace-pedigree-meta">
         <span>${esc(String(snapshot.generations || ""))} generations</span>
-        <span>Engine ${esc(snapshot.engineVersion || "")}</span>
+        <span>Canonical engine ${esc(snapshot.engineVersion || "")}</span>
       </div>
-      ${rows}
+      <p class="marketplace-help">Read-only sanitized lineage snapshot. Private notes, health data, contact details, photos, internal IDs, and sync metadata are not included.</p>
+      <div class="marketplace-pedigree-scroll">${sections}</div>
     `;
+  }
+
+  async function loadPedigree(dialog, listingId) {
+    const body = dialog.querySelector("[data-pedigree-body]");
+    body.innerHTML = '<div class="marketplace-notice">Loading pedigree…</div>';
+
+    try {
+      let payload = await rpc("marketplace_owner_listing_pedigree_preview", {
+        listing_id_value: listingId
+      });
+
+      if (payload?.reason === "refresh_required") {
+        const { data, error } = await context.client.functions.invoke("marketplace-pedigree-snapshot", {
+          body: { listingId }
+        });
+        if (error) {
+          throw new Error("Pedigree snapshot service unavailable.");
+        }
+        payload = data && typeof data === "object" ? data : payload;
+      }
+
+      renderPedigreeSnapshot(dialog, payload);
+    } catch {
+      body.innerHTML = '<div class="marketplace-notice error">Pedigree preview could not be loaded. No private herd data was exposed.</div>';
+    }
+  }
+
+  function bindSignedImageRecovery() {
+    root.querySelectorAll(".marketplace-gallery img").forEach((img) => {
+      img.addEventListener("error", () => {
+        if (!mediaRecoveryAttempted) {
+          mediaRecoveryAttempted = true;
+          start();
+          return;
+        }
+
+        const primary = img.closest(".marketplace-gallery-primary");
+        if (primary) {
+          primary.outerHTML = '<div class="marketplace-gallery-fallback">HH</div>';
+        } else {
+          img.remove();
+        }
+      }, { once: true });
+    });
   }
 
   async function start() {
@@ -141,7 +222,7 @@
       return;
     }
 
-    root.innerHTML = '<article class="marketplace-placeholder-card"><p>Loading listing…</p></article>';
+    root.innerHTML = '<article class="marketplace-placeholder-card" aria-busy="true"><p>Loading listing…</p></article>';
     root.hidden = false;
 
     try {
@@ -156,6 +237,8 @@
         return;
       }
 
+      document.title = (clean(listing.animal_name) || "Marketplace Listing") + " — HerdHarbor";
+
       const favorites = new Set(Array.isArray(favoriteData) ? favoriteData.map(String) : []);
       const favorite = favorites.has(listingId);
       const sellerName = listing.rabbitry_name || listing.seller_display_name || "HerdHarbor seller";
@@ -168,6 +251,7 @@
         <nav class="marketplace-detail-breadcrumb" aria-label="Breadcrumb">
           <a href="/marketplace/">Marketplace</a><span aria-hidden="true">/</span><span>${esc(listing.animal_name || "Listing")}</span>
         </nav>
+
         <article class="marketplace-detail-layout">
           <section class="marketplace-gallery" aria-label="Listing photos">
             ${photos.length
@@ -207,7 +291,7 @@
               <div>
                 <p class="eyebrow">HerdHarbor Pedigree</p>
                 <h2>Recorded lineage preview</h2>
-                <p>Pedigree preview is connected to HerdHarbor's canonical lineage system in the final Marketplace phase.</p>
+                <p>View a read-only sanitized snapshot generated from HerdHarbor's canonical pedigree engine.</p>
               </div>
               <button class="button button-secondary" type="button" id="view-marketplace-pedigree">View HerdHarbor Pedigree</button>
             </section>
@@ -232,56 +316,41 @@
               <button class="button button-secondary button-small" type="button" data-close-pedigree>Close</button>
             </div>
             <div data-pedigree-body aria-live="polite">
-              <div class="marketplace-notice">Loading pedigree…</div>
+              <div class="marketplace-notice">Pedigree has not been loaded yet.</div>
             </div>
           </div>
         </dialog>
       `;
 
+      bindSignedImageRecovery();
+
       const pedigreeButton = root.querySelector("#view-marketplace-pedigree");
       const pedigreeDialog = root.querySelector("#marketplace-pedigree-dialog");
       const closePedigree = root.querySelector("[data-close-pedigree]");
 
-      async function loadPedigree() {
-        const body = pedigreeDialog?.querySelector("[data-pedigree-body]");
-        if (!pedigreeDialog || !body) return;
-        body.innerHTML = '<div class="marketplace-notice">Loading pedigree…</div>';
-
-        try {
-          let payload = await rpc("marketplace_owner_listing_pedigree_preview", {
-            listing_id_value: listingId
-          });
-
-          if (payload?.reason === "refresh_required") {
-            const { data, error } = await context.client.functions.invoke("marketplace-pedigree-snapshot", {
-              body: { listingId }
-            });
-            if (!error && data?.available) {
-              payload = await rpc("marketplace_owner_listing_pedigree_preview", {
-                listing_id_value: listingId
-              });
-            }
-          }
-
-          renderPedigreeSnapshot(pedigreeDialog, payload);
-        } catch {
-          body.innerHTML = '<div class="marketplace-notice error">Pedigree preview could not be loaded. No private herd data was exposed.</div>';
-        }
-      }
-
       pedigreeButton?.addEventListener("click", async () => {
         if (!pedigreeDialog) return;
-        pedigreeDialog.showModal();
-        await loadPedigree();
+        if (typeof pedigreeDialog.showModal === "function") pedigreeDialog.showModal();
+        else pedigreeDialog.setAttribute("open", "");
+        closePedigree?.focus();
+        await loadPedigree(pedigreeDialog, listingId);
       });
 
-      closePedigree?.addEventListener("click", () => pedigreeDialog?.close());
+      closePedigree?.addEventListener("click", () => {
+        if (typeof pedigreeDialog?.close === "function") pedigreeDialog.close();
+        else pedigreeDialog?.removeAttribute("open");
+        pedigreeButton?.focus();
+      });
+
       pedigreeDialog?.addEventListener("click", (event) => {
-        if (event.target === pedigreeDialog) pedigreeDialog.close();
+        if (event.target !== pedigreeDialog) return;
+        if (typeof pedigreeDialog.close === "function") pedigreeDialog.close();
+        else pedigreeDialog.removeAttribute("open");
+        pedigreeButton?.focus();
       });
 
       const favoriteButton = root.querySelector("#listing-favorite");
-      favoriteButton.addEventListener("click", async () => {
+      favoriteButton?.addEventListener("click", async () => {
         const next = favoriteButton.getAttribute("aria-pressed") !== "true";
         favoriteButton.disabled = true;
         try {
