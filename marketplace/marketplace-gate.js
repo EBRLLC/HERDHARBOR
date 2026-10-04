@@ -5,7 +5,7 @@
   const SUPABASE_PUBLISHABLE_KEY = "sb_publishable_jxsX6uS9nnh2FOFtlSF9TA_8v6C7C09";
   const gateScript = document.currentScript;
   const MARKETPLACE_BASE = new URL("./", gateScript?.src || new URL("./", window.location.href));
-  const runtimeFile = document.documentElement.dataset.marketplaceRuntime || "marketplace-owner-shell.js?v=4";
+  const runtimeFile = document.documentElement.dataset.marketplaceRuntime || "marketplace-owner-shell.js?v=5";
   const OWNER_RUNTIME = new URL(runtimeFile, MARKETPLACE_BASE).href;
 
   const statusNode = document.getElementById("marketplace-gate-status");
@@ -104,7 +104,7 @@
   async function signOut() {
     await client?.auth?.signOut?.();
     window.HerdHarborMarketplaceContext = undefined;
-    showSignedOut("Signed out. Sign in with the protected HerdHarbor Owner account to continue.");
+    window.location.reload();
   }
 
   async function start() {
@@ -123,6 +123,14 @@
 
     formNode?.addEventListener("submit", signIn);
     signOutNode?.addEventListener("click", signOut);
+
+    client.auth.onAuthStateChange((event) => {
+      if (event === "SIGNED_OUT" && document.documentElement.dataset.marketplaceAccess === "owner") {
+        window.HerdHarborMarketplaceContext = undefined;
+        window.location.reload();
+      }
+    });
+
     await verifyOwnerSession();
   }
 
