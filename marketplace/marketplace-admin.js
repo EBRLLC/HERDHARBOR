@@ -238,11 +238,14 @@
                 <div class="marketplace-admin-report-copy">
                   <strong>${esc(report.reason || "No reason supplied")}</strong>
                   ${clean(report.details) ? `<p>${esc(report.details)}</p>` : ""}
+                  ${clean(report.target_excerpt) ? `<p><strong>Reported content:</strong> ${esc(report.target_excerpt)}</p>` : ""}
+                  ${clean(report.reported_label) ? `<p><strong>Reported account:</strong> ${esc(report.reported_label)}</p>` : ""}
                 </div>
                 ${open ? `
                   <div class="marketplace-admin-actions">
                     ${targetType === "listing" && targetState !== "removed" ? `<button type="button" class="button button-danger button-small" data-report-action="remove_listing" data-report-id="${esc(report.report_id)}">Remove listing</button>` : ""}
                     ${targetType === "user" && targetState !== "suspended" ? `<button type="button" class="button button-danger button-small" data-report-action="suspend_seller" data-report-id="${esc(report.report_id)}">Suspend seller</button>` : ""}
+                    ${report.can_suspend_account && !report.account_suspended ? `<button type="button" class="button button-danger button-small" data-report-action="suspend_account" data-report-id="${esc(report.report_id)}">Suspend Marketplace account</button>` : ""}
                     <button type="button" class="button button-secondary button-small" data-report-action="resolve" data-report-id="${esc(report.report_id)}">Resolve</button>
                     <button type="button" class="button button-secondary button-small" data-report-action="dismiss" data-report-id="${esc(report.report_id)}">Dismiss</button>
                   </div>
@@ -257,6 +260,7 @@
               const labels = {
                 remove_listing: ["Remove reported listing", "The listing will immediately leave Marketplace discovery.", "Remove listing"],
                 suspend_seller: ["Suspend reported seller", "The seller and their available listings will be hidden from Marketplace. Their HerdHarbor account remains active.", "Suspend seller"],
+                suspend_account: ["Suspend Marketplace account", "Block this account from Marketplace messaging, favorites, seller tools, and other interaction. Their main HerdHarbor account stays active.", "Suspend Marketplace account"],
                 resolve: ["Resolve report", "Close this report as resolved without changing the target.", "Resolve report"],
                 dismiss: ["Dismiss report", "Close this report as dismissed without changing the target.", "Dismiss report"]
               };
