@@ -971,3 +971,264 @@
     transition: none;
   }
 }
+
+
+/* Stack C6 — Owner Marketplace administration */
+.marketplace-tab-admin {
+  border-color: rgba(143,48,66,.28);
+}
+
+.marketplace-tab-admin[aria-current="page"] {
+  background: #7d3042;
+  border-color: #7d3042;
+}
+
+.marketplace-admin {
+  display: grid;
+  gap: 22px;
+}
+
+.marketplace-admin-badge {
+  display: inline-flex;
+  width: fit-content;
+  margin-bottom: 8px;
+  padding: 6px 9px;
+  color: #7d3042;
+  background: rgba(143,48,66,.09);
+  border: 1px solid rgba(143,48,66,.2);
+  border-radius: 999px;
+  font-size: .72rem;
+  font-weight: 900;
+  letter-spacing: .05em;
+  text-transform: uppercase;
+}
+
+.marketplace-admin-summary {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.marketplace-admin-stat {
+  display: grid;
+  gap: 4px;
+  padding: 18px;
+  background: rgba(255,255,255,.76);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+}
+
+.marketplace-admin-stat > span,
+.marketplace-admin-stat > small {
+  color: #65717e;
+}
+
+.marketplace-admin-stat > strong {
+  color: var(--navy);
+  font-size: 1.9rem;
+}
+
+.marketplace-admin-tabs {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  padding-bottom: 4px;
+  border-bottom: 1px solid var(--border);
+}
+
+.marketplace-admin-tab {
+  min-height: 42px;
+  padding: 9px 14px;
+  color: var(--navy);
+  background: transparent;
+  border: 0;
+  border-radius: 10px 10px 0 0;
+  font-weight: 900;
+}
+
+.marketplace-admin-tab[aria-current="page"] {
+  color: #fff;
+  background: var(--navy);
+}
+
+.marketplace-admin-view {
+  min-width: 0;
+}
+
+.marketplace-admin-toolbar {
+  display: flex;
+  align-items: end;
+  justify-content: space-between;
+  gap: 18px;
+  flex-wrap: wrap;
+  margin-bottom: 16px;
+}
+
+.marketplace-admin-toolbar h3 {
+  margin-bottom: 0;
+  font-size: 1.55rem;
+}
+
+.marketplace-admin-filter-row {
+  display: flex;
+  align-items: end;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.marketplace-admin-filter-row label,
+.marketplace-admin-toolbar > label {
+  min-width: 170px;
+}
+
+.marketplace-admin-list {
+  display: grid;
+  gap: 12px;
+}
+
+.marketplace-admin-card {
+  display: grid;
+  gap: 14px;
+  padding: 18px;
+  background: rgba(255,255,255,.78);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+}
+
+.marketplace-admin-card-heading {
+  display: flex;
+  align-items: start;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.marketplace-admin-card-heading h3 {
+  margin: 7px 0 5px;
+  font-size: 1.15rem;
+}
+
+.marketplace-admin-card-heading p,
+.marketplace-admin-card > p {
+  margin-bottom: 0;
+  color: #65717e;
+  font-size: .88rem;
+}
+
+.marketplace-admin-status {
+  display: inline-flex;
+  padding: 5px 8px;
+  color: var(--navy);
+  background: rgba(13,37,64,.08);
+  border-radius: 999px;
+  font-size: .68rem;
+  font-weight: 900;
+  text-transform: uppercase;
+}
+
+.marketplace-admin-status[data-state="open"],
+.marketplace-admin-status[data-state="suspended"],
+.marketplace-admin-status[data-state="removed"] {
+  color: #7d3042;
+  background: rgba(143,48,66,.1);
+}
+
+.marketplace-admin-status[data-state="active"],
+.marketplace-admin-status[data-state="resolved"],
+.marketplace-admin-status[data-state="available"] {
+  color: #245551;
+  background: rgba(46,125,123,.12);
+}
+
+.marketplace-admin-report-copy {
+  display: grid;
+  gap: 6px;
+}
+
+.marketplace-admin-report-copy p {
+  margin: 0;
+  white-space: pre-wrap;
+}
+
+.marketplace-admin-actions {
+  display: flex;
+  gap: 9px;
+  flex-wrap: wrap;
+}
+
+.button-danger {
+  color: white;
+  background: #7d3042;
+  border-color: #7d3042;
+}
+
+.button-danger:hover,
+.button-danger:focus-visible {
+  background: #682436;
+  border-color: #682436;
+}
+
+.marketplace-admin-metrics {
+  display: flex;
+  gap: 14px;
+  flex-wrap: wrap;
+  color: #65717e;
+  font-size: .84rem;
+}
+
+.marketplace-admin-price {
+  color: var(--teal);
+  font-weight: 900;
+}
+
+.marketplace-admin-dialog {
+  width: min(620px, 94vw);
+  max-width: 620px;
+  padding: 0;
+  color: var(--navy);
+  background: transparent;
+  border: 0;
+}
+
+.marketplace-admin-dialog::backdrop {
+  background: rgba(13,37,64,.72);
+  backdrop-filter: blur(3px);
+}
+
+.marketplace-admin-dialog-shell {
+  display: grid;
+  gap: 18px;
+  padding: clamp(22px, 4vw, 30px);
+  background: var(--cream);
+  border: 1px solid rgba(255,255,255,.35);
+  border-radius: 20px;
+  box-shadow: 0 24px 70px rgba(0,0,0,.3);
+}
+
+.marketplace-admin-dialog-shell textarea {
+  resize: vertical;
+}
+
+@media (max-width: 900px) {
+  .marketplace-admin-summary {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 640px) {
+  .marketplace-admin-summary {
+    grid-template-columns: 1fr;
+  }
+
+  .marketplace-admin-filter-row,
+  .marketplace-admin-filter-row label,
+  .marketplace-admin-filter-row .button,
+  .marketplace-admin-toolbar > label {
+    width: 100%;
+  }
+
+  .marketplace-admin-actions .button,
+  .marketplace-admin-actions a.button {
+    width: 100%;
+  }
+}
