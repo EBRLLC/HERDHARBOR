@@ -47,6 +47,26 @@
     `;
   }
 
+  function loadListings() {
+    if (window.HerdHarborMarketplaceListings?.mount) {
+      window.HerdHarborMarketplaceListings.mount(viewRoot, context);
+      return;
+    }
+
+    const existing = document.querySelector("script[data-marketplace-listings]");
+    if (existing) return;
+
+    const script = document.createElement("script");
+    script.src = "./marketplace-listings.js?v=1";
+    script.async = true;
+    script.dataset.marketplaceListings = "true";
+    script.addEventListener("load", () => window.HerdHarborMarketplaceListings?.mount?.(viewRoot, context), { once: true });
+    script.addEventListener("error", () => {
+      viewRoot.innerHTML = '<div class="marketplace-notice error">Listing management could not load.</div>';
+    }, { once: true });
+    document.body.appendChild(script);
+  }
+
   function loadProfile() {
     if (window.HerdHarborMarketplaceProfile?.mount) {
       window.HerdHarborMarketplaceProfile.mount(viewRoot, context);
@@ -70,6 +90,7 @@
   function show(view) {
     setCurrent(view);
     if (view === "profile") loadProfile();
+    else if (view === "listings") loadListings();
     else renderPlaceholder(view);
   }
 
