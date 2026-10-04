@@ -5,7 +5,7 @@
   const context = window.HerdHarborMarketplaceContext;
   if (!root || !context?.client) return;
 
-  const interactive = context.isAuthenticated && context.accountStatus === "active";
+  const interactive = context.isAuthenticated && context.accountStatus === "active" && context.marketplaceAccessReady === true;
   const owner = interactive && context.role === "owner";
 
   root.innerHTML = `
