@@ -7,7 +7,7 @@ const root = path.resolve(__dirname, "..");
 const read = (file) => fs.readFileSync(path.join(root, file), "utf8");
 
 test("C6W Admin tab is injected only inside the verified Owner shell", () => {
-  const shell = read("marketplace/marketplace-owner-shell.js");
+  const shell = read("marketplace/marketplace-shell.js");
   const index = read("marketplace/index.html");
   assert.match(shell, /const owner = interactive && context\.role === "owner"/);
   assert.match(shell, /data-marketplace-view="admin"/);
