@@ -315,14 +315,14 @@
               </select>
             </label>
             <label>Pedigree preview
-              <select name="pedigree_visibility">
+              <select name="pedigree_visibility" ${sourceId ? "" : "disabled"}>
                 ${option("hidden", listing?.pedigree_visibility || "hidden", "Hidden")}
                 ${option("parents", listing?.pedigree_visibility || "hidden", "Parents")}
                 ${option("3", listing?.pedigree_visibility || "hidden", "3 generations")}
                 ${option("4", listing?.pedigree_visibility || "hidden", "4 generations")}
                 ${option("5", listing?.pedigree_visibility || "hidden", "5 generations")}
               </select>
-              <span class="marketplace-help">Controls the read-only public-shaped pedigree snapshot. Private notes, health records, photos, and source IDs are never included.</span>
+              <span class="marketplace-help">${sourceId ? "Controls the read-only public-shaped pedigree snapshot. Private notes, health records, photos, and source IDs are never included." : "Pedigree preview requires a listing linked through Select From My Herd. Manual listings remain hidden."}</span>
             </label>
             <label>Registration
               <select name="registration_status">
@@ -388,7 +388,7 @@
             description_value: clean(form.elements.description.value),
             pedigree_status_value: form.elements.pedigree_status.value,
             registration_status_value: form.elements.registration_status.value,
-            pedigree_visibility_value: form.elements.pedigree_visibility.value,
+            pedigree_visibility_value: sourceId ? form.elements.pedigree_visibility.value : "hidden",
             listing_kind_value: form.elements.listing_kind.value,
             available_from_value: form.elements.available_from.value || null
           });
@@ -406,8 +406,8 @@
             if (previousPaths.length) await removePaths(client, previousPaths).catch(() => {});
           }
 
-          const visibility = form.elements.pedigree_visibility.value;
           const sourceAnimalId = clean(form.elements.source_animal_id.value);
+          const visibility = sourceAnimalId ? form.elements.pedigree_visibility.value : "hidden";
           const pedigreeRefresh = await refreshPedigreeSnapshot(client, savedId, visibility, sourceAnimalId);
 
           if (visibility !== "hidden" && sourceAnimalId && pedigreeRefresh?.error) {
