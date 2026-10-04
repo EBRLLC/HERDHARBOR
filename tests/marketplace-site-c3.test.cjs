@@ -10,17 +10,17 @@ test("C3W supports both manual and read-only herd-prefill listing paths", () => 
   const source = read("marketplace/marketplace-listings.js");
   assert.match(source, /Create Manual Listing/);
   assert.match(source, /Select From My Herd/);
-  assert.match(source, /marketplace_owner_herd_animals/);
-  assert.match(source, /marketplace_owner_save_listing/);
+  assert.match(source, /marketplace_member_herd_animals/);
+  assert.match(source, /marketplace_member_save_listing/);
   assert.match(source, /source_animal_id_value/);
   assert.match(source, /detached snapshot/i);
 });
 
 test("C3W uses Marketplace RPCs only and never private herd sync storage directly", () => {
   const source = read("marketplace/marketplace-listings.js");
-  assert.match(source, /marketplace_owner_listings/);
-  assert.match(source, /marketplace_owner_set_listing_photos/);
-  assert.match(source, /marketplace_owner_delete_listing/);
+  assert.match(source, /marketplace_member_listings/);
+  assert.match(source, /marketplace_member_set_listing_photos/);
+  assert.match(source, /marketplace_member_delete_listing/);
   assert.doesNotMatch(source, /HerdHarborStateStore|herdharbor_user_data|herdharbor_sync_records|cloud-sync|herdharbor-cloud/i);
   assert.doesNotMatch(source, /\.from\(["'](?:herdharbor_|account_access|subscriptions|billing)/i);
 });
@@ -28,13 +28,14 @@ test("C3W uses Marketplace RPCs only and never private herd sync storage directl
 test("C3W listing media is private signed media with strict client limits", () => {
   const source = read("marketplace/marketplace-listings.js");
   assert.match(source, /marketplace-public/);
-  assert.match(source, /createSignedUrl\(path, 900\)/);
+  assert.match(source, /createSignedUrl\(path, 300\)/);
   assert.match(source, /MAX_PHOTOS = 6/);
   assert.match(source, /8 \* 1024 \* 1024/);
   assert.match(source, /image\/jpeg/);
   assert.match(source, /image\/png/);
   assert.match(source, /image\/webp/);
-  assert.match(source, /userId.*listings.*listingId/s);
+  assert.match(source, /`listings\/\$\{listingId\}\/photo-/);
+  assert.doesNotMatch(source, /\$\{userId\}\/listings/);
   assert.doesNotMatch(source, /getPublicUrl/);
 });
 
@@ -47,17 +48,17 @@ test("C3W partial photo upload failures clean up files already uploaded", () => 
 
 test("C3W listing delete is explicitly isolated from source herd record", () => {
   const source = read("marketplace/marketplace-listings.js");
-  assert.match(source, /marketplace_owner_delete_listing/);
+  assert.match(source, /marketplace_member_delete_listing/);
   assert.match(source, /source HerdHarbor animal will not be changed/);
   assert.doesNotMatch(source, /\.from\(["']herdharbor_[^"']*["']\)[\s\S]{0,160}\.delete\(/i);
   assert.doesNotMatch(source, /rpc\([^\n]+(?:delete|remove)[_-](?:animal|herd)/i);
 });
 
-test("C3W listing runtime remains lazy-loaded behind Owner authorization", () => {
-  const shell = read("marketplace/marketplace-owner-shell.js");
+test("C3W listing runtime remains lazy-loaded behind active account authorization", () => {
+  const shell = read("marketplace/marketplace-shell.js");
   const html = read("marketplace/index.html");
-  assert.match(shell, /context\.role !== "owner"/);
-  assert.match(shell, /marketplace-listings\.js\?v=1/);
+  assert.match(shell, /const interactive = context\.isAuthenticated[\s\S]*?context\.accountStatus === "active"[\s\S]*?context\.marketplaceAccessReady === true/);
+  assert.match(shell, /marketplace-listings\.js\?v=7/);
   assert.match(shell, /data-marketplace-view="listings"/);
   assert.doesNotMatch(html, /marketplace-listings\.js/);
 });

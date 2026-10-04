@@ -21,21 +21,29 @@ jobs:
       - name: Verify Marketplace JavaScript syntax
         run: |
           node --check marketplace/marketplace-gate.js
-          node --check marketplace/marketplace-owner-shell.js
+          node --check marketplace/marketplace-shell.js
           node --check marketplace/marketplace-profile.js
           node --check marketplace/marketplace-listings.js
           node --check marketplace/marketplace-browse.js
           node --check marketplace/marketplace-detail.js
           node --check marketplace/marketplace-seller.js
+          node --check marketplace/marketplace-admin.js
+          node --check marketplace/account/marketplace-account.js
+          node --check marketplace/messages/marketplace-messages.js
       - name: Verify no broken internal Marketplace asset references
         run: |
           test -f marketplace/index.html
           test -f marketplace/marketplace.css
           test -f marketplace/marketplace-gate.js
-          test -f marketplace/marketplace-owner-shell.js
+          test -f marketplace/marketplace-shell.js
           test -f vendor/supabase-2.111.0.js
           test -f marketplace/listing/index.html
           test -f marketplace/seller/index.html
           test -f marketplace/marketplace-browse.js
           test -f marketplace/marketplace-detail.js
           test -f marketplace/marketplace-seller.js
+          test -f marketplace/marketplace-admin.js
+          test -f marketplace/account/index.html
+          test -f marketplace/account/marketplace-account.js
+          test -f marketplace/messages/index.html
+          test -f marketplace/messages/marketplace-messages.js

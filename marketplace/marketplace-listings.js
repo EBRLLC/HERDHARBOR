@@ -39,7 +39,7 @@
 
   async function signedUrl(client, path) {
     if (!path) return "";
-    const { data, error } = await client.storage.from(BUCKET).createSignedUrl(path, 900);
+    const { data, error } = await client.storage.from(BUCKET).createSignedUrl(path, 300);
     return error ? "" : (data?.signedUrl || "");
   }
 
@@ -49,7 +49,16 @@
     await client.storage.from(BUCKET).remove(safe);
   }
 
-  async function uploadPhotos(client, userId, listingId, files) {
+  async function refreshPedigreeSnapshot(client, listingId, visibility, sourceAnimalId) {
+    if (!listingId || visibility === "hidden" || !sourceAnimalId) return { available: false, skipped: true };
+    const { data, error } = await client.functions.invoke("marketplace-pedigree-snapshot", {
+      body: { listingId }
+    });
+    if (error) return { available: false, error };
+    return data && typeof data === "object" ? data : { available: false };
+  }
+
+  async function uploadPhotos(client, listingId, files) {
     const uploaded = [];
     try {
       for (const [index, file] of files.slice(0, MAX_PHOTOS).entries()) {
@@ -59,7 +68,7 @@
         }
 
         const token = globalThis.crypto?.randomUUID?.() || `${Date.now()}-${index}`;
-        const path = `${userId}/listings/${listingId}/photo-${index}-${token}.${ext}`;
+        const path = `listings/${listingId}/photo-${index}-${token}.${ext}`;
         const { error } = await client.storage.from(BUCKET).upload(path, file, {
           cacheControl: "3600",
           contentType: file.type,
@@ -88,9 +97,10 @@
     const firstPath = Array.isArray(listing.photo_paths) ? listing.photo_paths[0] : "";
     const photo = await signedUrl(client, firstPath);
     const location = [listing.location_city, listing.location_region].filter(Boolean).join(", ");
+    const removed = clean(listing.state).toLowerCase() === "removed";
 
     return `
-      <article class="marketplace-listing-card" data-listing-id="${esc(listing.id)}">
+      <article class="marketplace-listing-card ${removed ? "is-moderation-removed" : ""}" data-listing-id="${esc(listing.id)}">
         <div class="marketplace-listing-photo">
           ${photo ? `<img src="${esc(photo)}" alt="">` : '<div class="marketplace-listing-photo-empty">HH</div>'}
           <span class="marketplace-state-pill">${esc(listing.state || "draft")}</span>
@@ -100,9 +110,10 @@
           <h3>${esc(listing.animal_name || "Unnamed listing")}</h3>
           <p class="marketplace-card-meta">${esc([listing.breed, listing.variety_color, listing.sex].filter(Boolean).join(" · ") || listing.species || "Animal")}</p>
           <p class="marketplace-card-meta">${esc(location || "Location not set")}</p>
+          ${removed ? '<div class="marketplace-notice error">Removed by Marketplace moderation. This listing is locked until the Owner restores it to draft.</div>' : ""}
           <div class="marketplace-card-footer">
             <strong>${esc(priceLabel(listing))}</strong>
-            <button type="button" class="button button-secondary button-small" data-edit-listing="${esc(listing.id)}">Edit</button>
+            ${removed ? '<span class="marketplace-help">Locked</span>' : `<button type="button" class="button button-secondary button-small" data-edit-listing="${esc(listing.id)}">Edit</button>`}
           </div>
         </div>
       </article>
@@ -110,9 +121,9 @@
   }
 
   async function mount(root, context) {
-    if (!root || !context?.client || !context?.userId || context.role !== "owner") return;
+    if (!root || !context?.client || !context?.userId || !context.isAuthenticated || context.accountStatus !== "active" || context.marketplaceAccessReady !== true) return;
 
-    const { client, userId } = context;
+    const { client } = context;
     root.innerHTML = `
       <section class="marketplace-section-heading">
         <div>
@@ -135,7 +146,7 @@
     let herdAnimals = null;
 
     async function loadListings() {
-      const data = await rpc(client, "marketplace_owner_listings");
+      const data = await rpc(client, "marketplace_member_listings");
       listings = Array.isArray(data) ? data : [];
       const cards = await Promise.all(listings.map((listing) => listingCard(client, listing)));
       grid.innerHTML = cards.length
@@ -152,7 +163,7 @@
 
     async function loadHerdAnimals() {
       if (Array.isArray(herdAnimals)) return herdAnimals;
-      const data = await rpc(client, "marketplace_owner_herd_animals");
+      const data = await rpc(client, "marketplace_member_herd_animals");
       herdAnimals = Array.isArray(data) ? data : [];
       return herdAnimals;
     }
@@ -218,6 +229,13 @@
     }
 
     function openEditor(listing, sourceAnimal) {
+      if (clean(listing?.state).toLowerCase() === "removed") {
+        editor.hidden = false;
+        editor.innerHTML = '<div class="marketplace-notice error">This listing was removed by Marketplace moderation and cannot be edited or deleted by the seller. The Owner must restore it to draft first.</div>';
+        editor.scrollIntoView({ behavior: "smooth", block: "start" });
+        return;
+      }
+
       const listingId = clean(listing?.id);
       const sourceId = clean(listing?.source_animal_id || sourceAnimal?.source_animal_id);
       const asking = listing ? centsToMoney(listing.price_cents) : clean(sourceAnimal?.asking_price);
@@ -305,6 +323,16 @@
                 ${option("full", listing?.pedigree_status || "")}
               </select>
             </label>
+            <label>Pedigree preview
+              <select name="pedigree_visibility" ${sourceId ? "" : "disabled"}>
+                ${option("hidden", listing?.pedigree_visibility || "hidden", "Hidden")}
+                ${option("parents", listing?.pedigree_visibility || "hidden", "Parents")}
+                ${option("3", listing?.pedigree_visibility || "hidden", "3 generations")}
+                ${option("4", listing?.pedigree_visibility || "hidden", "4 generations")}
+                ${option("5", listing?.pedigree_visibility || "hidden", "5 generations")}
+              </select>
+              <span class="marketplace-help">${sourceId ? "Controls the read-only public-shaped pedigree snapshot. Private notes, health records, photos, and source IDs are never included." : "Pedigree preview requires a listing linked through Select From My Herd. Manual listings remain hidden."}</span>
+            </label>
             <label>Registration
               <select name="registration_status">
                 ${option("", listing?.registration_status || "", "Not specified")}
@@ -351,8 +379,21 @@
         setStatus("Saving…");
 
         let uploadedPaths = [];
+        let photosCommitted = false;
+        let listingRecordSaved = false;
+        let savedId = clean(form.elements.listing_id.value);
+
         try {
-          const savedId = await rpc(client, "marketplace_owner_save_listing", {
+          const files = [...(form.elements.photos.files || [])];
+          if (files.length > MAX_PHOTOS) throw new Error("Choose no more than six listing photos.");
+          for (const file of files) {
+            const ext = ALLOWED_IMAGE_TYPES.get(file.type);
+            if (!ext || file.size <= 0 || file.size > MAX_PHOTO_BYTES) {
+              throw new Error("Listing photos must be JPG, PNG, or WebP and no larger than 8 MB each.");
+            }
+          }
+
+          savedId = await rpc(client, "marketplace_member_save_listing", {
             listing_id_value: clean(form.elements.listing_id.value) || null,
             source_animal_id_value: clean(form.elements.source_animal_id.value) || null,
             state_value: form.elements.state.value,
@@ -369,31 +410,47 @@
             description_value: clean(form.elements.description.value),
             pedigree_status_value: form.elements.pedigree_status.value,
             registration_status_value: form.elements.registration_status.value,
-            pedigree_visibility_value: "hidden",
+            pedigree_visibility_value: sourceId ? form.elements.pedigree_visibility.value : "hidden",
             listing_kind_value: form.elements.listing_kind.value,
             available_from_value: form.elements.available_from.value || null
           });
-
-          const files = [...(form.elements.photos.files || [])];
-          if (files.length > MAX_PHOTOS) throw new Error("Choose no more than six listing photos.");
+          listingRecordSaved = true;
+          form.elements.listing_id.value = String(savedId || "");
 
           if (files.length) {
             const previousPaths = Array.isArray(listing?.photo_paths) ? listing.photo_paths.filter(Boolean) : [];
-            uploadedPaths = await uploadPhotos(client, userId, savedId, files);
-            await rpc(client, "marketplace_owner_set_listing_photos", {
+            uploadedPaths = await uploadPhotos(client, savedId, files);
+            await rpc(client, "marketplace_member_set_listing_photos", {
               listing_id_value: savedId,
               paths_value: uploadedPaths
             });
+            photosCommitted = true;
             if (previousPaths.length) await removePaths(client, previousPaths).catch(() => {});
           }
 
-          setStatus("Listing saved.", "success");
+          const sourceAnimalId = clean(form.elements.source_animal_id.value);
+          const visibility = sourceAnimalId ? form.elements.pedigree_visibility.value : "hidden";
+          const pedigreeRefresh = await refreshPedigreeSnapshot(client, savedId, visibility, sourceAnimalId);
+
+          if (visibility !== "hidden" && sourceAnimalId && pedigreeRefresh?.error) {
+            setStatus("Listing saved. Pedigree preview needs to be refreshed.", "error");
+          } else {
+            setStatus("Listing saved.", "success");
+          }
+
           editor.hidden = true;
           herdAnimals = null;
           await loadListings();
         } catch (error) {
-          if (uploadedPaths.length) await removePaths(client, uploadedPaths).catch(() => {});
-          setStatus(error?.message || "Listing could not be saved.", "error");
+          if (uploadedPaths.length && !photosCommitted) {
+            await removePaths(client, uploadedPaths).catch(() => {});
+          }
+          if (listingRecordSaved) {
+            setStatus("Listing details were saved, but a follow-up Marketplace update failed. Reopen the listing and retry the failed step.", "error");
+            await loadListings().catch(() => {});
+          } else {
+            setStatus(error?.message || "Listing could not be saved.", "error");
+          }
         } finally {
           submit.disabled = false;
         }
@@ -403,11 +460,27 @@
         if (!globalThis.confirm("Delete this Marketplace listing? The source HerdHarbor animal will not be changed.")) return;
         setStatus("Deleting…");
         try {
-          await rpc(client, "marketplace_owner_delete_listing", { listing_id_value: listingId });
+          const deleted = await rpc(client, "marketplace_member_delete_listing", { listing_id_value: listingId });
+          if (deleted !== true) {
+            throw new Error("This listing cannot be deleted while it is under Marketplace moderation.");
+          }
           const previousPaths = Array.isArray(listing?.photo_paths) ? listing.photo_paths.filter(Boolean) : [];
-          if (previousPaths.length) await removePaths(client, previousPaths).catch(() => {});
+          let cleanupFailed = false;
+          if (previousPaths.length) {
+            try {
+              await removePaths(client, previousPaths);
+            } catch {
+              cleanupFailed = true;
+            }
+          }
           editor.hidden = true;
           await loadListings();
+          setStatus(
+            cleanupFailed
+              ? "Listing deleted, but one or more stored photos could not be cleaned up."
+              : "Listing deleted.",
+            cleanupFailed ? "error" : "success"
+          );
         } catch (error) {
           setStatus(error?.message || "Listing could not be deleted.", "error");
         }

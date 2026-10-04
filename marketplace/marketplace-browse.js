@@ -2,8 +2,6 @@
   "use strict";
 
   const PAGE_SIZE = 24;
-  const BUCKET = "marketplace-public";
-
   const clean = (value) => String(value ?? "").trim();
   const esc = (value) => String(value ?? "")
     .replaceAll("&", "&amp;")
@@ -34,7 +32,6 @@
 
   function currentState() {
     const params = new URLSearchParams(window.location.search);
-    const page = Math.max(1, Number.parseInt(params.get("page") || "1", 10) || 1);
     return {
       q: clean(params.get("q")),
       species: clean(params.get("species")),
@@ -46,7 +43,7 @@
       min: clean(params.get("min")),
       max: clean(params.get("max")),
       sort: clean(params.get("sort")) || "newest",
-      page
+      page: Math.max(1, Number.parseInt(params.get("page") || "1", 10) || 1)
     };
   }
 
@@ -64,21 +61,21 @@
     return url.pathname + (url.search ? url.search : "");
   }
 
+  function accountUrl(next = window.location.pathname + window.location.search) {
+    return "/marketplace/account/?next=" + encodeURIComponent(next);
+  }
+
   async function mediaMap(client, listingIds) {
     if (!listingIds.length) return new Map();
-    const rows = await rpc(client, "marketplace_owner_preview_media", {
-      listing_ids_value: listingIds
+    const { data, error } = await client.functions.invoke("marketplace-public-media", {
+      body: { action: "listing", listingIds, maxPerListing: 1 }
     });
+    if (error) throw error;
+    const listings = data?.listings && typeof data.listings === "object" ? data.listings : {};
     const result = new Map();
-    for (const row of Array.isArray(rows) ? rows : []) {
-      const paths = Array.isArray(row.photo_paths) ? row.photo_paths : [];
-      const first = paths[0] || "";
-      if (!first) {
-        result.set(String(row.listing_id), "");
-        continue;
-      }
-      const { data, error } = await client.storage.from(BUCKET).createSignedUrl(first, 900);
-      result.set(String(row.listing_id), error ? "" : (data?.signedUrl || ""));
+    for (const id of listingIds) {
+      const urls = Array.isArray(listings[id]) ? listings[id] : [];
+      result.set(String(id), urls[0] || "");
     }
     return result;
   }
@@ -87,16 +84,20 @@
     const safe = Array.isArray(values) ? values.filter((value) => clean(value)) : [];
     return [
       '<option value="">' + esc(emptyLabel) + '</option>',
-      ...safe.map((value) => '<option value="' + esc(value) + '"' + (clean(current).toLowerCase() === clean(value).toLowerCase() ? " selected" : "") + '>' + esc(value) + '</option>')
+      ...safe.map((value) => '<option value="' + esc(value) + '"' +
+        (clean(current).toLowerCase() === clean(value).toLowerCase() ? " selected" : "") +
+        '>' + esc(value) + '</option>')
     ].join("");
   }
 
-  function listingCard(row, photoUrl, favorite) {
+  function listingCard(row, photoUrl, favorite, interactive, suspended) {
     const location = [row.location_city, row.location_region].filter(Boolean).join(", ");
     const details = [row.breed, row.variety_color, row.sex].filter(Boolean).join(" · ");
     const seller = row.rabbitry_name || row.seller_display_name || "HerdHarbor seller";
     const verified = clean(row.seller_verification_status).toLowerCase() === "verified";
-    const pedigree = row.pedigree_status ? '<span class="marketplace-chip">Pedigree: ' + esc(row.pedigree_status) + '</span>' : "";
+    const pedigree = row.pedigree_status
+      ? '<span class="marketplace-chip">Pedigree: ' + esc(row.pedigree_status) + '</span>'
+      : "";
 
     return `
       <article class="browse-card">
@@ -111,12 +112,15 @@
             <p>${esc(details || row.species || "Animal")}</p>
             <p>${esc(location || "Location not listed")}</p>
             <div class="browse-card-seller">
-              <a href="/marketplace/seller/?id=${encodeURIComponent(row.seller_public_id || "")}">${esc(seller)}</a>
+              <span>${esc(seller)}</span>
               ${verified ? '<span class="marketplace-verified" aria-label="Verified seller">Verified</span>' : ""}
             </div>
           </div>
         </a>
-        <button class="marketplace-favorite" type="button" data-favorite-listing="${esc(row.listing_id)}" aria-pressed="${favorite ? "true" : "false"}" aria-label="${favorite ? "Remove from favorites" : "Add to favorites"}">
+        <button class="marketplace-favorite" type="button"
+          data-favorite-listing="${esc(row.listing_id)}"
+          aria-pressed="${favorite ? "true" : "false"}"
+          aria-label="${interactive ? (favorite ? "Remove from favorites" : "Add to favorites") : suspended ? "Marketplace access suspended" : "Sign in to save this listing"}">
           <span aria-hidden="true">${favorite ? "♥" : "♡"}</span>
         </button>
       </article>
@@ -124,18 +128,20 @@
   }
 
   async function mount(root, context) {
-    if (!root || !context?.client || context.role !== "owner") return;
+    if (!root || !context?.client) return;
     const { client } = context;
+    const interactive = context.isAuthenticated && context.accountStatus === "active" && context.marketplaceAccessReady === true;
     let facets = {};
     let favoriteIds = new Set();
     let requestToken = 0;
+    let mediaRecoveryAttempted = false;
 
     root.innerHTML = `
       <section class="marketplace-browse-hero">
         <div>
           <p class="eyebrow">Browse Marketplace</p>
-          <h2>Find the right animal without digging through clutter.</h2>
-          <p class="marketplace-help">Search available HerdHarbor Marketplace listings by animal, breed, location, pedigree, and price.</p>
+          <h2>Find animals for sale without creating an account.</h2>
+          <p class="marketplace-help">Anyone can browse available listings. A HerdHarbor account is required only when you want to save a listing, message a seller, post an animal, or use Marketplace account features.</p>
         </div>
       </section>
 
@@ -191,7 +197,7 @@
     const pager = root.querySelector("#marketplace-pager");
 
     async function loadFacets() {
-      facets = await rpc(client, "marketplace_owner_browse_facets") || {};
+      facets = await rpc(client, "marketplace_public_facets_v2") || {};
       const state = currentState();
       form.elements.species.innerHTML = optionList(facets.species, state.species, "All species");
       form.elements.breed.innerHTML = optionList(facets.breeds, state.breed, "All breeds");
@@ -201,7 +207,11 @@
     }
 
     async function loadFavorites() {
-      const data = await rpc(client, "marketplace_owner_favorite_ids");
+      if (!interactive) {
+        favoriteIds = new Set();
+        return;
+      }
+      const data = await rpc(client, "marketplace_member_favorite_ids");
       favoriteIds = new Set(Array.isArray(data) ? data.map(String) : []);
     }
 
@@ -231,11 +241,11 @@
       const token = ++requestToken;
       const state = currentState();
       applyState(state);
-      results.innerHTML = '<article class="marketplace-placeholder-card"><p>Loading Marketplace listings…</p></article>';
+      results.innerHTML = '<article class="marketplace-placeholder-card" aria-busy="true"><p>Loading Marketplace listings…</p></article>';
       pager.innerHTML = "";
 
       try {
-        const rows = await rpc(client, "marketplace_owner_search_preview", {
+        const rows = await rpc(client, "marketplace_public_search_v2", {
           query_value: state.q,
           species_value: state.species,
           breed_value: state.breed,
@@ -259,16 +269,45 @@
 
         countNode.textContent = total === 1 ? "1 listing" : total + " listings";
         results.innerHTML = list.length
-          ? list.map((row) => listingCard(row, media.get(String(row.listing_id)) || "", favoriteIds.has(String(row.listing_id)))).join("")
+          ? list.map((row) => listingCard(
+              row,
+              media.get(String(row.listing_id)) || "",
+              favoriteIds.has(String(row.listing_id)),
+              interactive,
+              context.marketplaceSuspended === true
+            )).join("")
           : '<article class="marketplace-empty-state"><h3>No matching listings</h3><p>Try widening the filters or clearing the search.</p></article>';
+
+        results.querySelectorAll(".browse-card-media img").forEach((img) => {
+          img.addEventListener("error", () => {
+            if (!mediaRecoveryAttempted) {
+              mediaRecoveryAttempted = true;
+              refresh();
+              return;
+            }
+            const mediaNode = img.closest(".browse-card-media");
+            if (mediaNode) mediaNode.innerHTML = '<div class="browse-card-fallback">HH</div>';
+          }, { once: true });
+        });
 
         results.querySelectorAll("[data-favorite-listing]").forEach((button) => {
           button.addEventListener("click", async () => {
+            if (!interactive) {
+              if (context.marketplaceSuspended) {
+                globalThis.alert("Your Marketplace access is suspended. You can continue browsing, but favorites and other Marketplace interaction are disabled.");
+                return;
+              }
+              window.location.assign(context.isAuthenticated
+                ? "https://app.herdharbor.com/"
+                : accountUrl(stateUrl(currentState())));
+              return;
+            }
+
             const id = button.dataset.favoriteListing;
             const next = !favoriteIds.has(id);
             button.disabled = true;
             try {
-              await rpc(client, "marketplace_owner_toggle_favorite", {
+              await rpc(client, "marketplace_member_toggle_favorite", {
                 listing_id_value: id,
                 favorite_value: next
               });
@@ -306,8 +345,7 @@
 
     form.addEventListener("submit", (event) => {
       event.preventDefault();
-      const state = formState();
-      history.pushState({ marketplace: true }, "", stateUrl(state));
+      history.pushState({ marketplace: true }, "", stateUrl(formState()));
       refresh();
     });
 
@@ -316,8 +354,6 @@
       applyState({ sort: "newest" });
       refresh();
     });
-
-    window.addEventListener("popstate", refresh);
 
     try {
       await Promise.all([loadFacets(), loadFavorites()]);
