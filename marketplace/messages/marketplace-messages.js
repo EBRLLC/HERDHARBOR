@@ -165,13 +165,19 @@
     thread.innerHTML = '<div class="marketplace-notice">Loading conversation…</div>';
 
     try {
-      const rows = await rpc("marketplace_member_messages", {
-        conversation_id_value: conversationId,
-        limit_value: 100,
-        before_value: null
-      });
+      const [rows, blockState] = await Promise.all([
+        rpc("marketplace_member_messages", {
+          conversation_id_value: conversationId,
+          limit_value: 100,
+          before_value: null
+        }),
+        rpc("marketplace_member_conversation_block_state", {
+          conversation_id_value: conversationId
+        })
+      ]);
       if (requestToken !== threadRequestToken || selectedConversationId !== conversationId) return;
       const messages = Array.isArray(rows) ? rows.slice().reverse() : [];
+      let blocked = blockState === true;
       const inboxRow = inboxRows.find((row) => String(row.conversation_id) === conversationId) || {};
       const name = otherName(inboxRow);
 
@@ -182,7 +188,10 @@
             <h2>${esc(inboxRow.listing_name || "Marketplace conversation")}</h2>
             <p class="marketplace-help">Conversation with ${esc(name)}</p>
           </div>
-          <button class="button button-secondary button-small" type="button" id="marketplace-report-conversation">Report conversation</button>
+          <div class="marketplace-admin-actions">
+            <button class="button button-secondary button-small" type="button" id="marketplace-block-conversation">${blocked ? "Unblock account" : "Block account"}</button>
+            <button class="button button-secondary button-small" type="button" id="marketplace-report-conversation">Report conversation</button>
+          </div>
         </div>
 
         <div id="marketplace-message-list" class="marketplace-message-list">
@@ -195,7 +204,8 @@
           `).join("") : '<div class="marketplace-empty-state"><h3>No messages yet</h3><p>Send the first message about this listing.</p></div>'}
         </div>
 
-        <form id="marketplace-message-form" class="marketplace-message-form">
+        <div id="marketplace-block-status" class="marketplace-notice" ${blocked ? "" : "hidden"}>You blocked this Marketplace account. Unblock them to send another message.</div>
+        <form id="marketplace-message-form" class="marketplace-message-form" ${blocked ? "hidden" : ""}>
           <label>
             Message
             <textarea name="body" rows="4" maxlength="5000" required placeholder="Write a message to this Marketplace member."></textarea>
@@ -211,13 +221,40 @@
         conversation_id_value: conversationId
       }).catch(() => {});
 
+      const blockButton = root.querySelector("#marketplace-block-conversation");
+      const blockNotice = root.querySelector("#marketplace-block-status");
+      const messageForm = root.querySelector("#marketplace-message-form");
+
+      blockButton?.addEventListener("click", async () => {
+        const nextBlocked = !blocked;
+        if (nextBlocked && !globalThis.confirm("Block this Marketplace account? They will no longer be able to start or continue a conversation with you until you unblock them.")) {
+          return;
+        }
+
+        blockButton.disabled = true;
+        try {
+          blocked = await rpc("marketplace_member_set_conversation_block", {
+            conversation_id_value: conversationId,
+            blocked_value: nextBlocked
+          }) === true;
+
+          blockButton.textContent = blocked ? "Unblock account" : "Block account";
+          if (blockNotice) blockNotice.hidden = !blocked;
+          if (messageForm) messageForm.hidden = blocked;
+        } catch {
+          globalThis.alert("The block setting could not be changed.");
+        } finally {
+          blockButton.disabled = false;
+        }
+      });
+
       root.querySelector("#marketplace-report-conversation")?.addEventListener("click", () => {
         reportConversation(conversationId).catch(() => {
           globalThis.alert("The report could not be submitted.");
         });
       });
 
-      const form = root.querySelector("#marketplace-message-form");
+      const form = messageForm;
       const status = root.querySelector("#marketplace-message-status");
       form.addEventListener("submit", async (event) => {
         event.preventDefault();
