@@ -259,6 +259,17 @@
         window.location.assign("/marketplace/");
       }
     });
+
+    window.addEventListener("hashchange", async () => {
+      if (!ssoTicketFromHash()) return;
+      const redeemed = await redeemFragmentTicket().catch(() => false);
+      if (!redeemed) return;
+
+      const { data: refreshedSession } = await client.auth.getSession();
+      const refreshedContext = await contextForSession(refreshedSession?.session || null);
+      window.HerdHarborMarketplaceContext = refreshedContext;
+      window.location.reload();
+    });
   }
 
   start().catch((error) => {
