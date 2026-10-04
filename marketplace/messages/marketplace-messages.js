@@ -86,6 +86,7 @@
   const thread = root.querySelector("#marketplace-thread");
   let selectedConversationId = "";
   let inboxRows = [];
+  let threadRequestToken = 0;
 
   function conversationUrl(id) {
     const url = new URL(window.location.href);
@@ -126,7 +127,7 @@
     });
   }
 
-  async function loadInbox() {
+  async function loadInbox({ openRequested = true } = {}) {
     inbox.innerHTML = '<div class="marketplace-notice">Loading messages…</div>';
     try {
       const rows = await rpc("marketplace_member_inbox", { folder_value: folder.value });
@@ -134,7 +135,7 @@
       renderInbox();
 
       const requested = new URLSearchParams(window.location.search).get("id") || "";
-      if (validUuid(requested) && requested !== selectedConversationId) {
+      if (openRequested && validUuid(requested) && requested !== selectedConversationId) {
         await openThread(requested);
       }
     } catch {
@@ -157,6 +158,7 @@
 
   async function openThread(conversationId) {
     if (!validUuid(conversationId)) return;
+    const requestToken = ++threadRequestToken;
     selectedConversationId = conversationId;
     renderInbox();
 
@@ -168,6 +170,7 @@
         limit_value: 100,
         before_value: null
       });
+      if (requestToken !== threadRequestToken || selectedConversationId !== conversationId) return;
       const messages = Array.isArray(rows) ? rows.slice().reverse() : [];
       const inboxRow = inboxRows.find((row) => String(row.conversation_id) === conversationId) || {};
       const name = otherName(inboxRow);
@@ -232,7 +235,8 @@
           });
           form.reset();
           status.textContent = "";
-          await Promise.all([loadInbox(), openThread(conversationId)]);
+          await loadInbox({ openRequested: false });
+          await openThread(conversationId);
         } catch {
           status.textContent = "Message could not be sent.";
           status.dataset.state = "error";
@@ -242,7 +246,7 @@
       });
 
       const messageList = root.querySelector("#marketplace-message-list");
-      messageList?.scrollTo?.({ top: messageList.scrollHeight, behavior: "instant" });
+      messageList?.scrollTo?.({ top: messageList.scrollHeight, behavior: "auto" });
     } catch {
       thread.innerHTML = '<div class="marketplace-notice error">This conversation is unavailable to this account.</div>';
     }
