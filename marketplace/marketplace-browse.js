@@ -111,7 +111,7 @@
             <p>${esc(details || row.species || "Animal")}</p>
             <p>${esc(location || "Location not listed")}</p>
             <div class="browse-card-seller">
-              <a href="/marketplace/seller/?id=${encodeURIComponent(row.seller_public_id || "")}">${esc(seller)}</a>
+              <span>${esc(seller)}</span>
               ${verified ? '<span class="marketplace-verified" aria-label="Verified seller">Verified</span>' : ""}
             </div>
           </div>
@@ -129,6 +129,7 @@
     let facets = {};
     let favoriteIds = new Set();
     let requestToken = 0;
+    let mediaRecoveryAttempted = false;
 
     root.innerHTML = `
       <section class="marketplace-browse-hero">
@@ -261,6 +262,18 @@
         results.innerHTML = list.length
           ? list.map((row) => listingCard(row, media.get(String(row.listing_id)) || "", favoriteIds.has(String(row.listing_id)))).join("")
           : '<article class="marketplace-empty-state"><h3>No matching listings</h3><p>Try widening the filters or clearing the search.</p></article>';
+
+        results.querySelectorAll(".browse-card-media img").forEach((img) => {
+          img.addEventListener("error", () => {
+            if (!mediaRecoveryAttempted) {
+              mediaRecoveryAttempted = true;
+              refresh();
+              return;
+            }
+            const mediaNode = img.closest(".browse-card-media");
+            if (mediaNode) mediaNode.innerHTML = '<div class="browse-card-fallback">HH</div>';
+          }, { once: true });
+        });
 
         results.querySelectorAll("[data-favorite-listing]").forEach((button) => {
           button.addEventListener("click", async () => {
