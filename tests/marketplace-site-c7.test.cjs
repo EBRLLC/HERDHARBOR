@@ -227,3 +227,21 @@ test("C7W private messages hide sending when either participant blocks the conve
   assert.match(source, /This Marketplace account has blocked this conversation\. Messaging is unavailable\./);
   assert.match(source, /messageForm\.hidden = messagingBlocked/);
 });
+
+
+test("C7W Marketplace suspension is distinct from incomplete registration", () => {
+  const gate = read("marketplace/marketplace-gate.js");
+  const browse = read("marketplace/marketplace-browse.js");
+  const detail = read("marketplace/marketplace-detail.js");
+  const seller = read("marketplace/marketplace-seller.js");
+  const messages = read("marketplace/messages/marketplace-messages.js");
+
+  assert.match(gate, /marketplaceSuspended: account\.marketplace_suspended === true/);
+  assert.match(gate, /Marketplace access is suspended\. You can continue browsing/);
+  assert.match(browse, /context\.marketplaceSuspended/);
+  assert.match(detail, /blockUnavailableInteraction/);
+  assert.match(detail, /Marketplace suspended/);
+  assert.match(seller, /blockUnavailableInteraction/);
+  assert.match(messages, /Marketplace access suspended/);
+  assert.doesNotMatch(messages, /if \(context\.marketplaceSuspended\)[\s\S]{0,250}app\.herdharbor\.com/);
+});
