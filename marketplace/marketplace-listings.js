@@ -39,7 +39,7 @@
 
   async function signedUrl(client, path) {
     if (!path) return "";
-    const { data, error } = await client.storage.from(BUCKET).createSignedUrl(path, 900);
+    const { data, error } = await client.storage.from(BUCKET).createSignedUrl(path, 300);
     return error ? "" : (data?.signedUrl || "");
   }
 
