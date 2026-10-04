@@ -53,7 +53,8 @@ test("C6W listing moderation restores only to draft and never directly republish
 
 test("C6/C7 moderation preserves the main HerdHarbor account while separating seller and account suspension", () => {
   const source = read("marketplace/marketplace-admin.js");
-  assert.match(source, /Their HerdHarbor account (?:will )?remain active/);
+  assert.match(source, /None of these controls disable the main HerdHarbor account/);
+  assert.match(source, /The account can still browse and message unless you use a full Marketplace account suspension/);
   assert.match(source, /Block this account from Marketplace messaging, favorites, seller tools/);
   assert.match(source, /Their main HerdHarbor account stays active/);
   assert.doesNotMatch(source, /deleteUser|banUser|auth\.admin|account_access/i);
