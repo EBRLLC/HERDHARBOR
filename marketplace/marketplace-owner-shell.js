@@ -47,6 +47,26 @@
     `;
   }
 
+  function loadBrowse() {
+    if (window.HerdHarborMarketplaceBrowse?.mount) {
+      window.HerdHarborMarketplaceBrowse.mount(viewRoot, context);
+      return;
+    }
+
+    const existing = document.querySelector("script[data-marketplace-browse]");
+    if (existing) return;
+
+    const script = document.createElement("script");
+    script.src = "./marketplace-browse.js?v=1";
+    script.async = true;
+    script.dataset.marketplaceBrowse = "true";
+    script.addEventListener("load", () => window.HerdHarborMarketplaceBrowse?.mount?.(viewRoot, context), { once: true });
+    script.addEventListener("error", () => {
+      viewRoot.innerHTML = '<div class="marketplace-notice error">Marketplace Browse could not load.</div>';
+    }, { once: true });
+    document.body.appendChild(script);
+  }
+
   function loadListings() {
     if (window.HerdHarborMarketplaceListings?.mount) {
       window.HerdHarborMarketplaceListings.mount(viewRoot, context);
@@ -89,7 +109,8 @@
 
   function show(view) {
     setCurrent(view);
-    if (view === "profile") loadProfile();
+    if (view === "browse") loadBrowse();
+    else if (view === "profile") loadProfile();
     else if (view === "listings") loadListings();
     else renderPlaceholder(view);
   }
