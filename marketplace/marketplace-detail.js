@@ -35,6 +35,16 @@
     return "/marketplace/account/?next=" + encodeURIComponent(next);
   }
 
+  function blockUnavailableInteraction(next) {
+    if (interactive) return false;
+    if (context.marketplaceSuspended) {
+      globalThis.alert("Your Marketplace access is suspended. You can continue browsing, but messaging, favorites, reports, and seller tools are disabled.");
+      return true;
+    }
+    window.location.assign(context.isAuthenticated ? "https://app.herdharbor.com/" : accountUrl(next));
+    return true;
+  }
+
   function money(cents, currency = "USD") {
     if (cents === null || cents === undefined) return "Price not listed";
     return new Intl.NumberFormat("en-US", {
@@ -169,11 +179,8 @@
   }
 
   async function openConversation(listingId) {
-    if (!interactive) {
-      const next = "/marketplace/listing/?id=" + encodeURIComponent(listingId) + "&message=1";
-      window.location.assign(context.isAuthenticated ? "https://app.herdharbor.com/" : accountUrl(next));
-      return;
-    }
+    const next = "/marketplace/listing/?id=" + encodeURIComponent(listingId) + "&message=1";
+    if (blockUnavailableInteraction(next)) return;
 
     const conversationId = await rpc("marketplace_member_open_listing_conversation", {
       listing_id_value: listingId
@@ -182,11 +189,8 @@
   }
 
   async function reportListing(listingId) {
-    if (!interactive) {
-      const next = "/marketplace/listing/?id=" + encodeURIComponent(listingId);
-      window.location.assign(context.isAuthenticated ? "https://app.herdharbor.com/" : accountUrl(next));
-      return;
-    }
+    const next = "/marketplace/listing/?id=" + encodeURIComponent(listingId);
+    if (blockUnavailableInteraction(next)) return;
 
     const reason = clean(globalThis.prompt("Why are you reporting this listing?") || "");
     if (!reason) return;
@@ -284,8 +288,8 @@
               ${ownListing
                 ? '<span class="marketplace-notice">This is your listing.</span>'
                 : `<button class="button" type="button" id="marketplace-message-seller">${interactive ? "Message seller" : "Sign in to message seller"}</button>`}
-              <button class="button button-secondary button-small" type="button" id="marketplace-favorite-listing">♡ ${interactive ? "Save listing" : "Sign in to save"}</button>
-              <button class="button button-secondary button-small" type="button" id="marketplace-report-listing">${interactive ? "Report listing" : "Sign in to report"}</button>
+              <button class="button button-secondary button-small" type="button" id="marketplace-favorite-listing">♡ ${interactive ? "Save listing" : context.marketplaceSuspended ? "Marketplace suspended" : "Sign in to save"}</button>
+              <button class="button button-secondary button-small" type="button" id="marketplace-report-listing">${interactive ? "Report listing" : context.marketplaceSuspended ? "Marketplace suspended" : "Sign in to report"}</button>
             </div>
 
             <section class="listing-pedigree-callout">
@@ -344,11 +348,8 @@
       }
 
       favoriteButton?.addEventListener("click", async () => {
-        if (!interactive) {
-          const next = "/marketplace/listing/?id=" + encodeURIComponent(listingId);
-          window.location.assign(context.isAuthenticated ? "https://app.herdharbor.com/" : accountUrl(next));
-          return;
-        }
+        const next = "/marketplace/listing/?id=" + encodeURIComponent(listingId);
+        if (blockUnavailableInteraction(next)) return;
 
         favoriteButton.disabled = true;
         try {
