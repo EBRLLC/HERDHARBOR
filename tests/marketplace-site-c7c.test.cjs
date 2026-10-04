@@ -82,3 +82,21 @@ test("C7C website contains no browser calls to superseded report or media RPCs",
   assert.doesNotMatch(source, /marketplace_owner_admin_(?:summary|reports|resolve_report)\b(?!_v2)/);
   assert.doesNotMatch(source, /marketplace_public_(?:listing_media|seller_media)_v2/);
 });
+
+
+test("C7C successful seller-profile save is not undone by old-avatar cleanup failure", () => {
+  const source = read("marketplace/marketplace-profile.js");
+  assert.match(source, /marketplace_member_save_profile/);
+  assert.match(source, /removePath\(client, previousPath\)\.catch\(\(\) => \{\}\)/);
+  assert.doesNotMatch(source, /if \(uploadedPath && previousPath && previousPath !== uploadedPath\) \{\s*await removePath\(client, previousPath\);\s*\}/);
+});
+
+test("C7C listing UI distinguishes committed record from failed follow-up work", () => {
+  const source = read("marketplace/marketplace-listings.js");
+  assert.match(source, /let listingRecordSaved = false/);
+  assert.match(source, /listingRecordSaved = true/);
+  assert.match(source, /form\.elements\.listing_id\.value = String\(savedId \|\| ""\)/);
+  assert.match(source, /Listing details were saved, but a follow-up Marketplace update failed/);
+  assert.match(source, /if \(listingRecordSaved\)/);
+  assert.match(source, /for \(const file of files\)/);
+});
