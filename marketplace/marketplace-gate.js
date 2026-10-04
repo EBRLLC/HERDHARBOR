@@ -3,7 +3,10 @@
 
   const SUPABASE_URL = "https://okynebbksifqppwicghj.supabase.co";
   const SUPABASE_PUBLISHABLE_KEY = "sb_publishable_jxsX6uS9nnh2FOFtlSF9TA_8v6C7C09";
-  const OWNER_SHELL = "./marketplace-owner-shell.js?v=1";
+  const gateScript = document.currentScript;
+  const MARKETPLACE_BASE = new URL("./", gateScript?.src || new URL("./", window.location.href));
+  const runtimeFile = document.documentElement.dataset.marketplaceRuntime || "marketplace-owner-shell.js?v=1";
+  const OWNER_RUNTIME = new URL(runtimeFile, MARKETPLACE_BASE).href;
 
   const statusNode = document.getElementById("marketplace-gate-status");
   const formNode = document.getElementById("marketplace-auth-form");
@@ -39,14 +42,14 @@
 
   function loadOwnerShell() {
     return new Promise((resolve, reject) => {
-      if (document.querySelector('script[data-marketplace-owner-shell]')) {
+      if (document.querySelector('script[data-marketplace-owner-runtime]')) {
         resolve();
         return;
       }
       const script = document.createElement("script");
-      script.src = OWNER_SHELL;
+      script.src = OWNER_RUNTIME;
       script.async = true;
-      script.dataset.marketplaceOwnerShell = "true";
+      script.dataset.marketplaceOwnerRuntime = "true";
       script.addEventListener("load", resolve, { once: true });
       script.addEventListener("error", () => reject(new Error("Marketplace Owner shell failed to load.")), { once: true });
       document.body.appendChild(script);
