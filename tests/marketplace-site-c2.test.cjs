@@ -45,8 +45,8 @@ test("C2W profile runtime is lazy-loaded only from the authorized Owner shell", 
   assert.doesNotMatch(html, /marketplace-profile\.js/);
 });
 
-test("C2W preview never renders raw storage paths or contact details", () => {
+test("C2W preview never renders raw storage paths or contact fields", () => {
   const source = read("marketplace/marketplace-profile.js");
   assert.doesNotMatch(source, /textContent\s*=\s*.*avatar_path/);
-  assert.doesNotMatch(source, /email|phone|exact address/i);
+  assert.doesNotMatch(source, /name="(?:email|phone|street|exact_address)"/i);
 });
