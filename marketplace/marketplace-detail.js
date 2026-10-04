@@ -287,7 +287,7 @@
             <div class="marketplace-listing-contact-actions">
               ${ownListing
                 ? '<span class="marketplace-notice">This is your listing.</span>'
-                : `<button class="button" type="button" id="marketplace-message-seller">${interactive ? "Message seller" : "Sign in to message seller"}</button>`}
+                : `<button class="button" type="button" id="marketplace-message-seller">${interactive ? "Message seller" : context.marketplaceSuspended ? "Marketplace suspended" : "Sign in to message seller"}</button>`}
               <button class="button button-secondary button-small" type="button" id="marketplace-favorite-listing">♡ ${interactive ? "Save listing" : context.marketplaceSuspended ? "Marketplace suspended" : "Sign in to save"}</button>
               <button class="button button-secondary button-small" type="button" id="marketplace-report-listing">${interactive ? "Report listing" : context.marketplaceSuspended ? "Marketplace suspended" : "Sign in to report"}</button>
             </div>
