@@ -1,7 +1,7 @@
 (() => {
   "use strict";
 
-  const root = document.getElementById("marketplace-owner-root");
+  const root = document.getElementById("marketplace-root");
   const context = window.HerdHarborMarketplaceContext;
   if (!root || !context?.client) return;
 
