@@ -69,7 +69,7 @@ test("C7W app SSO supports exact-origin opener handoff plus one-time fragment fa
   assert.match(gate, /#sso-ticket=/);
   assert.match(gate, /redeemFragmentTicket/);
   assert.match(gate, /window\.addEventListener\("hashchange"/);
-  assert.match(gate, /window\.location\.replace\(window\.location\.pathname \+ window\.location\.search\)/);
+  assert.match(gate, /window\.location\.reload\(\)/);
   assert.match(gate, /history\.replaceState/);
   assert.doesNotMatch(gate, /searchParams\.get\(["'](?:access_token|refresh_token)|searchParams\.set\(["'](?:access_token|refresh_token)/i);
   assert.doesNotMatch(gate, /service_role|SUPABASE_SERVICE_ROLE_KEY/i);
