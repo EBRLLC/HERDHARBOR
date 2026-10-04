@@ -1,7 +1,6 @@
 (() => {
   "use strict";
 
-  const BUCKET = "marketplace-public";
   const root = document.getElementById("marketplace-owner-root");
   const context = window.HerdHarborMarketplaceContext;
   if (!root || !context?.client) return;
@@ -42,30 +41,26 @@
   }
 
   async function sellerAvatar(sellerPublicId) {
-    const path = await rpc("marketplace_public_seller_media_v2", {
-      seller_public_id_value: sellerPublicId
+    const { data, error } = await client.functions.invoke("marketplace-public-media", {
+      body: { action: "seller", publicId: sellerPublicId }
     });
-    if (!path) return "";
-    const { data, error } = await client.storage.from(BUCKET).createSignedUrl(path, 300);
-    return error ? "" : (data?.signedUrl || "");
+    if (error) throw error;
+    return String(data?.avatarUrl || "");
   }
 
   async function listingMedia(listingIds) {
     if (!listingIds.length) return new Map();
-    const rows = await rpc("marketplace_public_listing_media_v2", {
-      listing_ids_value: listingIds
+    const { data, error } = await client.functions.invoke("marketplace-public-media", {
+      body: { action: "listing", listingIds, maxPerListing: 1 }
     });
-    const map = new Map();
-    for (const row of Array.isArray(rows) ? rows : []) {
-      const path = Array.isArray(row.photo_paths) ? row.photo_paths[0] : "";
-      if (!path) {
-        map.set(String(row.listing_id), "");
-        continue;
-      }
-      const { data, error } = await client.storage.from(BUCKET).createSignedUrl(path, 300);
-      map.set(String(row.listing_id), error ? "" : (data?.signedUrl || ""));
+    if (error) throw error;
+    const listings = data?.listings && typeof data.listings === "object" ? data.listings : {};
+    const result = new Map();
+    for (const id of listingIds) {
+      const urls = Array.isArray(listings[id]) ? listings[id] : [];
+      result.set(String(id), urls[0] || "");
     }
-    return map;
+    return result;
   }
 
   async function reportSeller(sellerId) {
