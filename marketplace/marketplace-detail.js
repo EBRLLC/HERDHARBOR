@@ -289,6 +289,7 @@
               ${ownListing
                 ? '<span class="marketplace-notice">This is your listing.</span>'
                 : `<button class="button" type="button" id="marketplace-message-seller">${interactive ? "Message seller" : "Sign in to message seller"}</button>`}
+              <button class="button button-secondary button-small" type="button" id="marketplace-favorite-listing">♡ ${interactive ? "Save listing" : "Sign in to save"}</button>
               <button class="button button-secondary button-small" type="button" id="marketplace-report-listing">${interactive ? "Report listing" : "Sign in to report"}</button>
             </div>
 
@@ -334,6 +335,40 @@
         openConversation(listingId).catch(() => {
           globalThis.alert("The seller conversation could not be opened.");
         });
+      });
+
+      const favoriteButton = root.querySelector("#marketplace-favorite-listing");
+      let favorite = false;
+      if (interactive && favoriteButton) {
+        try {
+          const ids = await rpc("marketplace_member_favorite_ids");
+          favorite = Array.isArray(ids) && ids.map(String).includes(String(listingId));
+          favoriteButton.textContent = favorite ? "♥ Saved" : "♡ Save listing";
+          favoriteButton.setAttribute("aria-pressed", String(favorite));
+        } catch {}
+      }
+
+      favoriteButton?.addEventListener("click", async () => {
+        if (!interactive) {
+          const next = "/marketplace/listing/?id=" + encodeURIComponent(listingId);
+          window.location.assign(context.isAuthenticated ? "https://app.herdharbor.com/" : accountUrl(next));
+          return;
+        }
+
+        favoriteButton.disabled = true;
+        try {
+          favorite = !favorite;
+          await rpc("marketplace_member_toggle_favorite", {
+            listing_id_value: listingId,
+            favorite_value: favorite
+          });
+          favoriteButton.textContent = favorite ? "♥ Saved" : "♡ Save listing";
+          favoriteButton.setAttribute("aria-pressed", String(favorite));
+        } catch {
+          favorite = !favorite;
+        } finally {
+          favoriteButton.disabled = false;
+        }
       });
 
       root.querySelector("#marketplace-report-listing")?.addEventListener("click", () => {
