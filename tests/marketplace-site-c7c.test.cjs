@@ -110,6 +110,8 @@ test("C7C SSO keeps a one-time fragment fallback without URL session tokens", ()
   assert.match(gate, /redeemFragmentTicket/);
   assert.match(gate, /client\.auth\.verifyOtp/);
   assert.match(gate, /history\.replaceState/);
+  assert.match(gate, /addEventListener\("hashchange"/);
+  assert.match(gate, /if \(!ssoTicketFromHash\(\)\) return/);
   assert.doesNotMatch(gate, /[?&](?:access_token|refresh_token)=/i);
   assert.doesNotMatch(gate, /searchParams\.(?:get|set)\(["'](?:access_token|refresh_token)/i);
 });
