@@ -1,7 +1,6 @@
 (() => {
   "use strict";
 
-  const BUCKET = "marketplace-public";
   const root = document.getElementById("marketplace-owner-root");
   const context = window.HerdHarborMarketplaceContext;
   if (!root || !context?.client) return;
@@ -57,16 +56,12 @@
   }
 
   async function gallery(listingId) {
-    const rows = await rpc("marketplace_public_listing_media_v2", {
-      listing_ids_value: [listingId]
+    const { data, error } = await client.functions.invoke("marketplace-public-media", {
+      body: { action: "listing", listingIds: [listingId], maxPerListing: 6 }
     });
-    const paths = Array.isArray(rows) && Array.isArray(rows[0]?.photo_paths) ? rows[0].photo_paths : [];
-    const urls = [];
-    for (const path of paths.slice(0, 6)) {
-      const { data, error } = await client.storage.from(BUCKET).createSignedUrl(path, 300);
-      if (!error && data?.signedUrl) urls.push(data.signedUrl);
-    }
-    return urls;
+    if (error) throw error;
+    const urls = data?.listings?.[listingId];
+    return Array.isArray(urls) ? urls.filter(Boolean).slice(0, 6) : [];
   }
 
   function fact(label, value) {
