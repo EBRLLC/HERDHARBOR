@@ -8,7 +8,7 @@ const read = (file) => fs.readFileSync(path.join(root, file), "utf8");
 
 test("C7W Marketplace browsing no longer requires authentication", () => {
   const gate = read("marketplace/marketplace-gate.js");
-  const shell = read("marketplace/marketplace-owner-shell.js");
+  const shell = read("marketplace/marketplace-shell.js");
   const browse = read("marketplace/marketplace-browse.js");
 
   assert.match(gate, /role: "guest"/);
@@ -122,7 +122,7 @@ test("C7W Messages page never reads Marketplace tables directly", () => {
 });
 
 test("C7W role-aware shell keeps admin Owner-only and private account tabs authenticated", () => {
-  const shell = read("marketplace/marketplace-owner-shell.js");
+  const shell = read("marketplace/marketplace-shell.js");
   const index = read("marketplace/index.html");
 
   assert.match(shell, /const interactive = context\.isAuthenticated && context\.accountStatus === "active" && context\.marketplaceAccessReady === true/);
@@ -135,7 +135,7 @@ test("C7W role-aware shell keeps admin Owner-only and private account tabs authe
 
 test("C7W shared and nested Marketplace assets are consistently versioned", () => {
   const gate = read("marketplace/marketplace-gate.js");
-  const shell = read("marketplace/marketplace-owner-shell.js");
+  const shell = read("marketplace/marketplace-shell.js");
   const pages = [
     read("marketplace/index.html"),
     read("marketplace/listing/index.html"),
@@ -178,7 +178,7 @@ test("C7W incomplete registration stays browse-only instead of looping through s
 
 
 test("C7W lazy Marketplace modules cannot render over a newer selected tab", () => {
-  const shell = read("marketplace/marketplace-owner-shell.js");
+  const shell = read("marketplace/marketplace-shell.js");
   assert.match(shell, /let currentView = ""/);
   assert.match(shell, /if \(currentView !== view\) return/);
   assert.match(shell, /data-marketplace-module/);
