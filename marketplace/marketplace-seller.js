@@ -6,6 +6,8 @@
   const context = window.HerdHarborMarketplaceContext;
   if (!root || !context?.client || context.role !== "owner") return;
 
+  let mediaRecoveryAttempted = false;
+
   const clean = (value) => String(value ?? "").trim();
   const esc = (value) => String(value ?? "")
     .replaceAll("&", "&amp;")
@@ -148,6 +150,23 @@
           }).join("") : '<article class="marketplace-empty-state"><h3>No active listings</h3><p>This seller does not have any active Marketplace listings right now.</p></article>'}
         </section>
       `;
+      root.querySelectorAll("img").forEach((img) => {
+        img.addEventListener("error", () => {
+          if (!mediaRecoveryAttempted) {
+            mediaRecoveryAttempted = true;
+            start();
+            return;
+          }
+
+          if (img.closest(".seller-public-avatar")) {
+            const avatar = img.closest(".seller-public-avatar");
+            avatar.innerHTML = '<span>' + esc(title.slice(0, 2).toUpperCase()) + '</span>';
+          } else {
+            const mediaNode = img.closest(".browse-card-media");
+            if (mediaNode) mediaNode.innerHTML = '<div class="browse-card-fallback">HH</div>';
+          }
+        }, { once: true });
+      });
     } catch {
       root.innerHTML = '<section class="marketplace-empty-state"><h1>Seller unavailable</h1><p>The seller profile could not be loaded. Try again.</p><a class="button" href="/marketplace/">Back to Browse</a></section>';
     }
