@@ -3,129 +3,204 @@
 
   const SUPABASE_URL = "https://okynebbksifqppwicghj.supabase.co";
   const SUPABASE_PUBLISHABLE_KEY = "sb_publishable_jxsX6uS9nnh2FOFtlSF9TA_8v6C7C09";
+  const APP_ORIGIN = "https://app.herdharbor.com";
+  const SSO_TIMEOUT_MS = 5000;
+
   const gateScript = document.currentScript;
   const MARKETPLACE_BASE = new URL("./", gateScript?.src || new URL("./", window.location.href));
-  const runtimeFile = document.documentElement.dataset.marketplaceRuntime || "marketplace-owner-shell.js?v=6";
-  const OWNER_RUNTIME = new URL(runtimeFile, MARKETPLACE_BASE).href;
+  const runtimeFile = document.documentElement.dataset.marketplaceRuntime || "marketplace-owner-shell.js?v=7";
+  const RUNTIME_URL = new URL(runtimeFile, MARKETPLACE_BASE).href;
 
+  const sessionShell = document.getElementById("marketplace-access-shell");
   const statusNode = document.getElementById("marketplace-gate-status");
-  const formNode = document.getElementById("marketplace-auth-form");
   const actionsNode = document.getElementById("marketplace-gate-actions");
-  const emailNode = document.getElementById("marketplace-email");
-  const passwordNode = document.getElementById("marketplace-password");
+  const accountLink = document.getElementById("marketplace-account-link");
   const signOutNode = document.getElementById("marketplace-sign-out");
-  const ownerRoot = document.getElementById("marketplace-owner-root");
+  const root = document.getElementById("marketplace-owner-root");
 
   let client = null;
-  let authSubscription = null;
-  let verificationRunning = false;
+  let booting = false;
 
   function setStatus(message) {
     if (statusNode) statusNode.textContent = message;
   }
 
-  function clearPrivatePreview() {
-    window.HerdHarborMarketplaceContext = undefined;
-    if (ownerRoot) {
-      ownerRoot.replaceChildren();
-      ownerRoot.hidden = true;
+  function safeNext() {
+    const value = window.location.pathname + window.location.search + window.location.hash;
+    return value.startsWith("/marketplace/") ? value : "/marketplace/";
+  }
+
+  function accountUrl() {
+    return "/marketplace/account/?next=" + encodeURIComponent(safeNext());
+  }
+
+  function ssoNonceFromHash() {
+    if (!window.location.hash.startsWith("#app-sso=")) return "";
+    return decodeURIComponent(window.location.hash.slice("#app-sso=".length));
+  }
+
+  function clearSsoHash() {
+    if (!window.location.hash.startsWith("#app-sso=")) return;
+    history.replaceState(history.state, "", window.location.pathname + window.location.search);
+  }
+
+  async function acceptAppSessionHandoff() {
+    const nonce = ssoNonceFromHash();
+    if (!nonce || !window.opener) {
+      clearSsoHash();
+      return false;
     }
+
+    return new Promise((resolve) => {
+      let settled = false;
+      const finish = (value) => {
+        if (settled) return;
+        settled = true;
+        window.removeEventListener("message", onMessage);
+        clearTimeout(timer);
+        clearSsoHash();
+        resolve(value);
+      };
+
+      const onMessage = async (event) => {
+        if (event.origin !== APP_ORIGIN) return;
+        if (event.source !== window.opener) return;
+        if (event.data?.type !== "herdharbor:marketplace-sso-session") return;
+        if (String(event.data?.nonce || "") !== nonce) return;
+
+        const accessToken = String(event.data?.accessToken || "");
+        const refreshToken = String(event.data?.refreshToken || "");
+        if (!accessToken || !refreshToken) {
+          finish(false);
+          return;
+        }
+
+        const { data, error } = await client.auth.setSession({
+          access_token: accessToken,
+          refresh_token: refreshToken
+        });
+
+        if (error || !data?.session?.user?.id) {
+          finish(false);
+          return;
+        }
+
+        try {
+          window.opener.postMessage({
+            type: "herdharbor:marketplace-sso-complete",
+            nonce
+          }, APP_ORIGIN);
+        } catch {}
+
+        try {
+          window.opener = null;
+        } catch {}
+
+        finish(true);
+      };
+
+      const timer = setTimeout(() => finish(false), SSO_TIMEOUT_MS);
+      window.addEventListener("message", onMessage);
+
+      try {
+        window.opener.postMessage({
+          type: "herdharbor:marketplace-sso-request",
+          nonce
+        }, APP_ORIGIN);
+      } catch {
+        finish(false);
+      }
+    });
   }
 
-  function showSignedOut(message) {
-    clearPrivatePreview();
-    setStatus(message);
-    if (formNode) formNode.hidden = false;
+  async function contextForSession(session) {
+    if (!session?.user?.id) {
+      return Object.freeze({
+        client,
+        userId: "",
+        role: "guest",
+        isAuthenticated: false,
+        accountStatus: "guest",
+        membershipTier: "",
+        sellerPublicId: "",
+        marketplaceStatus: "guest"
+      });
+    }
+
+    const { data, error } = await client.rpc("marketplace_member_session");
+    const account = !error && data && typeof data === "object" ? data : {};
+
+    const accountRole = String(account.account_role || "user").toLowerCase();
+    const accountStatus = String(account.account_status || "unavailable").toLowerCase();
+
+    return Object.freeze({
+      client,
+      userId: String(session.user.id),
+      role: accountRole === "owner" ? "owner" : "member",
+      isAuthenticated: true,
+      accountStatus,
+      membershipTier: String(account.membership_tier || ""),
+      sellerPublicId: String(account.seller_public_id || ""),
+      marketplaceStatus: String(account.marketplace_status || "not_created")
+    });
+  }
+
+  function renderSession(context) {
+    if (context.isAuthenticated) {
+      setStatus(
+        context.accountStatus === "active"
+          ? "Signed in to HerdHarbor Marketplace."
+          : "Signed in. Marketplace interaction is unavailable while this HerdHarbor account is not active."
+      );
+      if (accountLink) {
+        accountLink.textContent = "Account";
+        accountLink.href = "/marketplace/account/";
+      }
+      if (signOutNode) signOutNode.hidden = false;
+      document.documentElement.dataset.marketplaceAccess = context.role;
+    } else {
+      setStatus("Browsing as a guest. Listings are public; sign in or create an account to message sellers or manage Marketplace activity.");
+      if (accountLink) {
+        accountLink.textContent = "Sign in / Create account";
+        accountLink.href = accountUrl();
+      }
+      if (signOutNode) signOutNode.hidden = true;
+      document.documentElement.dataset.marketplaceAccess = "guest";
+    }
+
+    if (sessionShell) sessionShell.hidden = false;
     if (actionsNode) actionsNode.hidden = false;
-    if (signOutNode) signOutNode.hidden = true;
-    document.documentElement.dataset.marketplaceAccess = "signed-out";
   }
 
-  function deny(message) {
-    clearPrivatePreview();
-    setStatus(message);
-    if (formNode) formNode.hidden = true;
-    if (actionsNode) actionsNode.hidden = false;
-    if (signOutNode) signOutNode.hidden = false;
-    document.documentElement.dataset.marketplaceAccess = "denied";
-  }
-
-  function loadOwnerShell() {
+  function loadRuntime() {
     return new Promise((resolve, reject) => {
-      if (document.querySelector('script[data-marketplace-owner-runtime]')) {
+      const existing = document.querySelector("script[data-marketplace-runtime-loaded]");
+      if (existing) {
         resolve();
         return;
       }
+
       const script = document.createElement("script");
-      script.src = OWNER_RUNTIME;
+      script.src = RUNTIME_URL;
       script.async = true;
-      script.dataset.marketplaceOwnerRuntime = "true";
+      script.dataset.marketplaceRuntimeLoaded = "true";
       script.addEventListener("load", resolve, { once: true });
-      script.addEventListener("error", () => reject(new Error("Marketplace Owner shell failed to load.")), { once: true });
+      script.addEventListener("error", () => reject(new Error("Marketplace runtime failed to load.")), { once: true });
       document.body.appendChild(script);
     });
   }
 
-  async function verifyOwnerSession() {
-    if (verificationRunning) return false;
-    verificationRunning = true;
-    try {
-      const { data: sessionData, error: sessionError } = await client.auth.getSession();
-    const session = sessionData?.session || null;
-    if (sessionError || !session?.user?.id) {
-      showSignedOut("Sign in with the protected HerdHarbor Owner account to open this private preview.");
-      return false;
-    }
-
-    const { data: role, error: roleError } = await client.rpc("herdharbor_account_role");
-    if (roleError || String(role || "").toLowerCase() !== "owner") {
-      deny("Marketplace is currently a private Owner-only preview.");
-      return false;
-    }
-
-    window.HerdHarborMarketplaceContext = Object.freeze({
-      client,
-      userId: session.user.id,
-      role: "owner"
-    });
-
-    if (formNode) formNode.hidden = true;
-    if (actionsNode) actionsNode.hidden = true;
-    document.documentElement.dataset.marketplaceAccess = "owner";
-      await loadOwnerShell();
-      return true;
-    } finally {
-      verificationRunning = false;
-    }
-  }
-
-  async function signIn(event) {
-    event.preventDefault();
-    const email = String(emailNode?.value || "").trim();
-    const password = String(passwordNode?.value || "");
-    if (!email || !password) {
-      setStatus("Enter the Owner account email and password.");
-      return;
-    }
-
-    setStatus("Verifying secure Owner access…");
-    const { error } = await client.auth.signInWithPassword({ email, password });
-    if (error) {
-      showSignedOut("Sign-in failed. Use the protected HerdHarbor Owner account.");
-      return;
-    }
-    await verifyOwnerSession();
-  }
-
   async function signOut() {
     await client?.auth?.signOut?.();
-    window.HerdHarborMarketplaceContext = undefined;
-    window.location.reload();
+    window.location.assign("/marketplace/");
   }
 
   async function start() {
+    if (booting) return;
+    booting = true;
+
     if (!window.supabase?.createClient) {
-      showSignedOut("Marketplace preview is unavailable because secure account services did not load.");
+      setStatus("Marketplace account services are unavailable. Public browsing cannot start.");
       return;
     }
 
@@ -137,21 +212,28 @@
       }
     });
 
-    formNode?.addEventListener("submit", signIn);
     signOutNode?.addEventListener("click", signOut);
 
+    await acceptAppSessionHandoff();
+
+    const { data: sessionData } = await client.auth.getSession();
+    const context = await contextForSession(sessionData?.session || null);
+    window.HerdHarborMarketplaceContext = context;
+
+    renderSession(context);
+    if (root) root.hidden = false;
+    await loadRuntime();
+
     client.auth.onAuthStateChange((event) => {
-      if (event === "SIGNED_OUT" && document.documentElement.dataset.marketplaceAccess === "owner") {
+      if (event === "SIGNED_OUT") {
         window.HerdHarborMarketplaceContext = undefined;
-        window.location.reload();
+        window.location.assign("/marketplace/");
       }
     });
-
-    await verifyOwnerSession();
   }
 
   start().catch((error) => {
-    console.error("Marketplace access verification failed:", error);
-    showSignedOut("Marketplace preview could not verify secure access.");
+    console.error("Marketplace bootstrap failed:", error);
+    setStatus("Marketplace could not finish loading. Try again.");
   });
 })();
