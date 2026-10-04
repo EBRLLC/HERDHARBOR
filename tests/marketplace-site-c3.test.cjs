@@ -57,7 +57,7 @@ test("C3W listing runtime remains lazy-loaded behind Owner authorization", () =>
   const shell = read("marketplace/marketplace-owner-shell.js");
   const html = read("marketplace/index.html");
   assert.match(shell, /context\.role !== "owner"/);
-  assert.match(shell, /marketplace-listings\.js\?v=1/);
+  assert.match(shell, /marketplace-listings\.js\?v=5/);
   assert.match(shell, /data-marketplace-view="listings"/);
   assert.doesNotMatch(html, /marketplace-listings\.js/);
 });
