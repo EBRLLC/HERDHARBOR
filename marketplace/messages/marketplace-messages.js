@@ -177,7 +177,9 @@
       ]);
       if (requestToken !== threadRequestToken || selectedConversationId !== conversationId) return;
       const messages = Array.isArray(rows) ? rows.slice().reverse() : [];
-      let blocked = blockState === true;
+      let blockedByMe = blockState?.blocked_by_me === true;
+      const blockedByPeer = blockState?.blocked_by_peer === true;
+      let messagingBlocked = blockState?.messaging_blocked === true;
       const inboxRow = inboxRows.find((row) => String(row.conversation_id) === conversationId) || {};
       const name = otherName(inboxRow);
 
@@ -189,7 +191,7 @@
             <p class="marketplace-help">Conversation with ${esc(name)}</p>
           </div>
           <div class="marketplace-admin-actions">
-            <button class="button button-secondary button-small" type="button" id="marketplace-block-conversation">${blocked ? "Unblock account" : "Block account"}</button>
+            <button class="button button-secondary button-small" type="button" id="marketplace-block-conversation">${blockedByMe ? "Unblock account" : "Block account"}</button>
             <button class="button button-secondary button-small" type="button" id="marketplace-report-conversation">Report conversation</button>
           </div>
         </div>
@@ -204,8 +206,14 @@
           `).join("") : '<div class="marketplace-empty-state"><h3>No messages yet</h3><p>Send the first message about this listing.</p></div>'}
         </div>
 
-        <div id="marketplace-block-status" class="marketplace-notice" ${blocked ? "" : "hidden"}>You blocked this Marketplace account. Unblock them to send another message.</div>
-        <form id="marketplace-message-form" class="marketplace-message-form" ${blocked ? "hidden" : ""}>
+        <div id="marketplace-block-status" class="marketplace-notice" ${messagingBlocked ? "" : "hidden"}>${blockedByMe && blockedByPeer
+          ? "Both accounts have blocked this conversation. Messaging remains unavailable until both blocks are cleared."
+          : blockedByMe
+            ? "You blocked this Marketplace account. Unblock them to send another message."
+            : blockedByPeer
+              ? "This Marketplace account has blocked this conversation. Messaging is unavailable."
+              : ""}</div>
+        <form id="marketplace-message-form" class="marketplace-message-form" ${messagingBlocked ? "hidden" : ""}>
           <label>
             Message
             <textarea name="body" rows="4" maxlength="5000" required placeholder="Write a message to this Marketplace member."></textarea>
@@ -226,21 +234,31 @@
       const messageForm = root.querySelector("#marketplace-message-form");
 
       blockButton?.addEventListener("click", async () => {
-        const nextBlocked = !blocked;
+        const nextBlocked = !blockedByMe;
         if (nextBlocked && !globalThis.confirm("Block this Marketplace account? They will no longer be able to start or continue a conversation with you until you unblock them.")) {
           return;
         }
 
         blockButton.disabled = true;
         try {
-          blocked = await rpc("marketplace_member_set_conversation_block", {
+          blockedByMe = await rpc("marketplace_member_set_conversation_block", {
             conversation_id_value: conversationId,
             blocked_value: nextBlocked
           }) === true;
+          messagingBlocked = blockedByMe || blockedByPeer;
 
-          blockButton.textContent = blocked ? "Unblock account" : "Block account";
-          if (blockNotice) blockNotice.hidden = !blocked;
-          if (messageForm) messageForm.hidden = blocked;
+          blockButton.textContent = blockedByMe ? "Unblock account" : "Block account";
+          if (blockNotice) {
+            blockNotice.hidden = !messagingBlocked;
+            blockNotice.textContent = blockedByMe && blockedByPeer
+              ? "Both accounts have blocked this conversation. Messaging remains unavailable until both blocks are cleared."
+              : blockedByMe
+                ? "You blocked this Marketplace account. Unblock them to send another message."
+                : blockedByPeer
+                  ? "This Marketplace account has blocked this conversation. Messaging is unavailable."
+                  : "";
+          }
+          if (messageForm) messageForm.hidden = messagingBlocked;
         } catch {
           globalThis.alert("The block setting could not be changed.");
         } finally {
