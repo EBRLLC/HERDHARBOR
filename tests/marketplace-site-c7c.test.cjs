@@ -146,3 +146,15 @@ test("C7C listing delete respects moderation denial before Storage cleanup", () 
   assert.match(source, /let cleanupFailed = false/);
   assert.match(source, /Listing deleted, but one or more stored photos could not be cleaned up/);
 });
+
+
+test("C7C Messages can block profile-less conversation participants without account IDs", () => {
+  const source = read("marketplace/messages/marketplace-messages.js");
+
+  assert.match(source, /marketplace_member_conversation_block_state/);
+  assert.match(source, /marketplace_member_set_conversation_block/);
+  assert.match(source, /Block account/);
+  assert.match(source, /Unblock account/);
+  assert.match(source, /You blocked this Marketplace account/);
+  assert.doesNotMatch(source, /peerUserId|targetUserId|blockedUserId|other_user_id/);
+});
