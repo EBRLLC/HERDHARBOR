@@ -15,22 +15,23 @@ test("Marketplace canonical route is website-hosted and noindexed during private
   assert.doesNotMatch(html, /app\.herdharbor\.com\/(?:.*\.js|.*\.css)/);
 });
 
-test("Marketplace uses its own Supabase session and protected Owner role", () => {
+test("Marketplace uses its own Supabase session with guest, member, and protected Owner context", () => {
   const gate = read("marketplace/marketplace-gate.js");
   assert.match(gate, /client\.auth\.getSession\(\)/);
-  assert.match(gate, /client\.auth\.signInWithPassword/);
-  assert.match(gate, /client\.rpc\("herdharbor_account_role"\)/);
-  assert.match(gate, /toLowerCase\(\) !== "owner"/);
+  assert.match(gate, /client\.rpc\("marketplace_member_session"\)/);
+  assert.match(gate, /role: "guest"/);
+  assert.match(gate, /accountRole === "owner" \? "owner" : "member"/);
   assert.match(gate, /detectSessionInUrl: false/);
-  assert.doesNotMatch(gate, /access_token|refresh_token|jwt|location\.search|URLSearchParams|preview=true/i);
+  assert.match(gate, /acceptAppSessionHandoff/);
+  assert.doesNotMatch(gate, /searchParams\.set\(["\'](?:access_token|refresh_token)|[?&](?:access_token|refresh_token)=/i);
 });
 
-test("Owner feature runtime lazy-loads only after authorization", () => {
+test("Marketplace feature runtime lazy-loads only after session context is established", () => {
   const html = read("marketplace/index.html");
   const gate = read("marketplace/marketplace-gate.js");
   assert.doesNotMatch(html, /marketplace-owner-shell\.js/);
-  assert.match(gate, /await loadOwnerShell\(\)/);
-  assert.match(gate, /role: "owner"/);
+  assert.match(gate, /window\.HerdHarborMarketplaceContext = context/);
+  assert.match(gate, /await loadRuntime\(\)/);
 });
 
 test("Marketplace website does not import HerdHarbor app sync runtime", () => {
