@@ -12,7 +12,7 @@ test("C4W Browse is the default real Marketplace experience with required filter
 
   assert.match(shell, /show\(viewFromLocation\(\)\)/);
   assert.match(shell, /return "browse"/);
-  assert.match(shell, /marketplace-browse\\.js\\?v=\\d+/);
+  assert.match(shell, /marketplace-browse\.js\?v=\d+/);
   assert.match(source, /marketplace_owner_search_preview/);
   assert.match(source, /marketplace_owner_browse_facets/);
   assert.match(source, /marketplace_owner_preview_media/);
@@ -41,7 +41,7 @@ test("C4W direct listing route uses only privacy-safe detail and private media R
   const html = read("marketplace/listing/index.html");
   const source = read("marketplace/marketplace-detail.js");
 
-  assert.match(html, /data-marketplace-runtime="marketplace-detail\\.js\\?v=\\d+"/);
+  assert.match(html, /data-marketplace-runtime="marketplace-detail\.js\?v=\d+"/);
   assert.match(html, /noindex,nofollow,noarchive/);
   assert.match(html, /https:\/\/herdharbor\.com\/marketplace\/listing\//);
   assert.match(source, /marketplace_owner_listing_preview/);
@@ -57,7 +57,7 @@ test("C4W direct seller route uses public-shaped seller/search contracts", () =>
   const html = read("marketplace/seller/index.html");
   const source = read("marketplace/marketplace-seller.js");
 
-  assert.match(html, /data-marketplace-runtime="marketplace-seller\\.js\\?v=\\d+"/);
+  assert.match(html, /data-marketplace-runtime="marketplace-seller\.js\?v=\d+"/);
   assert.match(html, /noindex,nofollow,noarchive/);
   assert.match(source, /marketplace_owner_seller_preview/);
   assert.match(source, /marketplace_owner_search_preview/);
@@ -76,7 +76,7 @@ test("C4W nested routes independently reuse the Owner gate without token handoff
   assert.match(gate, /dataset\.marketplaceRuntime/);
   assert.match(gate, /client\.auth\.getSession\(\)/);
   assert.match(gate, /client\.rpc\("herdharbor_account_role"\)/);
-  assert.match(pages, /\.\.\/marketplace-gate\\.js\\?v=\\d+/);
+  assert.match(pages, /\.\.\/marketplace-gate\.js\?v=\d+/);
   assert.doesNotMatch(gate, /access_token|refresh_token|location\.search|URLSearchParams|preview=true/i);
   assert.doesNotMatch(pages, /app\.herdharbor\.com\/.*\.(?:js|css)/i);
 });
