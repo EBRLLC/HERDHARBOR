@@ -72,7 +72,8 @@ test("C4W nested routes reuse the Marketplace gate and keep SSO tokens out of UR
   const gate = read("marketplace/marketplace-gate.js");
   const pages = [read("marketplace/listing/index.html"), read("marketplace/seller/index.html")].join("\n");
 
-  assert.match(gate, /document\.currentScript/);
+  assert.match(gate, /const MARKETPLACE_BASE = new URL\("\\.\\/", window\\.location\\.href\)/);
+  assert.doesNotMatch(gate, /document\\.currentScript|gateScript\\?\\.src/);
   assert.match(gate, /dataset\.marketplaceRuntime/);
   assert.match(gate, /client\.auth\.getSession\(\)/);
   assert.match(gate, /client\.rpc\("marketplace_member_session"\)/);
