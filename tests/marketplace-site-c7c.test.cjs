@@ -132,3 +132,15 @@ test("C7C committed listing photos survive later pedigree or refresh failures", 
   assert.match(source, /if \(uploadedPaths\.length && !photosCommitted\)/);
   assert.match(source, /Listing details were saved, but a follow-up Marketplace update failed/);
 });
+
+
+test("C7C listing delete respects moderation denial before Storage cleanup", () => {
+  const source = read("marketplace/marketplace-listings.js");
+  assert.match(source, /const deleted = await rpc\(client, "marketplace_member_delete_listing"/);
+  assert.match(source, /if \(deleted !== true\)/);
+  assert.match(source, /cannot be deleted while it is under Marketplace moderation/);
+
+  const denial = source.indexOf("if (deleted !== true)");
+  const cleanup = source.indexOf("await removePaths(client, previousPaths)", denial);
+  assert.ok(denial >= 0 && cleanup > denial);
+});
