@@ -115,10 +115,28 @@
     else renderPlaceholder(view);
   }
 
-  for (const button of buttons) {
-    button.addEventListener("click", () => show(button.dataset.marketplaceView));
+  function viewFromLocation() {
+    if (window.location.hash === "#my-listings") return "listings";
+    if (window.location.hash === "#seller-profile") return "profile";
+    return "browse";
   }
 
-  show("browse");
+  function urlForView(view) {
+    const url = new URL(window.location.href);
+    url.hash = view === "listings" ? "my-listings" : view === "profile" ? "seller-profile" : "";
+    return url.pathname + url.search + url.hash;
+  }
+
+  for (const button of buttons) {
+    button.addEventListener("click", () => {
+      const view = button.dataset.marketplaceView;
+      history.pushState({ marketplaceView: view }, "", urlForView(view));
+      show(view);
+    });
+  }
+
+  window.addEventListener("popstate", () => show(viewFromLocation()));
+
+  show(viewFromLocation());
   root.hidden = false;
 })();
