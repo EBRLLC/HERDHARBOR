@@ -223,7 +223,7 @@
         if (saveError) throw new Error("Seller profile could not be saved.");
 
         if (uploadedPath && previousPath && previousPath !== uploadedPath) {
-          await removePath(client, previousPath);
+          await removePath(client, previousPath).catch(() => {});
         }
 
         currentAvatarPath = uploadedPath || previousPath;
