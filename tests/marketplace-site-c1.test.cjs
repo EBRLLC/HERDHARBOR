@@ -38,7 +38,7 @@ test("Marketplace website does not import HerdHarbor app sync runtime", () => {
   const content = [
     read("marketplace/index.html"),
     read("marketplace/marketplace-gate.js"),
-    read("marketplace/marketplace-owner-shell.js")
+    read("marketplace/marketplace-shell.js")
   ].join("\n");
   assert.doesNotMatch(content, /HerdHarborStateStore|herdharbor-state-store|cloud-sync|offline save queue|conflict resolution|herdharbor-cloud\.js|app\.herdharbor\.com\/.*\.(?:js|css)/i);
 });
@@ -52,7 +52,7 @@ test("Main website navigation exposes Marketplace", () => {
 test("No hard-coded Owner identity exists", () => {
   const content = [
     read("marketplace/marketplace-gate.js"),
-    read("marketplace/marketplace-owner-shell.js")
+    read("marketplace/marketplace-shell.js")
   ].join("\n");
   assert.doesNotMatch(content, /owner[_-]?(?:email|user[_-]?id)\s*=|@(?:gmail|yahoo|outlook|icloud)\.com/i);
 });
