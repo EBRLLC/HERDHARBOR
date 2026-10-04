@@ -26,7 +26,7 @@ test("C2W profile form contains only approved public-facing fields", () => {
 test("C2W avatar media is private, signed, validated, and account-prefixed", () => {
   const source = read("marketplace/marketplace-profile.js");
   assert.match(source, /marketplace-public/);
-  assert.match(source, /createSignedUrl\(path, 900\)/);
+  assert.match(source, /createSignedUrl\(path, 300\)/);
   assert.match(source, /image\/jpeg/);
   assert.match(source, /image\/png/);
   assert.match(source, /image\/webp/);
@@ -39,7 +39,7 @@ test("C2W avatar media is private, signed, validated, and account-prefixed", () 
 test("C2W profile runtime is lazy-loaded only for an active authenticated Marketplace account", () => {
   const shell = read("marketplace/marketplace-owner-shell.js");
   const html = read("marketplace/index.html");
-  assert.match(shell, /const interactive = context\.isAuthenticated && context\.accountStatus === "active"/);
+  assert.match(shell, /const interactive = context\.isAuthenticated && context\.accountStatus === "active" && context\.marketplaceAccessReady === true/);
   assert.match(shell, /marketplace-profile\.js\?v=7/);
   assert.match(shell, /data-marketplace-view="profile"/);
   assert.doesNotMatch(html, /marketplace-profile\.js/);
