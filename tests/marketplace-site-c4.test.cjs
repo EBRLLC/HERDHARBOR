@@ -7,7 +7,7 @@ const root = path.resolve(__dirname, "..");
 const read = (file) => fs.readFileSync(path.join(root, file), "utf8");
 
 test("C4W Browse is the default real Marketplace experience with required filters", () => {
-  const shell = read("marketplace/marketplace-owner-shell.js");
+  const shell = read("marketplace/marketplace-shell.js");
   const source = read("marketplace/marketplace-browse.js");
 
   assert.match(shell, /show\(viewFromLocation\(\)\)/);
@@ -84,7 +84,7 @@ test("C4W nested routes reuse the Marketplace gate and keep SSO tokens out of UR
 });
 
 test("C4W Marketplace tabs support direct hashes and browser history", () => {
-  const shell = read("marketplace/marketplace-owner-shell.js");
+  const shell = read("marketplace/marketplace-shell.js");
   assert.match(shell, /#my-listings/);
   assert.match(shell, /#seller-profile/);
   assert.match(shell, /history\.pushState/);
