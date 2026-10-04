@@ -63,13 +63,20 @@
     return result;
   }
 
-  async function reportSeller(sellerId) {
-    if (!interactive) {
-      window.location.assign(context.isAuthenticated
-        ? "https://app.herdharbor.com/"
-        : "/marketplace/account/?next=" + encodeURIComponent(window.location.pathname + window.location.search));
-      return;
+  function blockUnavailableInteraction() {
+    if (interactive) return false;
+    if (context.marketplaceSuspended) {
+      globalThis.alert("Your Marketplace access is suspended. You can continue browsing, but reports and other Marketplace interaction are disabled.");
+      return true;
     }
+    window.location.assign(context.isAuthenticated
+      ? "https://app.herdharbor.com/"
+      : "/marketplace/account/?next=" + encodeURIComponent(window.location.pathname + window.location.search));
+    return true;
+  }
+
+  async function reportSeller(sellerId) {
+    if (blockUnavailableInteraction()) return;
 
     const reason = clean(globalThis.prompt("Why are you reporting this seller?") || "");
     if (!reason) return;
@@ -155,7 +162,7 @@
             <p>${esc(profile.about || "No seller description has been added.")}</p>
             ${breeds.length ? '<p class="seller-public-meta">' + esc(breeds.join(" • ")) + '</p>' : ""}
             <p class="seller-public-meta">${Number(profile.active_listing_count || 0)} active listing${Number(profile.active_listing_count || 0) === 1 ? "" : "s"}</p>
-            ${ownProfile ? "" : '<button class="button button-secondary button-small" type="button" id="marketplace-report-seller">' + (interactive ? "Report seller" : "Sign in to report") + '</button>'}
+            ${ownProfile ? "" : '<button class="button button-secondary button-small" type="button" id="marketplace-report-seller">' + (interactive ? "Report seller" : context.marketplaceSuspended ? "Marketplace suspended" : "Sign in to report") + '</button>'}
           </div>
         </section>
 
