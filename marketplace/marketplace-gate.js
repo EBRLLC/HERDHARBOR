@@ -8,7 +8,7 @@
 
   const gateScript = document.currentScript;
   const MARKETPLACE_BASE = new URL("./", gateScript?.src || new URL("./", window.location.href));
-  const runtimeFile = document.documentElement.dataset.marketplaceRuntime || "marketplace-owner-shell.js?v=7";
+  const runtimeFile = document.documentElement.dataset.marketplaceRuntime || "marketplace-shell.js?v=7";
   const RUNTIME_URL = new URL(runtimeFile, MARKETPLACE_BASE).href;
 
   const sessionShell = document.getElementById("marketplace-access-shell");
@@ -16,7 +16,7 @@
   const actionsNode = document.getElementById("marketplace-gate-actions");
   const accountLink = document.getElementById("marketplace-account-link");
   const signOutNode = document.getElementById("marketplace-sign-out");
-  const root = document.getElementById("marketplace-owner-root");
+  const root = document.getElementById("marketplace-root");
 
   let client = null;
   let booting = false;
