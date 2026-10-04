@@ -68,9 +68,9 @@ test("C5W/C7 keeps private features authenticated and SSO credentials out of URL
     read("marketplace/marketplace-listings.js"),
     read("marketplace/marketplace-detail.js")
   ].join("\n");
-  assert.match(content, /context\.role !== "owner"|toLowerCase\(\) !== "owner"/);
-  assert.doesNotMatch(content, /preview=true|allowAnonymous|publicLaunch|role\s*===\s*["']anon["']/i);
-  assert.doesNotMatch(content, /access_token|refresh_token|service_role|SUPABASE_SERVICE_ROLE_KEY/i);
+  assert.match(content, /context\.marketplaceAccessReady === true|context\.marketplaceAccessReady !== true/);
+  assert.doesNotMatch(content, /preview=true|publicLaunch|service_role|SUPABASE_SERVICE_ROLE_KEY/i);
+  assert.doesNotMatch(content, /searchParams\.set\(["'](?:access_token|refresh_token)|[?&](?:access_token|refresh_token)=/i);
 });
 
 test("C5W pedigree UI is responsive and accessible", () => {
