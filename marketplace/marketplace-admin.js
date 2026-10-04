@@ -48,7 +48,7 @@
             <span class="marketplace-admin-badge">Owner Administration</span>
             <p class="eyebrow">Marketplace Safety</p>
             <h2>Admin & Moderation</h2>
-            <p class="marketplace-help">Review reports, remove abusive listings, suspend Marketplace sellers, and audit every moderation action. These controls affect Marketplace access only; they do not disable a HerdHarbor account.</p>
+            <p class="marketplace-help">Review reports, remove abusive listings, suspend seller profiles, suspend Marketplace accounts when necessary, and audit every moderation action. None of these controls disable the main HerdHarbor account.</p>
           </div>
         </div>
 
@@ -362,8 +362,8 @@
                   <span><strong>${esc(seller.removed_listing_count || 0)}</strong> removed listings</span>
                 </div>
                 <div class="marketplace-admin-actions">
-                  ${sellerStatus === "active" ? `<button type="button" class="button button-danger button-small" data-seller-action="suspend" data-seller-id="${esc(seller.public_id)}">Suspend Marketplace</button>` : ""}
-                  ${sellerStatus !== "active" ? `<button type="button" class="button button-secondary button-small" data-seller-action="reactivate" data-seller-id="${esc(seller.public_id)}">Reactivate Marketplace</button>` : ""}
+                  ${sellerStatus === "active" ? `<button type="button" class="button button-danger button-small" data-seller-action="suspend" data-seller-id="${esc(seller.public_id)}">Suspend selling</button>` : ""}
+                  ${sellerStatus !== "active" ? `<button type="button" class="button button-secondary button-small" data-seller-action="reactivate" data-seller-id="${esc(seller.public_id)}">Reactivate selling</button>` : ""}
                   ${sellerStatus !== "closed" ? `<button type="button" class="button button-secondary button-small" data-seller-action="close" data-seller-id="${esc(seller.public_id)}">Close Marketplace profile</button>` : ""}
                 </div>
               </article>
@@ -374,8 +374,8 @@
             button.addEventListener("click", () => {
               const action = button.dataset.sellerAction;
               const labels = {
-                suspend: ["Suspend Marketplace seller", "The seller and their available listings will immediately disappear from Marketplace. Their HerdHarbor account will remain active.", "Suspend seller"],
-                reactivate: ["Reactivate Marketplace seller", "Restore this seller's Marketplace status to active. Listings still retain their own existing state.", "Reactivate seller"],
+                suspend: ["Suspend selling", "Hide this seller profile and its available listings. The account can still browse and message unless you use a full Marketplace account suspension.", "Suspend selling"],
+                reactivate: ["Reactivate selling", "Restore this seller profile to active. This does not lift a separate Marketplace account suspension, and listings keep their existing state.", "Reactivate selling"],
                 close: ["Close Marketplace seller profile", "Close this seller's Marketplace profile. This does not delete their HerdHarbor account.", "Close Marketplace profile"]
               };
               const [title, description, confirmLabel] = labels[action];
