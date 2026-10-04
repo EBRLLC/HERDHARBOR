@@ -87,7 +87,7 @@
 
   async function mount(root, context) {
     if (!root || !context?.client || !context?.userId || !context.isAuthenticated || context.accountStatus !== "active" || context.marketplaceAccessReady !== true) return;
-    const { client, userId } = context;
+    const { client } = context;
 
     root.innerHTML = `
       <section class="seller-profile-layout">
@@ -192,7 +192,7 @@
           }
 
           const suffix = globalThis.crypto?.randomUUID?.() || String(Date.now());
-          uploadedPath = `${userId}/profiles/avatar-${suffix}.${ext}`;
+          uploadedPath = `profiles/avatar-${suffix}.${ext}`;
           const { error: uploadError } = await client.storage.from(BUCKET).upload(uploadedPath, file, {
             cacheControl: "3600",
             contentType: file.type,
