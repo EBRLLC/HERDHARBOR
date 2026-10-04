@@ -115,3 +115,20 @@ test("C7C SSO keeps a one-time fragment fallback without URL session tokens", ()
   assert.doesNotMatch(gate, /[?&](?:access_token|refresh_token)=/i);
   assert.doesNotMatch(gate, /searchParams\.(?:get|set)\(["'](?:access_token|refresh_token)/i);
 });
+
+
+test("C7C committed profile media is never deleted by a later preview failure", () => {
+  const source = read("marketplace/marketplace-profile.js");
+  assert.match(source, /let profileSaved = false/);
+  assert.match(source, /profileSaved = true/);
+  assert.match(source, /if \(uploadedPath && !profileSaved\)/);
+  assert.match(source, /Seller profile was saved, but the preview could not refresh/);
+});
+
+test("C7C committed listing photos survive later pedigree or refresh failures", () => {
+  const source = read("marketplace/marketplace-listings.js");
+  assert.match(source, /let photosCommitted = false/);
+  assert.match(source, /photosCommitted = true/);
+  assert.match(source, /if \(uploadedPaths\.length && !photosCommitted\)/);
+  assert.match(source, /Listing details were saved, but a follow-up Marketplace update failed/);
+});
