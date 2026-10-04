@@ -58,7 +58,7 @@
     return data && typeof data === "object" ? data : { available: false };
   }
 
-  async function uploadPhotos(client, userId, listingId, files) {
+  async function uploadPhotos(client, listingId, files) {
     const uploaded = [];
     try {
       for (const [index, file] of files.slice(0, MAX_PHOTOS).entries()) {
@@ -68,7 +68,7 @@
         }
 
         const token = globalThis.crypto?.randomUUID?.() || `${Date.now()}-${index}`;
-        const path = `${userId}/listings/${listingId}/photo-${index}-${token}.${ext}`;
+        const path = `listings/${listingId}/photo-${index}-${token}.${ext}`;
         const { error } = await client.storage.from(BUCKET).upload(path, file, {
           cacheControl: "3600",
           contentType: file.type,
@@ -123,7 +123,7 @@
   async function mount(root, context) {
     if (!root || !context?.client || !context?.userId || !context.isAuthenticated || context.accountStatus !== "active" || context.marketplaceAccessReady !== true) return;
 
-    const { client, userId } = context;
+    const { client } = context;
     root.innerHTML = `
       <section class="marketplace-section-heading">
         <div>
@@ -407,7 +407,7 @@
 
           if (files.length) {
             const previousPaths = Array.isArray(listing?.photo_paths) ? listing.photo_paths.filter(Boolean) : [];
-            uploadedPaths = await uploadPhotos(client, userId, savedId, files);
+            uploadedPaths = await uploadPhotos(client, savedId, files);
             await rpc(client, "marketplace_member_set_listing_photos", {
               listing_id_value: savedId,
               paths_value: uploadedPaths
