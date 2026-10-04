@@ -153,15 +153,23 @@
 
       dialogConfirm.disabled = true;
       dialogError.textContent = "";
+
       try {
         await pendingAction(reason);
-        closeDialog();
+      } catch {
+        dialogError.textContent = "The moderation action could not be completed.";
+        dialogConfirm.disabled = false;
+        return;
+      }
+
+      dialogConfirm.disabled = false;
+      closeDialog();
+
+      try {
         await refreshSummary();
         await renderView(currentView);
       } catch {
-        dialogError.textContent = "The moderation action could not be completed.";
-      } finally {
-        dialogConfirm.disabled = false;
+        viewNode.innerHTML = '<div class="marketplace-notice error">The moderation action was completed, but the Admin view could not refresh. Reload Marketplace before taking another action.</div>';
       }
     });
 
