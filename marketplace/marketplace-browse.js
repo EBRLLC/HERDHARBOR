@@ -2,8 +2,6 @@
   "use strict";
 
   const PAGE_SIZE = 24;
-  const BUCKET = "marketplace-public";
-
   const clean = (value) => String(value ?? "").trim();
   const esc = (value) => String(value ?? "")
     .replaceAll("&", "&amp;")
@@ -69,19 +67,15 @@
 
   async function mediaMap(client, listingIds) {
     if (!listingIds.length) return new Map();
-    const rows = await rpc(client, "marketplace_public_listing_media_v2", {
-      listing_ids_value: listingIds
+    const { data, error } = await client.functions.invoke("marketplace-public-media", {
+      body: { action: "listing", listingIds, maxPerListing: 1 }
     });
+    if (error) throw error;
+    const listings = data?.listings && typeof data.listings === "object" ? data.listings : {};
     const result = new Map();
-    for (const row of Array.isArray(rows) ? rows : []) {
-      const paths = Array.isArray(row.photo_paths) ? row.photo_paths : [];
-      const first = paths[0] || "";
-      if (!first) {
-        result.set(String(row.listing_id), "");
-        continue;
-      }
-      const { data, error } = await client.storage.from(BUCKET).createSignedUrl(first, 300);
-      result.set(String(row.listing_id), error ? "" : (data?.signedUrl || ""));
+    for (const id of listingIds) {
+      const urls = Array.isArray(listings[id]) ? listings[id] : [];
+      result.set(String(id), urls[0] || "");
     }
     return result;
   }
