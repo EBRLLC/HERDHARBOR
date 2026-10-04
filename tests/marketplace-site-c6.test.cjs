@@ -90,11 +90,11 @@ test("C6W changed shared assets have new identities", () => {
   const seller = read("marketplace/seller/index.html");
   assert.match(gate, /marketplace-shell\.js\?v=7/);
   assert.match(index, /marketplace\.css\?v=7/);
-  assert.match(index, /marketplace-gate\.js\?v=7/);
+  assert.match(index, /marketplace-gate\.js\?v=8/);
   assert.match(listing, /marketplace\.css\?v=7/);
-  assert.match(listing, /marketplace-gate\.js\?v=7/);
+  assert.match(listing, /marketplace-gate\.js\?v=8/);
   assert.match(seller, /marketplace\.css\?v=7/);
-  assert.match(seller, /marketplace-gate\.js\?v=7/);
+  assert.match(seller, /marketplace-gate\.js\?v=8/);
 });
 
 test("C6W admin remains responsive and keyboard accessible", () => {
