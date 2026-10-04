@@ -12,8 +12,8 @@ test("C5W listing editor exposes explicit pedigree visibility controls", () => {
   for (const value of ["hidden","parents","3","4","5"]) {
     assert.match(source, new RegExp('option\\("' + value + '"'));
   }
-  assert.match(source, /pedigree_visibility_value: form\.elements\.pedigree_visibility\.value/);
-  assert.doesNotMatch(source, /pedigree_visibility_value:\s*"hidden"/);
+  assert.match(source, /name="pedigree_visibility" \$\{sourceId \? "" : "disabled"\}/);
+  assert.match(source, /pedigree_visibility_value: sourceId \? form\.elements\.pedigree_visibility\.value : "hidden"/);
 });
 
 test("C5W refreshes the canonical server pedigree snapshot after linked listing save", () => {
@@ -60,7 +60,8 @@ test("C5W private website session fails closed when auth ends", () => {
   assert.match(gate, /onAuthStateChange/);
   assert.match(gate, /event === "SIGNED_OUT"/);
   assert.match(gate, /window\.HerdHarborMarketplaceContext = undefined/);
-  assert.match(gate, /session ended/);
+  assert.match(gate, /window\.location\.reload\(\)/);
+  assert.match(gate, /dataset\.marketplaceAccess === "owner"/);
 });
 
 test("C5W retains Owner-only private preview and no token handoff", () => {
