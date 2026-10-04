@@ -57,7 +57,7 @@
     if (existing) return;
 
     const script = document.createElement("script");
-    script.src = "./marketplace-browse.js?v=1";
+    script.src = "./marketplace-browse.js?v=5";
     script.async = true;
     script.dataset.marketplaceBrowse = "true";
     script.addEventListener("load", () => window.HerdHarborMarketplaceBrowse?.mount?.(viewRoot, context), { once: true });
@@ -77,7 +77,7 @@
     if (existing) return;
 
     const script = document.createElement("script");
-    script.src = "./marketplace-listings.js?v=1";
+    script.src = "./marketplace-listings.js?v=5";
     script.async = true;
     script.dataset.marketplaceListings = "true";
     script.addEventListener("load", () => window.HerdHarborMarketplaceListings?.mount?.(viewRoot, context), { once: true });
