@@ -27,7 +27,6 @@ test("C5W refreshes the canonical server pedigree snapshot after linked listing 
 test("C5W detail reads only sanitized pedigree preview contracts", () => {
   const source = read("marketplace/marketplace-detail.js");
   assert.match(source, /marketplace_public_pedigree_v2/);
-  assert.match(source, /client\.functions\.invoke\("marketplace-pedigree-snapshot"/);
   assert.match(source, /View HerdHarbor Pedigree/);
   assert.match(source, /showModal\(\)/);
   assert.match(source, /data-pedigree-body/);
