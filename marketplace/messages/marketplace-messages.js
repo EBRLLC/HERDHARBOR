@@ -233,15 +233,24 @@
             conversation_id_value: conversationId,
             body_value: body
           });
-          form.reset();
-          status.textContent = "";
-          await loadInbox({ openRequested: false });
-          await openThread(conversationId);
         } catch {
           status.textContent = "Message could not be sent.";
           status.dataset.state = "error";
-        } finally {
           submit.disabled = false;
+          return;
+        }
+
+        form.reset();
+        status.textContent = "Message sent.";
+        status.dataset.state = "success";
+        submit.disabled = false;
+
+        try {
+          await loadInbox({ openRequested: false });
+          await openThread(conversationId);
+        } catch {
+          status.textContent = "Message sent, but the conversation could not refresh. Reload Messages to continue.";
+          status.dataset.state = "error";
         }
       });
 
