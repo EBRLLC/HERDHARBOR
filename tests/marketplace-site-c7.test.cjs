@@ -30,8 +30,8 @@ test("C7W listing and seller pages use public read-only contracts", () => {
   assert.match(detail, /marketplace_public_pedigree_v2/);
   assert.match(seller, /marketplace_public_seller_v2/);
   assert.match(seller, /marketplace_public_search_v2/);
-  assert.match(seller, /marketplace_public_seller_media_v2/);
-  assert.match(seller, /marketplace_public_listing_media_v2/);
+  assert.match(seller, /functions\.invoke\("marketplace-public-media"/);
+  assert.doesNotMatch(seller, /marketplace_public_(?:seller_media|listing_media)_v2|createSignedUrl/);
 
   for (const source of [detail, seller]) {
     assert.doesNotMatch(source, /source_animal_id|herdharbor_user_data|account_access|subscription_payments|exact_address|medical|acquisition/i);
