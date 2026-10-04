@@ -100,3 +100,16 @@ test("C7C listing UI distinguishes committed record from failed follow-up work",
   assert.match(source, /if \(listingRecordSaved\)/);
   assert.match(source, /for \(const file of files\)/);
 });
+
+
+test("C7C SSO keeps a one-time fragment fallback without URL session tokens", () => {
+  const gate = read("marketplace/marketplace-gate.js");
+
+  assert.match(gate, /#app-sso=/);
+  assert.match(gate, /#sso-ticket=/);
+  assert.match(gate, /redeemFragmentTicket/);
+  assert.match(gate, /client\.auth\.verifyOtp/);
+  assert.match(gate, /history\.replaceState/);
+  assert.doesNotMatch(gate, /[?&](?:access_token|refresh_token)=/i);
+  assert.doesNotMatch(gate, /searchParams\.(?:get|set)\(["'](?:access_token|refresh_token)/i);
+});
