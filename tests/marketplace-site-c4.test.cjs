@@ -76,7 +76,7 @@ test("C4W nested routes reuse the Marketplace gate and keep SSO tokens out of UR
   assert.match(gate, /dataset\.marketplaceRuntime/);
   assert.match(gate, /client\.auth\.getSession\(\)/);
   assert.match(gate, /client\.rpc\("marketplace_member_session"\)/);
-  assert.match(gate, /APP_ORIGIN = "https:\\/\\/app\.herdharbor\.com"/);
+  assert.match(gate, /APP_ORIGIN = "https:\/\/app\.herdharbor\.com"/);
   assert.match(gate, /event\.origin !== APP_ORIGIN/);
   assert.match(pages, /\.\.\/marketplace-gate\.js\?v=\d+/);
   assert.doesNotMatch(gate, /searchParams\.set\(["\'](?:access_token|refresh_token)|[?&](?:access_token|refresh_token)=/i);
@@ -108,6 +108,8 @@ test("C4W guest browsing uses public read contracts while account features remai
     read("marketplace/marketplace-detail.js"),
     read("marketplace/marketplace-seller.js")
   ].join("\n");
-  assert.doesNotMatch(content, /preview=true|allowAnonymous|publicLaunch|role\s*===\s*["']anon["']/i);
-  assert.match(content, /context\.role !== "owner"|toLowerCase\(\) !== "owner"/);
+  assert.doesNotMatch(content, /preview=true|publicLaunch/i);
+  assert.match(content, /role: "guest"/);
+  assert.match(content, /marketplace_public_search_v2/);
+  assert.match(content, /marketplace_member_open_listing_conversation/);
 });
