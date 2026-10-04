@@ -23,7 +23,7 @@
 
   async function signedAvatar(client, path) {
     if (!path) return "";
-    const { data, error } = await client.storage.from(BUCKET).createSignedUrl(path, 900);
+    const { data, error } = await client.storage.from(BUCKET).createSignedUrl(path, 300);
     if (error) return "";
     return data?.signedUrl || "";
   }
