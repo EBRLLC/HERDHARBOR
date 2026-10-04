@@ -217,3 +217,13 @@ test("C7W registers fragment fallback before waiting on opener SSO", () => {
   assert.ok(handoff >= 0, "fragment redemption bootstrap missing");
   assert.ok(listener < handoff, "fragment fallback listener must exist before opener handshake wait");
 });
+
+
+test("C7W private messages hide sending when either participant blocks the conversation", () => {
+  const source = read("marketplace/messages/marketplace-messages.js");
+  assert.match(source, /blockedByMe = blockState\?\.blocked_by_me === true/);
+  assert.match(source, /blockedByPeer = blockState\?\.blocked_by_peer === true/);
+  assert.match(source, /messagingBlocked = blockState\?\.messaging_blocked === true/);
+  assert.match(source, /This Marketplace account has blocked this conversation\. Messaging is unavailable\./);
+  assert.match(source, /messageForm\.hidden = messagingBlocked/);
+});
