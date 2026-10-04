@@ -31,6 +31,7 @@
 
   const viewRoot = document.getElementById("marketplace-view-root");
   const buttons = [...root.querySelectorAll("[data-marketplace-view]")];
+  let currentView = "";
 
   function setCurrent(view) {
     for (const button of buttons) {
@@ -39,22 +40,32 @@
     }
   }
 
-  function loadModule({ globalName, marker, src, failure }) {
+  function loadModule({ view, globalName, marker, src, failure }) {
+    const mountIfCurrent = () => {
+      if (currentView !== view) return;
+      window[globalName]?.mount?.(viewRoot, context);
+    };
+
     const globalApi = window[globalName];
     if (globalApi?.mount) {
-      globalApi.mount(viewRoot, context);
+      mountIfCurrent();
       return;
     }
 
-    const existing = document.querySelector(`script[data-${marker}]`);
-    if (existing) return;
+    const selector = 'script[data-marketplace-module="' + marker + '"]';
+    const existing = document.querySelector(selector);
+    if (existing) {
+      existing.addEventListener("load", mountIfCurrent, { once: true });
+      return;
+    }
 
     const script = document.createElement("script");
     script.src = src;
     script.async = true;
-    script.dataset[marker] = "true";
-    script.addEventListener("load", () => window[globalName]?.mount?.(viewRoot, context), { once: true });
+    script.dataset.marketplaceModule = marker;
+    script.addEventListener("load", mountIfCurrent, { once: true });
     script.addEventListener("error", () => {
+      if (currentView !== view) return;
       viewRoot.innerHTML = '<div class="marketplace-notice error">' + failure + '</div>';
     }, { once: true });
     document.body.appendChild(script);
@@ -62,6 +73,7 @@
 
   function loadBrowse() {
     loadModule({
+      view: "browse",
       globalName: "HerdHarborMarketplaceBrowse",
       marker: "marketplaceBrowse",
       src: "./marketplace-browse.js?v=7",
@@ -75,6 +87,7 @@
       return;
     }
     loadModule({
+      view: "listings",
       globalName: "HerdHarborMarketplaceListings",
       marker: "marketplaceListings",
       src: "./marketplace-listings.js?v=7",
@@ -88,6 +101,7 @@
       return;
     }
     loadModule({
+      view: "profile",
       globalName: "HerdHarborMarketplaceProfile",
       marker: "marketplaceProfile",
       src: "./marketplace-profile.js?v=7",
@@ -101,6 +115,7 @@
       return;
     }
     loadModule({
+      view: "admin",
       globalName: "HerdHarborMarketplaceAdmin",
       marker: "marketplaceAdmin",
       src: "./marketplace-admin.js?v=7",
@@ -109,6 +124,7 @@
   }
 
   function show(view) {
+    currentView = view;
     setCurrent(view);
     if (view === "browse") loadBrowse();
     else if (view === "listings") loadListings();
