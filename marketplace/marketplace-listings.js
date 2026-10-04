@@ -465,13 +465,22 @@
             throw new Error("This listing cannot be deleted while it is under Marketplace moderation.");
           }
           const previousPaths = Array.isArray(listing?.photo_paths) ? listing.photo_paths.filter(Boolean) : [];
+          let cleanupFailed = false;
           if (previousPaths.length) {
-            await removePaths(client, previousPaths).catch(() => {
-              throw new Error("Listing was deleted, but one or more stored photos could not be cleaned up.");
-            });
+            try {
+              await removePaths(client, previousPaths);
+            } catch {
+              cleanupFailed = true;
+            }
           }
           editor.hidden = true;
           await loadListings();
+          setStatus(
+            cleanupFailed
+              ? "Listing deleted, but one or more stored photos could not be cleaned up."
+              : "Listing deleted.",
+            cleanupFailed ? "error" : "success"
+          );
         } catch (error) {
           setStatus(error?.message || "Listing could not be deleted.", "error");
         }
