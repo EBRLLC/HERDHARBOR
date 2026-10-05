@@ -50,7 +50,7 @@ test("D4 lifecycle and Saved Animals modules have fresh cache identities and CI 
 
   assert.match(shell, /marketplace-listings\.js\?v=9/);
   assert.match(shell, /marketplace-saved\.js\?v=1/);
-  assert.match(gate, /marketplace-shell\.js\?v=11/);
-  assert.match(pages, /marketplace-gate\.js\?v=12/);
+  assert.match(gate, /marketplace-shell\.js\?v=12/);
+  assert.match(pages, /marketplace-gate\.js\?v=13/);
   assert.match(workflow, /node --check marketplace\/marketplace-saved\.js/);
 });

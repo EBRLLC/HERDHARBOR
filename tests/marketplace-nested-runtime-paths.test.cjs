@@ -19,7 +19,7 @@ test("nested Marketplace pages use absolute runtime paths that match repository 
   const cases = [
     ["marketplace/listing/index.html", "/marketplace/marketplace-detail.js?v=9", "marketplace/marketplace-detail.js"],
     ["marketplace/seller/index.html", "/marketplace/marketplace-seller.js?v=9", "marketplace/marketplace-seller.js"],
-    ["marketplace/messages/index.html", "/marketplace/messages/marketplace-messages.js?v=10", "marketplace/messages/marketplace-messages.js"]
+    ["marketplace/messages/index.html", "/marketplace/messages/marketplace-messages.js?v=11", "marketplace/messages/marketplace-messages.js"]
   ];
 
   for (const [page, expectedRuntime, repoFile] of cases) {
