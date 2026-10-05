@@ -222,31 +222,31 @@
     );
   }
 
-  function speciesValues() {
-    const live = Array.isArray(facets.species)
+  function speciesValues(facets) {
+    const live = Array.isArray(facets?.species)
       ? facets.species.map(canonicalSpeciesLabel)
       : [];
     return mergeValues(BASE_SPECIES, live);
   }
 
-  function breedValues(species) {
+  function breedValues(species, facets) {
     const key = canonicalSpecies(species);
     const baseline = key
       ? (BASE_BREEDS[key] || [])
       : Object.values(BASE_BREEDS).flat();
-    const pairs = Array.isArray(facets.breed_pairs) ? facets.breed_pairs : [];
+    const pairs = Array.isArray(facets?.breed_pairs) ? facets.breed_pairs : [];
     const liveForSpecies = key
       ? pairs
           .filter((row) => canonicalSpecies(row?.species) === key)
           .map((row) => row?.breed)
-      : (Array.isArray(facets.breeds) ? facets.breeds : pairs.map((row) => row?.breed));
+      : (Array.isArray(facets?.breeds) ? facets.breeds : pairs.map((row) => row?.breed));
     return mergeValues(baseline, liveForSpecies);
   }
 
-  function sexEntries() {
+  function sexEntries(facets) {
     const entries = [...SEX_OPTIONS];
     const known = new Set(SEX_OPTIONS.map((entry) => entry.value));
-    for (const value of Array.isArray(facets.sexes) ? facets.sexes : []) {
+    for (const value of Array.isArray(facets?.sexes) ? facets.sexes : []) {
       const canonical = canonicalSex(value);
       if (!clean(value) || known.has(canonical)) continue;
       known.add(canonical);
@@ -255,10 +255,10 @@
     return entries;
   }
 
-  function regionEntries() {
+  function regionEntries(facets) {
     const entries = [...US_STATES];
     const known = new Set(US_STATES.map((entry) => entry.value.toLowerCase()));
-    for (const value of Array.isArray(facets.regions) ? facets.regions : []) {
+    for (const value of Array.isArray(facets?.regions) ? facets.regions : []) {
       const canonical = canonicalRegion(value);
       const key = clean(canonical).toLowerCase();
       if (!key || known.has(key)) continue;
@@ -376,7 +376,7 @@
 
     function renderBreedOptions(species, currentBreed = "") {
       form.elements.breed.innerHTML = valueOptions(
-        breedValues(species),
+        breedValues(species, facets),
         currentBreed,
         species ? "All " + canonicalSpeciesLabel(species).toLowerCase() + " breeds" : "All breeds"
       );
@@ -387,12 +387,10 @@
       const normalizedSex = canonicalSex(state.sex);
       const normalizedRegion = canonicalRegion(state.region);
 
-      form.elements.species.innerHTML = valueOptions(speciesValues(), normalizedSpecies, "All species");
+      form.elements.species.innerHTML = valueOptions(speciesValues(facets), normalizedSpecies, "All species");
       renderBreedOptions(normalizedSpecies, state.breed);
-      form.elements.sex.innerHTML = optionEntries(SEX_OPTIONS.concat(
-        sexEntries().filter((entry) => !SEX_OPTIONS.some((base) => base.value === entry.value))
-      ), normalizedSex, "Any sex");
-      form.elements.region.innerHTML = optionEntries(regionEntries(), normalizedRegion, "Any state");
+      form.elements.sex.innerHTML = optionEntries(sexEntries(facets), normalizedSex, "Any sex");
+      form.elements.region.innerHTML = optionEntries(regionEntries(facets), normalizedRegion, "Any state");
       form.elements.kind.innerHTML = optionEntries(LISTING_KIND_OPTIONS, state.kind, "Any listing type");
     }
 
