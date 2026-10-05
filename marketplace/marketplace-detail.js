@@ -8,6 +8,15 @@
   const { client } = context;
   const interactive = context.isAuthenticated && context.accountStatus === "active" && context.marketplaceAccessReady === true;
   let mediaRecoveryAttempted = false;
+  const REPORT_CATEGORIES = ["spam","fraud_scam","harassment","unsafe_sale","animal_welfare","prohibited_content","privacy","impersonation","other"];
+
+  function reportCategory(subject) {
+    const raw = clean(globalThis.prompt(
+      "Report category for " + subject + ":\n" + REPORT_CATEGORIES.join(", "),
+      "other"
+    ) || "").toLowerCase().replaceAll(" ", "_").replaceAll("/", "_");
+    return REPORT_CATEGORIES.includes(raw) ? raw : "";
+  }
 
   const clean = (value) => String(value ?? "").trim();
   const esc = (value) => String(value ?? "")
@@ -192,16 +201,17 @@
     const next = "/marketplace/listing/?id=" + encodeURIComponent(listingId);
     if (blockUnavailableInteraction(next)) return;
 
-    const reason = clean(globalThis.prompt("Why are you reporting this listing?") || "");
-    if (!reason) return;
+    const category = reportCategory("this listing");
+    if (!category) return;
     const details = clean(globalThis.prompt("Add details for the Marketplace admin (optional):") || "");
 
     try {
-      await rpc("marketplace_member_submit_report", {
+      await rpc("marketplace_member_submit_report_v2", {
         target_type_value: "listing",
         target_id_value: listingId,
-        reason_value: reason,
-        details_value: details
+        category_value: category,
+        details_value: details,
+        evidence_refs_value: []
       });
       globalThis.alert("Report submitted for review.");
     } catch {
@@ -289,6 +299,7 @@
                 ? '<span class="marketplace-notice">This is your listing.</span>'
                 : `<button class="button" type="button" id="marketplace-message-seller">${interactive ? "Message seller" : context.marketplaceSuspended ? "Marketplace suspended" : "Sign in to message seller"}</button>`}
               <button class="button button-secondary button-small" type="button" id="marketplace-favorite-listing">♡ ${interactive ? "Save listing" : context.marketplaceSuspended ? "Marketplace suspended" : "Sign in to save"}</button>
+              ${ownListing ? "" : `<button class="button button-secondary button-small" type="button" id="marketplace-block-seller">${interactive ? "Block seller" : context.marketplaceSuspended ? "Marketplace suspended" : "Sign in to block"}</button>`}
               <button class="button button-secondary button-small" type="button" id="marketplace-report-listing">${interactive ? "Report listing" : context.marketplaceSuspended ? "Marketplace suspended" : "Sign in to report"}</button>
             </div>
 
@@ -330,7 +341,45 @@
       bindSignedImageRecovery();
 
       const messageButton = root.querySelector("#marketplace-message-seller");
+      const blockSellerButton = root.querySelector("#marketplace-block-seller");
+      let sellerBlocked = false;
+
+      if (interactive && !ownListing && blockSellerButton) {
+        try {
+          const state = await rpc("marketplace_member_user_block_state", { seller_public_id_value: listing.seller_public_id });
+          sellerBlocked = state?.blocked_by_me === true;
+          blockSellerButton.textContent = sellerBlocked ? "Unblock seller" : "Block seller";
+          if (sellerBlocked && messageButton) {
+            messageButton.disabled = true;
+            messageButton.textContent = "Seller blocked";
+          }
+        } catch {}
+      }
+
+      blockSellerButton?.addEventListener("click", async () => {
+        if (blockUnavailableInteraction("/marketplace/listing/?id=" + encodeURIComponent(listingId))) return;
+        const next = !sellerBlocked;
+        if (next && !globalThis.confirm("Block this Marketplace seller? Existing message history stays available, but new contact is disabled until you unblock them.")) return;
+        blockSellerButton.disabled = true;
+        try {
+          sellerBlocked = await rpc("marketplace_member_set_user_block", {
+            seller_public_id_value: listing.seller_public_id,
+            blocked_value: next
+          }) === true;
+          blockSellerButton.textContent = sellerBlocked ? "Unblock seller" : "Block seller";
+          if (messageButton) {
+            messageButton.disabled = sellerBlocked;
+            messageButton.textContent = sellerBlocked ? "Seller blocked" : "Message seller";
+          }
+        } catch {
+          globalThis.alert("The block setting could not be changed.");
+        } finally {
+          blockSellerButton.disabled = false;
+        }
+      });
+
       messageButton?.addEventListener("click", () => {
+        if (sellerBlocked) return;
         openConversation(listingId).catch(() => {
           globalThis.alert("The seller conversation could not be opened.");
         });
