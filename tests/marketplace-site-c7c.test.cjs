@@ -42,7 +42,7 @@ test("C7C Owner moderation can act on abusive buyers as Marketplace accounts", (
   const source = read("marketplace/marketplace-admin.js");
 
   assert.match(source, /marketplace_owner_admin_summary_v2/);
-  assert.match(source, /marketplace_owner_admin_reports_v2/);
+  assert.match(source, /marketplace_owner_admin_reports_v3/);
   assert.match(source, /marketplace_owner_admin_resolve_report_v2/);
   assert.match(source, /marketplace_owner_admin_suspensions/);
   assert.match(source, /marketplace_owner_admin_reactivate_account/);
