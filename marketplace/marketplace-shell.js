@@ -93,7 +93,7 @@
       view: "browse",
       globalName: "HerdHarborMarketplaceBrowse",
       marker: "marketplaceBrowse",
-      src: "./marketplace-browse.js?v=7",
+      src: "./marketplace-browse.js?v=8",
       failure: "Marketplace Browse could not load."
     });
   }
