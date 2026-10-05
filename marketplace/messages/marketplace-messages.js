@@ -306,6 +306,10 @@
       await rpc("marketplace_member_mark_conversation_read", {
         conversation_id_value: conversationId
       }).catch(() => {});
+      await rpc("marketplace_member_mark_entity_notifications_read", {
+        entity_type_value: "conversation",
+        entity_id_value: conversationId
+      }).catch(() => 0);
       const currentInboxRow = inboxRows.find((row) => String(row.conversation_id) === conversationId);
       if (currentInboxRow) currentInboxRow.unread_count = 0;
       renderInbox();
