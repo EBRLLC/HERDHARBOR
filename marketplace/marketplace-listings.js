@@ -149,14 +149,52 @@
           <button type="button" class="button" id="marketplace-select-herd">Select From My Herd</button>
         </div>
       </section>
+      <div id="marketplace-seller-profile-notice"></div>
       <section id="marketplace-listing-editor" class="marketplace-listing-editor" hidden></section>
       <section id="marketplace-listing-grid" class="marketplace-listing-grid" aria-live="polite"></section>
     `;
 
     const editor = root.querySelector("#marketplace-listing-editor");
     const grid = root.querySelector("#marketplace-listing-grid");
+    const sellerProfileNotice = root.querySelector("#marketplace-seller-profile-notice");
     let listings = [];
     let herdAnimals = null;
+    let liveSellerProfileStatus = clean(context.marketplaceStatus).toLowerCase() || "not_created";
+
+    function renderSellerProfileNotice() {
+      if (!sellerProfileNotice) return;
+      if (liveSellerProfileStatus === "active") {
+        const resumed = new URLSearchParams(window.location.search).get("seller-profile-saved") === "1";
+        sellerProfileNotice.innerHTML = resumed
+          ? '<div class="marketplace-notice success">Seller Profile saved. Your listing is still a draft; open it and set Status to Available when you are ready to publish.</div>'
+          : "";
+        if (resumed) {
+          const url = new URL(window.location.href);
+          url.searchParams.delete("seller-profile-saved");
+          history.replaceState(history.state, "", url.pathname + url.search + url.hash);
+        }
+        return;
+      }
+
+      if (liveSellerProfileStatus === "suspended") {
+        sellerProfileNotice.innerHTML = '<div class="marketplace-notice error">Your Marketplace seller profile is suspended. Drafts can still be edited, but listings cannot be published until the suspension is lifted.</div>';
+        return;
+      }
+
+      sellerProfileNotice.innerHTML = '<div class="marketplace-notice">Complete your Seller Profile before publishing a listing. You can create and save drafts now. <button type="button" class="button button-secondary button-small" data-open-seller-profile>Complete Seller Profile</button></div>';
+      const button = sellerProfileNotice.querySelector("[data-open-seller-profile]");
+      if (button) button.addEventListener("click", function(){ beginSellerProfileSetup(""); });
+    }
+
+    async function refreshSellerProfileStatus() {
+      try {
+        liveSellerProfileStatus = await sellerProfileStatus(client);
+      } catch {
+        liveSellerProfileStatus = clean(context.marketplaceStatus).toLowerCase() || "not_created";
+      }
+      renderSellerProfileNotice();
+      return liveSellerProfileStatus;
+    }
 
     async function loadListings() {
       const data = await rpc(client, "marketplace_member_listings");
