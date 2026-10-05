@@ -4,6 +4,7 @@
   const BUCKET = "marketplace-public";
   const MAX_PHOTO_BYTES = 8 * 1024 * 1024;
   const MAX_PHOTOS = 6;
+  const PUBLISH_SETUP_KEY = "herdharbor_marketplace_publish_setup_v1";
   const ALLOWED_IMAGE_TYPES = new Map([
     ["image/jpeg", "jpg"],
     ["image/png", "png"],
@@ -37,6 +38,18 @@
     return data;
   }
 
+  async function sellerProfileStatus(client) {
+    const data = await rpc(client, "marketplace_member_profile_preview");
+    const row = Array.isArray(data) ? data[0] : data;
+    return clean(row && row.marketplace_status).toLowerCase() || "not_created";
+  }
+
+  function beginSellerProfileSetup(listingId = "") {
+    try {
+      sessionStorage.setItem(PUBLISH_SETUP_KEY, String(listingId || ""));
+    } catch {}
+    window.location.assign("/marketplace/?seller-profile-setup=publish#seller-profile");
+  }
   async function signedUrl(client, path) {
     if (!path) return "";
     const { data, error } = await client.storage.from(BUCKET).createSignedUrl(path, 300);
