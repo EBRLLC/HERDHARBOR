@@ -435,6 +435,22 @@
         let savedId = clean(form.elements.listing_id.value);
 
         try {
+          const requestedState = clean(form.elements.state.value).toLowerCase() || "draft";
+          let saveState = requestedState;
+          let requiresSellerProfileSetup = false;
+
+          if (requestedState === "available") {
+            const currentProfileStatus = await refreshSellerProfileStatus();
+            if (currentProfileStatus === "suspended") {
+              throw new Error("Your Marketplace seller profile is suspended. This listing cannot be published.");
+            }
+            if (currentProfileStatus !== "active") {
+              requiresSellerProfileSetup = true;
+              saveState = "draft";
+              setStatus("Saving as draft before Seller Profile setup…");
+            }
+          }
+
           const files = [...(form.elements.photos.files || [])];
           if (files.length > MAX_PHOTOS) throw new Error("Choose no more than six listing photos.");
           for (const file of files) {
@@ -447,7 +463,7 @@
           savedId = await rpc(client, "marketplace_member_save_listing", {
             listing_id_value: clean(form.elements.listing_id.value) || null,
             source_animal_id_value: clean(form.elements.source_animal_id.value) || null,
-            state_value: form.elements.state.value,
+            state_value: saveState,
             animal_name_value: clean(form.elements.animal_name.value),
             species_value: clean(form.elements.species.value),
             breed_value: clean(form.elements.breed.value),
@@ -482,6 +498,16 @@
           const sourceAnimalId = clean(form.elements.source_animal_id.value);
           const visibility = sourceAnimalId ? form.elements.pedigree_visibility.value : "hidden";
           const pedigreeRefresh = await refreshPedigreeSnapshot(client, savedId, visibility, sourceAnimalId);
+
+          if (requiresSellerProfileSetup) {
+            form.elements.state.value = "draft";
+            setStatus("Listing saved as draft. Complete your Seller Profile to publish it.", "success");
+            editor.hidden = true;
+            herdAnimals = null;
+            await loadListings();
+            beginSellerProfileSetup(savedId);
+            return;
+          }
 
           if (visibility !== "hidden" && sourceAnimalId && pedigreeRefresh?.error) {
             setStatus("Listing saved. Pedigree preview needs to be refreshed.", "error");
@@ -552,6 +578,7 @@
     });
 
     try {
+      await refreshSellerProfileStatus();
       await loadListings();
     } catch (error) {
       grid.innerHTML = `<div class="marketplace-notice error">${esc(error?.message || "Listings could not be loaded.")}</div>`;
