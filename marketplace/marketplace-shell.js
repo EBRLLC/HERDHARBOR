@@ -107,7 +107,7 @@
       view: "listings",
       globalName: "HerdHarborMarketplaceListings",
       marker: "marketplaceListings",
-      src: "./marketplace-listings.js?v=7",
+      src: "./marketplace-listings.js?v=8",
       failure: "Listing management could not load."
     });
   }
@@ -121,7 +121,7 @@
       view: "profile",
       globalName: "HerdHarborMarketplaceProfile",
       marker: "marketplaceProfile",
-      src: "./marketplace-profile.js?v=7",
+      src: "./marketplace-profile.js?v=8",
       failure: "Seller Profile could not load."
     });
   }
