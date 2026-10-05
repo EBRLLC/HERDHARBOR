@@ -41,7 +41,7 @@ test("C2W profile runtime is lazy-loaded only for an active authenticated Market
   const shell = read("marketplace/marketplace-shell.js");
   const html = read("marketplace/index.html");
   assert.match(shell, /const interactive = context\.isAuthenticated[\s\S]*?context\.accountStatus === "active"[\s\S]*?context\.marketplaceAccessReady === true/);
-  assert.match(shell, /marketplace-profile\.js\?v=7/);
+  assert.match(shell, /marketplace-profile\.js\?v=8/);
   assert.match(shell, /data-marketplace-view="profile"/);
   assert.doesNotMatch(html, /marketplace-profile\.js/);
 });

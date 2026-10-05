@@ -37,6 +37,15 @@
     return data;
   }
 
+  async function sellerProfileStatus(client) {
+    const data = await rpc(client, "marketplace_member_profile_preview");
+    const row = Array.isArray(data) ? data[0] : data;
+    return clean(row && row.marketplace_status).toLowerCase() || "not_created";
+  }
+
+  function beginSellerProfileSetup() {
+    window.location.assign("/marketplace/?seller-profile-setup=publish#seller-profile");
+  }
   async function signedUrl(client, path) {
     if (!path) return "";
     const { data, error } = await client.storage.from(BUCKET).createSignedUrl(path, 300);
@@ -136,14 +145,52 @@
           <button type="button" class="button" id="marketplace-select-herd">Select From My Herd</button>
         </div>
       </section>
+      <div id="marketplace-seller-profile-notice"></div>
       <section id="marketplace-listing-editor" class="marketplace-listing-editor" hidden></section>
       <section id="marketplace-listing-grid" class="marketplace-listing-grid" aria-live="polite"></section>
     `;
 
     const editor = root.querySelector("#marketplace-listing-editor");
     const grid = root.querySelector("#marketplace-listing-grid");
+    const sellerProfileNotice = root.querySelector("#marketplace-seller-profile-notice");
     let listings = [];
     let herdAnimals = null;
+    let liveSellerProfileStatus = clean(context.marketplaceStatus).toLowerCase() || "not_created";
+
+    function renderSellerProfileNotice() {
+      if (!sellerProfileNotice) return;
+      if (liveSellerProfileStatus === "active") {
+        const resumed = new URLSearchParams(window.location.search).get("seller-profile-saved") === "1";
+        sellerProfileNotice.innerHTML = resumed
+          ? '<div class="marketplace-notice success">Seller Profile saved. Your listing is still a draft; open it and set Status to Available when you are ready to publish.</div>'
+          : "";
+        if (resumed) {
+          const url = new URL(window.location.href);
+          url.searchParams.delete("seller-profile-saved");
+          history.replaceState(history.state, "", url.pathname + url.search + url.hash);
+        }
+        return;
+      }
+
+      if (liveSellerProfileStatus === "suspended") {
+        sellerProfileNotice.innerHTML = '<div class="marketplace-notice error">Your Marketplace seller profile is suspended. Drafts can still be edited, but listings cannot be published until the suspension is lifted.</div>';
+        return;
+      }
+
+      sellerProfileNotice.innerHTML = '<div class="marketplace-notice">Complete your Seller Profile before publishing a listing. You can create and save drafts now. <button type="button" class="button button-secondary button-small" data-open-seller-profile>Complete Seller Profile</button></div>';
+      const button = sellerProfileNotice.querySelector("[data-open-seller-profile]");
+      if (button) button.addEventListener("click", function(){ beginSellerProfileSetup(""); });
+    }
+
+    async function refreshSellerProfileStatus() {
+      try {
+        liveSellerProfileStatus = await sellerProfileStatus(client);
+      } catch {
+        liveSellerProfileStatus = clean(context.marketplaceStatus).toLowerCase() || "not_created";
+      }
+      renderSellerProfileNotice();
+      return liveSellerProfileStatus;
+    }
 
     async function loadListings() {
       const data = await rpc(client, "marketplace_member_listings");
@@ -384,6 +431,22 @@
         let savedId = clean(form.elements.listing_id.value);
 
         try {
+          const requestedState = clean(form.elements.state.value).toLowerCase() || "draft";
+          let saveState = requestedState;
+          let requiresSellerProfileSetup = false;
+
+          if (requestedState === "available") {
+            const currentProfileStatus = await refreshSellerProfileStatus();
+            if (currentProfileStatus === "suspended") {
+              throw new Error("Your Marketplace seller profile is suspended. This listing cannot be published.");
+            }
+            if (currentProfileStatus !== "active") {
+              requiresSellerProfileSetup = true;
+              saveState = "draft";
+              setStatus("Saving as draft before Seller Profile setup…");
+            }
+          }
+
           const files = [...(form.elements.photos.files || [])];
           if (files.length > MAX_PHOTOS) throw new Error("Choose no more than six listing photos.");
           for (const file of files) {
@@ -396,7 +459,7 @@
           savedId = await rpc(client, "marketplace_member_save_listing", {
             listing_id_value: clean(form.elements.listing_id.value) || null,
             source_animal_id_value: clean(form.elements.source_animal_id.value) || null,
-            state_value: form.elements.state.value,
+            state_value: saveState,
             animal_name_value: clean(form.elements.animal_name.value),
             species_value: clean(form.elements.species.value),
             breed_value: clean(form.elements.breed.value),
@@ -431,6 +494,16 @@
           const sourceAnimalId = clean(form.elements.source_animal_id.value);
           const visibility = sourceAnimalId ? form.elements.pedigree_visibility.value : "hidden";
           const pedigreeRefresh = await refreshPedigreeSnapshot(client, savedId, visibility, sourceAnimalId);
+
+          if (requiresSellerProfileSetup) {
+            form.elements.state.value = "draft";
+            setStatus("Listing saved as draft. Complete your Seller Profile to publish it.", "success");
+            editor.hidden = true;
+            herdAnimals = null;
+            await loadListings();
+            beginSellerProfileSetup();
+            return;
+          }
 
           if (visibility !== "hidden" && sourceAnimalId && pedigreeRefresh?.error) {
             setStatus("Listing saved. Pedigree preview needs to be refreshed.", "error");
@@ -501,6 +574,7 @@
     });
 
     try {
+      await refreshSellerProfileStatus();
       await loadListings();
     } catch (error) {
       grid.innerHTML = `<div class="marketplace-notice error">${esc(error?.message || "Listings could not be loaded.")}</div>`;

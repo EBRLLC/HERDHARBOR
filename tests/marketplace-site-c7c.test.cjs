@@ -33,7 +33,7 @@ test("C7C generic shell contains no stale Owner-preview runtime naming", () => {
     read("marketplace/messages/index.html")
   ].join("\n");
 
-  assert.match(gate, /marketplace-shell\.js\?v=8/);
+  assert.match(gate, /marketplace-shell\.js\?v=9/);
   assert.doesNotMatch(gate + shell + pages, /marketplace-owner-(?:shell|root|panel)/);
   assert.match(pages, /id="marketplace-root"/);
 });
