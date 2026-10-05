@@ -33,7 +33,7 @@ test("C7C generic shell contains no stale Owner-preview runtime naming", () => {
     read("marketplace/messages/index.html")
   ].join("\n");
 
-  assert.match(gate, /marketplace-shell\.js\?v=9/);
+  assert.match(gate, /marketplace-shell\.js\?v=12/);
   assert.doesNotMatch(gate + shell + pages, /marketplace-owner-(?:shell|root|panel)/);
   assert.match(pages, /id="marketplace-root"/);
 });
@@ -42,7 +42,7 @@ test("C7C Owner moderation can act on abusive buyers as Marketplace accounts", (
   const source = read("marketplace/marketplace-admin.js");
 
   assert.match(source, /marketplace_owner_admin_summary_v2/);
-  assert.match(source, /marketplace_owner_admin_reports_v2/);
+  assert.match(source, /marketplace_owner_admin_reports_v3/);
   assert.match(source, /marketplace_owner_admin_resolve_report_v2/);
   assert.match(source, /marketplace_owner_admin_suspensions/);
   assert.match(source, /marketplace_owner_admin_reactivate_account/);

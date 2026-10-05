@@ -8,6 +8,15 @@
   const { client } = context;
   const interactive = context.isAuthenticated && context.accountStatus === "active" && context.marketplaceAccessReady === true;
   let mediaRecoveryAttempted = false;
+  const REPORT_CATEGORIES = ["spam","fraud_scam","harassment","unsafe_sale","animal_welfare","prohibited_content","privacy","impersonation","other"];
+
+  function reportCategory(subject) {
+    const raw = clean(globalThis.prompt(
+      "Report category for " + subject + ":\n" + REPORT_CATEGORIES.join(", "),
+      "other"
+    ) || "").toLowerCase().replaceAll(" ", "_").replaceAll("/", "_");
+    return REPORT_CATEGORIES.includes(raw) ? raw : "";
+  }
 
   const clean = (value) => String(value ?? "").trim();
   const esc = (value) => String(value ?? "")
@@ -78,16 +87,17 @@
   async function reportSeller(sellerId) {
     if (blockUnavailableInteraction()) return;
 
-    const reason = clean(globalThis.prompt("Why are you reporting this seller?") || "");
-    if (!reason) return;
+    const category = reportCategory("this seller");
+    if (!category) return;
     const details = clean(globalThis.prompt("Add details for the Marketplace admin (optional):") || "");
 
     try {
-      await rpc("marketplace_member_submit_report", {
+      await rpc("marketplace_member_submit_report_v2", {
         target_type_value: "user",
         target_id_value: sellerId,
-        reason_value: reason,
-        details_value: details
+        category_value: category,
+        details_value: details,
+        evidence_refs_value: []
       });
       globalThis.alert("Report submitted for review.");
     } catch {
@@ -162,7 +172,7 @@
             <p>${esc(profile.about || "No seller description has been added.")}</p>
             ${breeds.length ? '<p class="seller-public-meta">' + esc(breeds.join(" • ")) + '</p>' : ""}
             <p class="seller-public-meta">${Number(profile.active_listing_count || 0)} active listing${Number(profile.active_listing_count || 0) === 1 ? "" : "s"}</p>
-            ${ownProfile ? "" : '<button class="button button-secondary button-small" type="button" id="marketplace-report-seller">' + (interactive ? "Report seller" : context.marketplaceSuspended ? "Marketplace suspended" : "Sign in to report") + '</button>'}
+            ${ownProfile ? "" : '<div class="marketplace-admin-actions"><button class="button button-secondary button-small" type="button" id="marketplace-block-seller">' + (interactive ? "Block seller" : context.marketplaceSuspended ? "Marketplace suspended" : "Sign in to block") + '</button><button class="button button-secondary button-small" type="button" id="marketplace-report-seller">' + (interactive ? "Report seller" : context.marketplaceSuspended ? "Marketplace suspended" : "Sign in to report") + '</button></div>'}
           </div>
         </section>
 
@@ -190,6 +200,34 @@
           }).join("") : '<article class="marketplace-empty-state"><h3>No active listings</h3><p>This seller does not have any active Marketplace listings right now.</p></article>'}
         </section>
       `;
+
+      const blockSellerButton = root.querySelector("#marketplace-block-seller");
+      let blockedByMe = false;
+      if (interactive && !ownProfile && blockSellerButton) {
+        try {
+          const state = await rpc("marketplace_member_user_block_state", { seller_public_id_value: sellerId });
+          blockedByMe = state?.blocked_by_me === true;
+          blockSellerButton.textContent = blockedByMe ? "Unblock seller" : "Block seller";
+        } catch {}
+      }
+
+      blockSellerButton?.addEventListener("click", async () => {
+        if (blockUnavailableInteraction()) return;
+        const next = !blockedByMe;
+        if (next && !globalThis.confirm("Block this Marketplace seller? Existing message history stays available, but new contact is disabled until you unblock them.")) return;
+        blockSellerButton.disabled = true;
+        try {
+          blockedByMe = await rpc("marketplace_member_set_user_block", {
+            seller_public_id_value: sellerId,
+            blocked_value: next
+          }) === true;
+          blockSellerButton.textContent = blockedByMe ? "Unblock seller" : "Block seller";
+        } catch {
+          globalThis.alert("The block setting could not be changed.");
+        } finally {
+          blockSellerButton.disabled = false;
+        }
+      });
 
       root.querySelector("#marketplace-report-seller")?.addEventListener("click", () => {
         reportSeller(sellerId);

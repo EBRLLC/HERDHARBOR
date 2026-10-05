@@ -2,7 +2,7 @@ name: HerdHarbor Website CI
 
 on:
   pull_request:
-    branches: [main, 'marketplace-site/site-*']
+    branches: [main, 'marketplace-site/site-*', 'marketplace-comms/site-*']
   workflow_dispatch:
 
 permissions:
@@ -24,6 +24,8 @@ jobs:
           node --check marketplace/marketplace-shell.js
           node --check marketplace/marketplace-profile.js
           node --check marketplace/marketplace-listings.js
+          node --check marketplace/marketplace-saved.js
+          node --check marketplace/marketplace-notifications.js
           node --check marketplace/marketplace-browse.js
           node --check marketplace/marketplace-detail.js
           node --check marketplace/marketplace-seller.js

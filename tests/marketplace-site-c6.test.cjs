@@ -11,7 +11,7 @@ test("C6W Admin tab is injected only inside the verified Owner shell", () => {
   const index = read("marketplace/index.html");
   assert.match(shell, /const owner = interactive && context\.role === "owner"/);
   assert.match(shell, /data-marketplace-view="admin"/);
-  assert.match(shell, /marketplace-admin\.js\?v=7/);
+  assert.match(shell, /marketplace-admin\.js\?v=8/);
   assert.match(shell, /#admin/);
   assert.doesNotMatch(index, />Admin</);
   assert.doesNotMatch(index, /marketplace-admin\.js/);
@@ -21,7 +21,7 @@ test("C6W admin browser code uses Owner RPCs only and never reads moderation tab
   const source = read("marketplace/marketplace-admin.js");
   for (const fn of [
     "marketplace_owner_admin_summary_v2",
-    "marketplace_owner_admin_reports_v2",
+    "marketplace_owner_admin_reports_v3",
     "marketplace_owner_admin_sellers",
     "marketplace_owner_admin_listings",
     "marketplace_owner_admin_moderate_listing",
@@ -88,13 +88,13 @@ test("C6W changed shared assets have new identities", () => {
   const index = read("marketplace/index.html");
   const listing = read("marketplace/listing/index.html");
   const seller = read("marketplace/seller/index.html");
-  assert.match(gate, /marketplace-shell\.js\?v=9/);
+  assert.match(gate, /marketplace-shell\.js\?v=12/);
   assert.match(index, /marketplace\.css\?v=7/);
-  assert.match(index, /marketplace-gate\.js\?v=10/);
+  assert.match(index, /marketplace-gate\.js\?v=13/);
   assert.match(listing, /marketplace\.css\?v=7/);
-  assert.match(listing, /marketplace-gate\.js\?v=10/);
+  assert.match(listing, /marketplace-gate\.js\?v=13/);
   assert.match(seller, /marketplace\.css\?v=7/);
-  assert.match(seller, /marketplace-gate\.js\?v=10/);
+  assert.match(seller, /marketplace-gate\.js\?v=13/);
 });
 
 test("C6W admin remains responsive and keyboard accessible", () => {

@@ -8,6 +8,15 @@
   const { client } = context;
   const interactive = context.isAuthenticated && context.accountStatus === "active" && context.marketplaceAccessReady === true;
   const clean = (value) => String(value ?? "").trim();
+  const REPORT_CATEGORIES = ["spam","fraud_scam","harassment","unsafe_sale","animal_welfare","prohibited_content","privacy","impersonation","other"];
+
+  function reportCategory(subject) {
+    const raw = clean(globalThis.prompt(
+      "Report category for " + subject + ":\n" + REPORT_CATEGORIES.join(", "),
+      "other"
+    ) || "").toLowerCase().replaceAll(" ", "_").replaceAll("/", "_");
+    return REPORT_CATEGORIES.includes(raw) ? raw : "";
+  }
   const esc = (value) => String(value ?? "")
     .replaceAll("&", "&amp;")
     .replaceAll("<", "&lt;")
@@ -67,6 +76,8 @@
                 <option value="buying">Buying</option>
                 <option value="selling">Selling</option>
                 <option value="unread">Unread</option>
+                <option value="muted">Muted</option>
+                <option value="archived">Archived</option>
               </select>
             </label>
           </div>
@@ -92,6 +103,57 @@
   let selectedConversationId = "";
   let inboxRows = [];
   let threadRequestToken = 0;
+  let realtimeChannel = null;
+  let realtimeConversationId = "";
+
+  function requestId() {
+    if (globalThis.crypto?.randomUUID) return globalThis.crypto.randomUUID();
+    return "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(/[xy]/g, (char) => {
+      const value = Math.floor(Math.random() * 16);
+      const nibble = char === "x" ? value : (value & 0x3) | 0x8;
+      return nibble.toString(16);
+    });
+  }
+
+  async function stopRealtime() {
+    const channel = realtimeChannel;
+    realtimeChannel = null;
+    realtimeConversationId = "";
+    if (!channel) return;
+    try {
+      await client.removeChannel(channel);
+    } catch {}
+  }
+
+  function startRealtime(conversationId) {
+    if (!validUuid(conversationId) || realtimeConversationId === conversationId) return;
+    stopRealtime();
+    realtimeConversationId = conversationId;
+
+    const channel = client
+      .channel("marketplace-message-events:" + conversationId)
+      .on(
+        "postgres_changes",
+        {
+          event: "INSERT",
+          schema: "public",
+          table: "marketplace_message_events",
+          filter: "conversation_id=eq." + conversationId
+        },
+        () => {
+          if (selectedConversationId !== conversationId) return;
+          loadInbox({ openRequested: false }).catch(() => {});
+          openThread(conversationId, { refreshRealtime: false }).catch(() => {});
+        }
+      )
+      .subscribe((status) => {
+        if (status !== "SUBSCRIBED" || selectedConversationId !== conversationId) return;
+        loadInbox({ openRequested: false }).catch(() => {});
+        openThread(conversationId, { refreshRealtime: false }).catch(() => {});
+      });
+
+    realtimeChannel = channel;
+  }
 
   function conversationUrl(id) {
     const url = new URL(window.location.href);
@@ -120,6 +182,8 @@
         <span>${esc(row.listing_name || "Marketplace conversation")}</span>
         <small>${esc(row.last_message_preview || "No messages yet")}</small>
         <small>${esc(dateTime(row.last_message_at))}</small>
+        ${row.muted ? '<small class="marketplace-help">Muted</small>' : ""}
+        ${row.archived ? '<small class="marketplace-help">Archived</small>' : ""}
       </button>
     `).join("");
 
@@ -135,7 +199,7 @@
   async function loadInbox({ openRequested = true } = {}) {
     inbox.innerHTML = '<div class="marketplace-notice">Loading messages…</div>';
     try {
-      const rows = await rpc("marketplace_member_inbox", { folder_value: folder.value });
+      const rows = await rpc("marketplace_member_inbox_v2", { folder_value: folder.value });
       inboxRows = Array.isArray(rows) ? rows : [];
       renderInbox();
 
@@ -149,19 +213,20 @@
   }
 
   async function reportConversation(conversationId) {
-    const reason = clean(globalThis.prompt("Why are you reporting this conversation?") || "");
-    if (!reason) return;
+    const category = reportCategory("this conversation");
+    if (!category) return;
     const details = clean(globalThis.prompt("Add details for the Marketplace admin (optional):") || "");
-    await rpc("marketplace_member_submit_report", {
+    await rpc("marketplace_member_submit_report_v2", {
       target_type_value: "conversation",
       target_id_value: conversationId,
-      reason_value: reason,
-      details_value: details
+      category_value: category,
+      details_value: details,
+      evidence_refs_value: []
     });
     globalThis.alert("Report submitted for review.");
   }
 
-  async function openThread(conversationId) {
+  async function openThread(conversationId, { refreshRealtime = true } = {}) {
     if (!validUuid(conversationId)) return;
     const requestToken = ++threadRequestToken;
     selectedConversationId = conversationId;
@@ -188,6 +253,8 @@
       let messagingBlocked = blockState?.messaging_blocked === true;
       const inboxRow = inboxRows.find((row) => String(row.conversation_id) === conversationId) || {};
       const name = otherName(inboxRow);
+      let archived = inboxRow.archived === true;
+      let muted = inboxRow.muted === true;
 
       thread.innerHTML = `
         <div class="marketplace-thread-heading">
@@ -197,6 +264,8 @@
             <p class="marketplace-help">Conversation with ${esc(name)}</p>
           </div>
           <div class="marketplace-admin-actions">
+            <button class="button button-secondary button-small" type="button" id="marketplace-archive-conversation">${archived ? "Unarchive" : "Archive"}</button>
+            <button class="button button-secondary button-small" type="button" id="marketplace-mute-conversation">${muted ? "Unmute" : "Mute"}</button>
             <button class="button button-secondary button-small" type="button" id="marketplace-block-conversation">${blockedByMe ? "Unblock account" : "Block account"}</button>
             <button class="button button-secondary button-small" type="button" id="marketplace-report-conversation">Report conversation</button>
           </div>
@@ -208,6 +277,7 @@
               <strong>${esc(message.sender_is_me ? "You" : (message.sender_display_name || name))}</strong>
               <p>${esc(message.body)}</p>
               <small>${esc(dateTime(message.created_at))}</small>
+              ${message.sender_is_me ? "" : `<button class="button button-secondary button-small" type="button" data-report-message="${esc(message.message_id)}">Report message</button>`}
             </article>
           `).join("") : '<div class="marketplace-empty-state"><h3>No messages yet</h3><p>Send the first message about this listing.</p></div>'}
         </div>
@@ -236,10 +306,57 @@
       await rpc("marketplace_member_mark_conversation_read", {
         conversation_id_value: conversationId
       }).catch(() => {});
+      await rpc("marketplace_member_mark_entity_notifications_read", {
+        entity_type_value: "conversation",
+        entity_id_value: conversationId
+      }).catch(() => 0);
+      const currentInboxRow = inboxRows.find((row) => String(row.conversation_id) === conversationId);
+      if (currentInboxRow) currentInboxRow.unread_count = 0;
+      renderInbox();
+      if (refreshRealtime) startRealtime(conversationId);
 
+      const archiveButton = root.querySelector("#marketplace-archive-conversation");
+      const muteButton = root.querySelector("#marketplace-mute-conversation");
       const blockButton = root.querySelector("#marketplace-block-conversation");
       const blockNotice = root.querySelector("#marketplace-block-status");
       const messageForm = root.querySelector("#marketplace-message-form");
+
+      archiveButton?.addEventListener("click", async () => {
+        archiveButton.disabled = true;
+        try {
+          const result = await rpc("marketplace_member_set_conversation_preferences", {
+            conversation_id_value: conversationId,
+            archived_value: !archived,
+            muted_value: null
+          });
+          archived = result?.archived === true;
+          archiveButton.textContent = archived ? "Unarchive" : "Archive";
+          if (archived) folder.value = "archived";
+          await loadInbox({ openRequested: false });
+        } catch {
+          globalThis.alert("The archive setting could not be changed.");
+        } finally {
+          archiveButton.disabled = false;
+        }
+      });
+
+      muteButton?.addEventListener("click", async () => {
+        muteButton.disabled = true;
+        try {
+          const result = await rpc("marketplace_member_set_conversation_preferences", {
+            conversation_id_value: conversationId,
+            archived_value: null,
+            muted_value: !muted
+          });
+          muted = result?.muted === true;
+          muteButton.textContent = muted ? "Unmute" : "Mute";
+          await loadInbox({ openRequested: false });
+        } catch {
+          globalThis.alert("The mute setting could not be changed.");
+        } finally {
+          muteButton.disabled = false;
+        }
+      });
 
       blockButton?.addEventListener("click", async () => {
         const nextBlocked = !blockedByMe;
@@ -282,6 +399,30 @@
         });
       });
 
+      root.querySelectorAll("[data-report-message]").forEach((button) => {
+        button.addEventListener("click", async () => {
+          const messageId = button.dataset.reportMessage || "";
+          const category = reportCategory("this message");
+          if (!validUuid(messageId) || !category) return;
+          const details = clean(globalThis.prompt("Add details for the Marketplace admin (optional):") || "");
+          button.disabled = true;
+          try {
+            await rpc("marketplace_member_submit_report_v2", {
+              target_type_value: "message",
+              target_id_value: messageId,
+              category_value: category,
+              details_value: details,
+              evidence_refs_value: [messageId]
+            });
+            globalThis.alert("Report submitted for review.");
+          } catch {
+            globalThis.alert("The report could not be submitted.");
+          } finally {
+            button.disabled = false;
+          }
+        });
+      });
+
       const form = messageForm;
       const status = root.querySelector("#marketplace-message-status");
       form.addEventListener("submit", async (event) => {
@@ -294,9 +435,10 @@
         status.textContent = "Sending…";
 
         try {
-          await rpc("marketplace_member_send_message", {
+          await rpc("marketplace_member_send_message_v2", {
             conversation_id_value: conversationId,
-            body_value: body
+            body_value: body,
+            client_request_id_value: requestId()
           });
         } catch {
           status.textContent = "Message could not be sent.";
@@ -326,7 +468,15 @@
     }
   }
 
-  folder.addEventListener("change", loadInbox);
+  folder.addEventListener("change", () => {
+    selectedConversationId = "";
+    stopRealtime();
+    loadInbox();
+  });
+  window.addEventListener("beforeunload", () => {
+    stopRealtime();
+  });
+
   window.addEventListener("popstate", () => {
     const requested = new URLSearchParams(window.location.search).get("id") || "";
     if (validUuid(requested)) openThread(requested);

@@ -121,8 +121,8 @@ test("C5W private routes remain noindex and load website assets only", () => {
 
   const listing = read("marketplace/listing/index.html");
   const seller = read("marketplace/seller/index.html");
-  assert.match(listing, /data-marketplace-runtime="\/marketplace\/marketplace-detail\.js\?v=8"/);
-  assert.match(seller, /data-marketplace-runtime="\/marketplace\/marketplace-seller\.js\?v=8"/);
+  assert.match(listing, /data-marketplace-runtime="\/marketplace\/marketplace-detail\.js\?v=9"/);
+  assert.match(seller, /data-marketplace-runtime="\/marketplace\/marketplace-seller\.js\?v=9"/);
 });
 
 test("C5W final accessibility hardening includes focus and reduced-motion handling", () => {

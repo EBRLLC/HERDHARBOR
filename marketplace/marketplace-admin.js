@@ -222,7 +222,7 @@
         list.setAttribute("aria-busy", "true");
         list.innerHTML = '<div class="marketplace-notice">Loading reports…</div>';
         try {
-          const rows = await rpc(client, "marketplace_owner_admin_reports_v2", { status_value: status.value });
+          const rows = await rpc(client, "marketplace_owner_admin_reports_v3", { status_value: status.value });
           const reports = Array.isArray(rows) ? rows : [];
           list.removeAttribute("aria-busy");
           if (!reports.length) {
@@ -244,15 +244,19 @@
                   </div>
                 </div>
                 <div class="marketplace-admin-report-copy">
+                  <p><strong>Category:</strong> ${esc((report.category || "other").replaceAll("_"," "))}</p>
                   <strong>${esc(report.reason || "No reason supplied")}</strong>
                   ${clean(report.details) ? `<p>${esc(report.details)}</p>` : ""}
                   ${clean(report.target_excerpt) ? `<p><strong>Reported content:</strong> ${esc(report.target_excerpt)}</p>` : ""}
                   ${clean(report.reported_label) ? `<p><strong>Reported account:</strong> ${esc(report.reported_label)}</p>` : ""}
+                  ${Array.isArray(report.evidence_refs) && report.evidence_refs.length ? `<p><strong>Evidence references:</strong> ${esc(report.evidence_refs.join(", "))}</p>` : ""}
                 </div>
                 ${open ? `
                   <div class="marketplace-admin-actions">
                     ${targetType === "listing" && targetState !== "removed" ? `<button type="button" class="button button-danger button-small" data-report-action="remove_listing" data-report-id="${esc(report.report_id)}">Remove listing</button>` : ""}
                     ${targetType === "user" && targetState !== "suspended" ? `<button type="button" class="button button-danger button-small" data-report-action="suspend_seller" data-report-id="${esc(report.report_id)}">Suspend seller</button>` : ""}
+                    ${clean(report.status).toLowerCase() === "open" ? `<button type="button" class="button button-secondary button-small" data-review-state="reviewing" data-report-id="${esc(report.report_id)}">Start review</button>` : `<button type="button" class="button button-secondary button-small" data-review-state="open" data-report-id="${esc(report.report_id)}">Move to open</button>`}
+                    ${report.can_suspend_account ? `<button type="button" class="button button-secondary button-small" data-report-warning data-report-id="${esc(report.report_id)}">Warn member</button>` : ""}
                     ${report.can_suspend_account && !report.account_suspended ? `<button type="button" class="button button-danger button-small" data-report-action="suspend_account" data-report-id="${esc(report.report_id)}">Suspend Marketplace account</button>` : ""}
                     <button type="button" class="button button-secondary button-small" data-report-action="resolve" data-report-id="${esc(report.report_id)}">Resolve</button>
                     <button type="button" class="button button-secondary button-small" data-report-action="dismiss" data-report-id="${esc(report.report_id)}">Dismiss</button>
@@ -261,6 +265,38 @@
               </article>
             `;
           }).join("");
+
+          list.querySelectorAll("[data-review-state]").forEach((button) => {
+            button.addEventListener("click", async () => {
+              button.disabled = true;
+              try {
+                await rpc(client, "marketplace_owner_admin_set_report_reviewing", {
+                  report_id_value: button.dataset.reportId,
+                  reviewing_value: button.dataset.reviewState === "reviewing"
+                });
+                await Promise.all([load(), refreshSummary()]);
+              } catch {
+                globalThis.alert("The report review state could not be changed.");
+              } finally {
+                button.disabled = false;
+              }
+            });
+          });
+
+          list.querySelectorAll("[data-report-warning]").forEach((button) => {
+            button.addEventListener("click", () => {
+              requestAction({
+                title: "Warn Marketplace member",
+                description: "Send a Marketplace-only warning. This does not suspend their HerdHarbor account or remove private records.",
+                confirmLabel: "Send warning",
+                trigger: button,
+                run: (reason) => rpc(client, "marketplace_owner_admin_warn_reported_user", {
+                  report_id_value: button.dataset.reportId,
+                  warning_text_value: reason
+                })
+              });
+            });
+          });
 
           list.querySelectorAll("[data-report-action]").forEach((button) => {
             button.addEventListener("click", () => {
