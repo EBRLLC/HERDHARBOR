@@ -7,7 +7,7 @@
   const SSO_TIMEOUT_MS = 5000;
 
   const MARKETPLACE_BASE = new URL("./", window.location.href);
-  const runtimeFile = document.documentElement.dataset.marketplaceRuntime || "marketplace-shell.js?v=9";
+  const runtimeFile = document.documentElement.dataset.marketplaceRuntime || "marketplace-shell.js?v=12";
   const RUNTIME_URL = new URL(runtimeFile, MARKETPLACE_BASE).href;
 
   const sessionShell = document.getElementById("marketplace-access-shell");
