@@ -43,5 +43,5 @@ test("D2 Messages can report an individual peer message", () => {
 test("D2 safety runtimes use fresh absolute cache identities", () => {
   assert.match(read("marketplace/listing/index.html"), /\/marketplace\/marketplace-detail\.js\?v=9/);
   assert.match(read("marketplace/seller/index.html"), /\/marketplace\/marketplace-seller\.js\?v=9/);
-  assert.match(read("marketplace/messages/index.html"), /\/marketplace\/messages\/marketplace-messages\.js\?v=10/);
+  assert.match(read("marketplace/messages/index.html"), /\/marketplace\/messages\/marketplace-messages\.js\?v=11/);
 });

@@ -46,6 +46,6 @@ test("D3 shell/admin/gate use fresh cache identities", () => {
   ].join("\n");
 
   assert.match(shell, /marketplace-admin\.js\?v=8/);
-  assert.match(gate, /marketplace-shell\.js\?v=10/);
-  assert.match(pages, /marketplace-gate\.js\?v=11/);
+  assert.match(gate, /marketplace-shell\.js\?v=12/);
+  assert.match(pages, /marketplace-gate\.js\?v=13/);
 });
