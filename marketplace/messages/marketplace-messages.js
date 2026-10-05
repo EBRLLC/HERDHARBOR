@@ -8,6 +8,15 @@
   const { client } = context;
   const interactive = context.isAuthenticated && context.accountStatus === "active" && context.marketplaceAccessReady === true;
   const clean = (value) => String(value ?? "").trim();
+  const REPORT_CATEGORIES = ["spam","fraud_scam","harassment","unsafe_sale","animal_welfare","prohibited_content","privacy","impersonation","other"];
+
+  function reportCategory(subject) {
+    const raw = clean(globalThis.prompt(
+      "Report category for " + subject + ":\n" + REPORT_CATEGORIES.join(", "),
+      "other"
+    ) || "").toLowerCase().replaceAll(" ", "_").replaceAll("/", "_");
+    return REPORT_CATEGORIES.includes(raw) ? raw : "";
+  }
   const esc = (value) => String(value ?? "")
     .replaceAll("&", "&amp;")
     .replaceAll("<", "&lt;")
@@ -204,14 +213,15 @@
   }
 
   async function reportConversation(conversationId) {
-    const reason = clean(globalThis.prompt("Why are you reporting this conversation?") || "");
-    if (!reason) return;
+    const category = reportCategory("this conversation");
+    if (!category) return;
     const details = clean(globalThis.prompt("Add details for the Marketplace admin (optional):") || "");
-    await rpc("marketplace_member_submit_report", {
+    await rpc("marketplace_member_submit_report_v2", {
       target_type_value: "conversation",
       target_id_value: conversationId,
-      reason_value: reason,
-      details_value: details
+      category_value: category,
+      details_value: details,
+      evidence_refs_value: []
     });
     globalThis.alert("Report submitted for review.");
   }
@@ -267,6 +277,7 @@
               <strong>${esc(message.sender_is_me ? "You" : (message.sender_display_name || name))}</strong>
               <p>${esc(message.body)}</p>
               <small>${esc(dateTime(message.created_at))}</small>
+              ${message.sender_is_me ? "" : `<button class="button button-secondary button-small" type="button" data-report-message="${esc(message.message_id)}">Report message</button>`}
             </article>
           `).join("") : '<div class="marketplace-empty-state"><h3>No messages yet</h3><p>Send the first message about this listing.</p></div>'}
         </div>
@@ -381,6 +392,30 @@
       root.querySelector("#marketplace-report-conversation")?.addEventListener("click", () => {
         reportConversation(conversationId).catch(() => {
           globalThis.alert("The report could not be submitted.");
+        });
+      });
+
+      root.querySelectorAll("[data-report-message]").forEach((button) => {
+        button.addEventListener("click", async () => {
+          const messageId = button.dataset.reportMessage || "";
+          const category = reportCategory("this message");
+          if (!validUuid(messageId) || !category) return;
+          const details = clean(globalThis.prompt("Add details for the Marketplace admin (optional):") || "");
+          button.disabled = true;
+          try {
+            await rpc("marketplace_member_submit_report_v2", {
+              target_type_value: "message",
+              target_id_value: messageId,
+              category_value: category,
+              details_value: details,
+              evidence_refs_value: [messageId]
+            });
+            globalThis.alert("Report submitted for review.");
+          } catch {
+            globalThis.alert("The report could not be submitted.");
+          } finally {
+            button.disabled = false;
+          }
         });
       });
 
