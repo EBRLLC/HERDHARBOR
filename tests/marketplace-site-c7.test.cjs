@@ -257,5 +257,5 @@ test("C7W nested Marketplace pages resolve their runtime from the current page d
   assert.doesNotMatch(gate, /gateScript\?\.src/);
   assert.match(listing, /data-marketplace-runtime="\/marketplace\/marketplace-detail\.js\?v=8"/);
   assert.match(seller, /data-marketplace-runtime="\/marketplace\/marketplace-seller\.js\?v=8"/);
-  assert.match(messages, /data-marketplace-runtime="\/marketplace\/messages\/marketplace-messages\.js\?v=8"/);
+  assert.match(messages, /data-marketplace-runtime="\/marketplace\/messages\/marketplace-messages\.js\?v=9"/);
 });
