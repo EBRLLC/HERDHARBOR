@@ -58,7 +58,7 @@ test("C3W listing runtime remains lazy-loaded behind active account authorizatio
   const shell = read("marketplace/marketplace-shell.js");
   const html = read("marketplace/index.html");
   assert.match(shell, /const interactive = context\.isAuthenticated[\s\S]*?context\.accountStatus === "active"[\s\S]*?context\.marketplaceAccessReady === true/);
-  assert.match(shell, /marketplace-listings\.js\?v=7/);
+  assert.match(shell, /marketplace-listings\.js\?v=8/);
   assert.match(shell, /data-marketplace-view="listings"/);
   assert.doesNotMatch(html, /marketplace-listings\.js/);
 });
