@@ -11,7 +11,7 @@ test("C6W Admin tab is injected only inside the verified Owner shell", () => {
   const index = read("marketplace/index.html");
   assert.match(shell, /const owner = interactive && context\.role === "owner"/);
   assert.match(shell, /data-marketplace-view="admin"/);
-  assert.match(shell, /marketplace-admin\.js\?v=7/);
+  assert.match(shell, /marketplace-admin\.js\?v=8/);
   assert.match(shell, /#admin/);
   assert.doesNotMatch(index, />Admin</);
   assert.doesNotMatch(index, /marketplace-admin\.js/);
@@ -88,13 +88,13 @@ test("C6W changed shared assets have new identities", () => {
   const index = read("marketplace/index.html");
   const listing = read("marketplace/listing/index.html");
   const seller = read("marketplace/seller/index.html");
-  assert.match(gate, /marketplace-shell\.js\?v=9/);
+  assert.match(gate, /marketplace-shell\.js\?v=10/);
   assert.match(index, /marketplace\.css\?v=7/);
-  assert.match(index, /marketplace-gate\.js\?v=10/);
+  assert.match(index, /marketplace-gate\.js\?v=11/);
   assert.match(listing, /marketplace\.css\?v=7/);
-  assert.match(listing, /marketplace-gate\.js\?v=10/);
+  assert.match(listing, /marketplace-gate\.js\?v=11/);
   assert.match(seller, /marketplace\.css\?v=7/);
-  assert.match(seller, /marketplace-gate\.js\?v=10/);
+  assert.match(seller, /marketplace-gate\.js\?v=11/);
 });
 
 test("C6W admin remains responsive and keyboard accessible", () => {
