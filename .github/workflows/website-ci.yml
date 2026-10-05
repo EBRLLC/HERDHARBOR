@@ -2,7 +2,7 @@ name: HerdHarbor Website CI
 
 on:
   pull_request:
-    branches: [main, 'marketplace-site/site-*']
+    branches: [main, 'marketplace-site/site-*', 'marketplace-comms/site-*']
   workflow_dispatch:
 
 permissions:
