@@ -28,10 +28,12 @@
           : '<a class="button button-small" href="/marketplace/account/?next=%2Fmarketplace%2F">Sign in / Create account</a>'}
       </nav>
     </section>
+    ${interactive ? '<section id="marketplace-member-warnings" class="marketplace-member-warnings" aria-live="polite" hidden></section>' : ""}
     <section id="marketplace-view-root" aria-live="polite"></section>
   `;
 
   const viewRoot = document.getElementById("marketplace-view-root");
+  const warningsRoot = document.getElementById("marketplace-member-warnings");
   const buttons = [...root.querySelectorAll("[data-marketplace-view]")];
   let currentView = "";
 
@@ -135,9 +137,48 @@
       view: "admin",
       globalName: "HerdHarborMarketplaceAdmin",
       marker: "marketplaceAdmin",
-      src: "./marketplace-admin.js?v=7",
+      src: "./marketplace-admin.js?v=8",
       failure: "Marketplace Admin could not load."
     });
+  }
+
+  async function loadWarnings() {
+    if (!interactive || !warningsRoot) return;
+    try {
+      const { data, error } = await context.client.rpc("marketplace_member_warnings", { limit_value: 10 });
+      if (error) throw error;
+      const warnings = (Array.isArray(data) ? data : []).filter((item) => item.acknowledged !== true);
+      if (!warnings.length) {
+        warningsRoot.hidden = true;
+        warningsRoot.innerHTML = "";
+        return;
+      }
+
+      warningsRoot.hidden = false;
+      warningsRoot.innerHTML = warnings.map((warning) => `
+        <article class="marketplace-notice error" data-warning-id="${String(warning.warning_id || "")}">
+          <strong>Marketplace warning</strong>
+          <p>${String(warning.warning_text || "").replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll(">","&gt;")}</p>
+          <button class="button button-secondary button-small" type="button" data-ack-warning="${String(warning.warning_id || "")}">Acknowledge</button>
+        </article>
+      `).join("");
+
+      warningsRoot.querySelectorAll("[data-ack-warning]").forEach((button) => {
+        button.addEventListener("click", async () => {
+          button.disabled = true;
+          const { error: ackError } = await context.client.rpc("marketplace_member_acknowledge_warning", {
+            warning_id_value: button.dataset.ackWarning
+          });
+          if (ackError) {
+            button.disabled = false;
+            return;
+          }
+          await loadWarnings();
+        });
+      });
+    } catch {
+      warningsRoot.hidden = true;
+    }
   }
 
   function show(view) {
@@ -179,5 +220,6 @@
 
   window.addEventListener("popstate", () => show(viewFromLocation()));
 
+  loadWarnings();
   show(viewFromLocation());
 })();
