@@ -45,6 +45,6 @@ test("Publish-flow assets have fresh cache identities", () => {
 
   assert.match(shell, /marketplace-listings\.js\?v=8/);
   assert.match(shell, /marketplace-profile\.js\?v=8/);
-  assert.match(gate, /marketplace-shell\.js\?v=9/);
-  assert.match(pages, /marketplace-gate\.js\?v=10/);
+  assert.match(gate, /marketplace-shell\.js\?v=10/);
+  assert.match(pages, /marketplace-gate\.js\?v=11/);
 });
