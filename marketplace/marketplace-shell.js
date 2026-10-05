@@ -19,6 +19,7 @@
       </div>
       <nav class="marketplace-tabs" aria-label="Marketplace">
         <button class="marketplace-tab" type="button" data-marketplace-view="browse" aria-current="page">Browse</button>
+        ${interactive ? '<button class="marketplace-tab" type="button" data-marketplace-view="saved">Saved Animals</button>' : ""}
         ${interactive ? '<button class="marketplace-tab" type="button" data-marketplace-view="listings">My Listings</button>' : ""}
         ${interactive ? '<button class="marketplace-tab" type="button" data-marketplace-view="profile">Seller Profile</button>' : ""}
         ${interactive ? '<a class="marketplace-tab marketplace-tab-link" href="/marketplace/messages/">Messages</a>' : ""}
@@ -109,8 +110,22 @@
       view: "listings",
       globalName: "HerdHarborMarketplaceListings",
       marker: "marketplaceListings",
-      src: "./marketplace-listings.js?v=8",
+      src: "./marketplace-listings.js?v=9",
       failure: "Listing management could not load."
+    });
+  }
+
+  function loadSaved() {
+    if (!interactive) {
+      window.location.assign("/marketplace/account/?next=" + encodeURIComponent("/marketplace/#saved"));
+      return;
+    }
+    loadModule({
+      view: "saved",
+      globalName: "HerdHarborMarketplaceSaved",
+      marker: "marketplaceSaved",
+      src: "./marketplace-saved.js?v=1",
+      failure: "Saved Animals could not load."
     });
   }
 
@@ -185,6 +200,7 @@
     currentView = view;
     setCurrent(view);
     if (view === "browse") loadBrowse();
+    else if (view === "saved") loadSaved();
     else if (view === "listings") loadListings();
     else if (view === "profile") loadProfile();
     else if (view === "admin") loadAdmin();
@@ -192,6 +208,7 @@
   }
 
   function viewFromLocation() {
+    if (window.location.hash === "#saved" && interactive) return "saved";
     if (window.location.hash === "#my-listings" && interactive) return "listings";
     if (window.location.hash === "#seller-profile" && interactive) return "profile";
     if (window.location.hash === "#admin" && owner) return "admin";
@@ -200,9 +217,11 @@
 
   function urlForView(view) {
     const url = new URL(window.location.href);
-    url.hash = view === "listings"
-      ? "my-listings"
-      : view === "profile"
+    url.hash = view === "saved"
+      ? "saved"
+      : view === "listings"
+        ? "my-listings"
+        : view === "profile"
         ? "seller-profile"
         : view === "admin"
           ? "admin"
