@@ -21,7 +21,7 @@ test("C6W admin browser code uses Owner RPCs only and never reads moderation tab
   const source = read("marketplace/marketplace-admin.js");
   for (const fn of [
     "marketplace_owner_admin_summary_v2",
-    "marketplace_owner_admin_reports_v2",
+    "marketplace_owner_admin_reports_v3",
     "marketplace_owner_admin_sellers",
     "marketplace_owner_admin_listings",
     "marketplace_owner_admin_moderate_listing",
