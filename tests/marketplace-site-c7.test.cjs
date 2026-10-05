@@ -156,7 +156,7 @@ test("C7W shared and nested Marketplace assets are consistently versioned", () =
   assert.match(shell, /marketplace-profile\.js\?v=8/);
   assert.match(shell, /marketplace-admin\.js\?v=7/);
   assert.doesNotMatch(pages, /marketplace\.css\?v=[1-6]/);
-  assert.doesNotMatch(pages, /marketplace-gate\.js\?v=[1-6]/);
+  assert.match(pages, /marketplace-gate\.js\?v=10/);
 });
 
 test("C7W public browse remains noindex until explicit production launch authorization", () => {
