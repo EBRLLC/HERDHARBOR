@@ -88,8 +88,10 @@
   async function mount(root, context) {
     if (!root || !context?.client || !context?.userId || !context.isAuthenticated || context.accountStatus !== "active" || context.marketplaceAccessReady !== true) return;
     const { client } = context;
+    const publishSetupRequested = new URLSearchParams(window.location.search).get("seller-profile-setup") === "publish";
 
     root.innerHTML = `
+      ${publishSetupRequested ? '<div class="marketplace-notice">Your listing was saved as Draft so nothing was lost. Complete your Seller Profile, then return to My Listings and set Status to Available to publish it.</div>' : ""}
       <section class="seller-profile-layout">
         <article class="seller-profile-editor">
           <div>
