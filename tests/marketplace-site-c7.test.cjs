@@ -151,7 +151,7 @@ test("C7W shared and nested Marketplace assets are consistently versioned", () =
   ].join("\n");
 
   assert.match(gate, /marketplace-shell\.js\?v=7/);
-  assert.match(shell, /marketplace-browse\.js\?v=7/);
+  assert.match(shell, /marketplace-browse\.js\?v=8/);
   assert.match(shell, /marketplace-listings\.js\?v=7/);
   assert.match(shell, /marketplace-profile\.js\?v=7/);
   assert.match(shell, /marketplace-admin\.js\?v=7/);
