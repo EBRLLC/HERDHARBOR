@@ -41,7 +41,7 @@ test("C4W direct listing route uses privacy-safe detail plus Edge-signed media",
   const html = read("marketplace/listing/index.html");
   const source = read("marketplace/marketplace-detail.js");
 
-  assert.match(html, /data-marketplace-runtime="marketplace-detail\.js\?v=\d+"/);
+  assert.match(html, /data-marketplace-runtime="\/marketplace\/marketplace-detail\.js\?v=\d+"/);
   assert.match(html, /noindex,nofollow,noarchive/);
   assert.match(html, /https:\/\/herdharbor\.com\/marketplace\/listing\//);
   assert.match(source, /marketplace_public_listing_v2/);
@@ -57,7 +57,7 @@ test("C4W direct seller route uses public-shaped seller/search contracts", () =>
   const html = read("marketplace/seller/index.html");
   const source = read("marketplace/marketplace-seller.js");
 
-  assert.match(html, /data-marketplace-runtime="marketplace-seller\.js\?v=\d+"/);
+  assert.match(html, /data-marketplace-runtime="\/marketplace\/marketplace-seller\.js\?v=\d+"/);
   assert.match(html, /noindex,nofollow,noarchive/);
   assert.match(source, /marketplace_public_seller_v2/);
   assert.match(source, /marketplace_public_search_v2/);
