@@ -2,6 +2,67 @@
   "use strict";
 
   const PAGE_SIZE = 24;
+
+  const BASE_SPECIES = Object.freeze(["Rabbit","Cattle","Goat","Sheep","Poultry","Swine"]);
+  const BASE_BREEDS = Object.freeze({
+    rabbit: Object.freeze([
+      "American","American Chinchilla","American Fuzzy Lop","American Sable","Belgian Hare",
+      "Beveren","Blanc de Hotot","Britannia Petite","Californian","Champagne d'Argent",
+      "Checkered Giant","Cinnamon","Creme d'Argent","Dutch","Dwarf Hotot","English Angora",
+      "English Lop","English Spot","Flemish Giant","Florida White","French Angora","French Lop",
+      "Giant Angora","Giant Chinchilla","Harlequin","Havana","Himalayan","Holland Lop",
+      "Jersey Wooly","Lilac","Lionhead","Mini Lop","Mini Rex","Mini Satin","Netherland Dwarf",
+      "New Zealand","Palomino","Polish","Rex","Rhinelander","Satin","Satin Angora","Silver",
+      "Silver Fox","Silver Marten","Standard Chinchilla","Tan","Thrianta","Mixed / Crossbred"
+    ]),
+    cattle: Object.freeze([
+      "Angus","Red Angus","Hereford","Holstein","Jersey","Brown Swiss","Guernsey","Charolais",
+      "Simmental","Limousin","Shorthorn","Brahman","Highland","Belted Galloway","Gelbvieh",
+      "Mixed / Crossbred"
+    ]),
+    goat: Object.freeze([
+      "Alpine","Angora","Boer","Kiko","LaMancha","Myotonic","Nigerian Dwarf","Nubian",
+      "Oberhasli","Pygmy","Saanen","Sable","Spanish","Toggenburg","Mixed / Crossbred"
+    ]),
+    sheep: Object.freeze([
+      "Border Leicester","Cheviot","Columbia","Dorper","Dorset","Finnsheep","Hampshire","Icelandic",
+      "Jacob","Katahdin","Merino","Rambouillet","Southdown","Suffolk","Texel","Mixed / Crossbred"
+    ]),
+    poultry: Object.freeze([
+      "Ameraucana","Australorp","Barred Plymouth Rock","Brahma","Cochin","Cornish","Delaware",
+      "Leghorn","Marans","New Hampshire","Orpington","Rhode Island Red","Silkie","Sussex",
+      "Wyandotte","Mixed / Crossbred"
+    ]),
+    swine: Object.freeze([
+      "Berkshire","Chester White","Duroc","Gloucestershire Old Spots","Hampshire","Hereford",
+      "Landrace","Large Black","Mangalitsa","Poland China","Red Wattle","Tamworth","Yorkshire",
+      "Mixed / Crossbred"
+    ])
+  });
+  const SEX_OPTIONS = Object.freeze([
+    Object.freeze({ value: "male", label: "Male / Buck / Bull / Boar / Ram / Rooster" }),
+    Object.freeze({ value: "female", label: "Female / Doe / Cow / Sow / Ewe / Hen" }),
+    Object.freeze({ value: "unknown", label: "Unknown / Unsexed" })
+  ]);
+  const LISTING_KIND_OPTIONS = Object.freeze([
+    Object.freeze({ value: "individual", label: "Individual animal" }),
+    Object.freeze({ value: "future_offspring", label: "Future offspring" }),
+    Object.freeze({ value: "litter_announcement", label: "Litter announcement" })
+  ]);
+  const US_STATES = Object.freeze([
+    ["AL","Alabama"],["AK","Alaska"],["AZ","Arizona"],["AR","Arkansas"],["CA","California"],
+    ["CO","Colorado"],["CT","Connecticut"],["DE","Delaware"],["DC","District of Columbia"],
+    ["FL","Florida"],["GA","Georgia"],["HI","Hawaii"],["ID","Idaho"],["IL","Illinois"],
+    ["IN","Indiana"],["IA","Iowa"],["KS","Kansas"],["KY","Kentucky"],["LA","Louisiana"],
+    ["ME","Maine"],["MD","Maryland"],["MA","Massachusetts"],["MI","Michigan"],["MN","Minnesota"],
+    ["MS","Mississippi"],["MO","Missouri"],["MT","Montana"],["NE","Nebraska"],["NV","Nevada"],
+    ["NH","New Hampshire"],["NJ","New Jersey"],["NM","New Mexico"],["NY","New York"],
+    ["NC","North Carolina"],["ND","North Dakota"],["OH","Ohio"],["OK","Oklahoma"],["OR","Oregon"],
+    ["PA","Pennsylvania"],["RI","Rhode Island"],["SC","South Carolina"],["SD","South Dakota"],
+    ["TN","Tennessee"],["TX","Texas"],["UT","Utah"],["VT","Vermont"],["VA","Virginia"],
+    ["WA","Washington"],["WV","West Virginia"],["WI","Wisconsin"],["WY","Wyoming"]
+  ].map(([value,name]) => Object.freeze({ value, label: name + " (" + value + ")" })));
+
   const clean = (value) => String(value ?? "").trim();
   const esc = (value) => String(value ?? "")
     .replaceAll("&", "&amp;")
@@ -80,14 +141,131 @@
     return result;
   }
 
-  function optionList(values, current, emptyLabel) {
-    const safe = Array.isArray(values) ? values.filter((value) => clean(value)) : [];
+  const SPECIES_ALIASES = Object.freeze({
+    rabbit: "rabbit", rabbits: "rabbit",
+    cattle: "cattle", cow: "cattle", cows: "cattle",
+    goat: "goat", goats: "goat", sheep: "sheep",
+    poultry: "poultry", chicken: "poultry", chickens: "poultry",
+    swine: "swine", pig: "swine", pigs: "swine"
+  });
+  const SEX_ALIASES = Object.freeze({
+    male: "male", m: "male", buck: "male", bull: "male", boar: "male", ram: "male",
+    rooster: "male", cock: "male", steer: "male", wether: "male", barrow: "male", capon: "male",
+    female: "female", f: "female", doe: "female", cow: "female", sow: "female", ewe: "female",
+    hen: "female", heifer: "female", gilt: "female",
+    unknown: "unknown", unsexed: "unknown", na: "unknown", "n/a": "unknown"
+  });
+  const STATE_CODES = new Map();
+  for (const entry of US_STATES) {
+    STATE_CODES.set(entry.value.toLowerCase(), entry.value);
+    STATE_CODES.set(entry.label.replace(/\s*\([A-Z]{2}\)$/, "").toLowerCase(), entry.value);
+  }
+  STATE_CODES.set("washington dc", "DC");
+  STATE_CODES.set("washington, dc", "DC");
+
+  function canonicalSpecies(value) {
+    const normalized = clean(value).toLowerCase();
+    return SPECIES_ALIASES[normalized] || normalized;
+  }
+
+  function canonicalSpeciesLabel(value) {
+    const key = canonicalSpecies(value);
+    const baseline = BASE_SPECIES.find((item) => item.toLowerCase() === key);
+    return baseline || clean(value);
+  }
+
+  function canonicalSex(value) {
+    const normalized = clean(value).toLowerCase();
+    return SEX_ALIASES[normalized] || normalized;
+  }
+
+  function canonicalRegion(value) {
+    const normalized = clean(value).toLowerCase();
+    return STATE_CODES.get(normalized) || clean(value);
+  }
+
+  function mergeValues(...groups) {
+    const seen = new Set();
+    const values = [];
+    for (const group of groups) {
+      if (!Array.isArray(group)) continue;
+      for (const item of group) {
+        const value = clean(item);
+        const key = value.toLowerCase();
+        if (!value || seen.has(key)) continue;
+        seen.add(key);
+        values.push(value);
+      }
+    }
+    return values;
+  }
+
+  function optionEntries(entries, current, emptyLabel) {
+    const wanted = clean(current).toLowerCase();
     return [
       '<option value="">' + esc(emptyLabel) + '</option>',
-      ...safe.map((value) => '<option value="' + esc(value) + '"' +
-        (clean(current).toLowerCase() === clean(value).toLowerCase() ? " selected" : "") +
-        '>' + esc(value) + '</option>')
+      ...(Array.isArray(entries) ? entries : []).map((entry) => {
+        const value = clean(entry?.value);
+        const label = clean(entry?.label) || value;
+        return '<option value="' + esc(value) + '"' +
+          (wanted === value.toLowerCase() ? " selected" : "") +
+          '>' + esc(label) + '</option>';
+      })
     ].join("");
+  }
+
+  function valueOptions(values, current, emptyLabel) {
+    return optionEntries(
+      mergeValues(values).map((value) => ({ value, label: value })),
+      current,
+      emptyLabel
+    );
+  }
+
+  function speciesValues(facets) {
+    const live = Array.isArray(facets?.species)
+      ? facets.species.map(canonicalSpeciesLabel)
+      : [];
+    return mergeValues(BASE_SPECIES, live);
+  }
+
+  function breedValues(species, facets) {
+    const key = canonicalSpecies(species);
+    const baseline = key
+      ? (BASE_BREEDS[key] || [])
+      : Object.values(BASE_BREEDS).flat();
+    const pairs = Array.isArray(facets?.breed_pairs) ? facets.breed_pairs : [];
+    const liveForSpecies = key
+      ? pairs
+          .filter((row) => canonicalSpecies(row?.species) === key)
+          .map((row) => row?.breed)
+      : (Array.isArray(facets?.breeds) ? facets.breeds : pairs.map((row) => row?.breed));
+    return mergeValues(baseline, liveForSpecies);
+  }
+
+  function sexEntries(facets) {
+    const entries = [...SEX_OPTIONS];
+    const known = new Set(SEX_OPTIONS.map((entry) => entry.value));
+    for (const value of Array.isArray(facets?.sexes) ? facets.sexes : []) {
+      const canonical = canonicalSex(value);
+      if (!clean(value) || known.has(canonical)) continue;
+      known.add(canonical);
+      entries.push({ value: clean(value), label: clean(value) });
+    }
+    return entries;
+  }
+
+  function regionEntries(facets) {
+    const entries = [...US_STATES];
+    const known = new Set(US_STATES.map((entry) => entry.value.toLowerCase()));
+    for (const value of Array.isArray(facets?.regions) ? facets.regions : []) {
+      const canonical = canonicalRegion(value);
+      const key = clean(canonical).toLowerCase();
+      if (!key || known.has(key)) continue;
+      known.add(key);
+      entries.push({ value: clean(value), label: clean(value) });
+    }
+    return entries;
   }
 
   function listingCard(row, photoUrl, favorite, interactive, suspended) {
@@ -196,14 +374,33 @@
     const countNode = root.querySelector("#marketplace-result-count");
     const pager = root.querySelector("#marketplace-pager");
 
+    function renderBreedOptions(species, currentBreed = "") {
+      form.elements.breed.innerHTML = valueOptions(
+        breedValues(species, facets),
+        currentBreed,
+        species ? "All " + canonicalSpeciesLabel(species).toLowerCase() + " breeds" : "All breeds"
+      );
+    }
+
+    function renderFilterOptions(state) {
+      const normalizedSpecies = canonicalSpeciesLabel(state.species);
+      const normalizedSex = canonicalSex(state.sex);
+      const normalizedRegion = canonicalRegion(state.region);
+
+      form.elements.species.innerHTML = valueOptions(speciesValues(facets), normalizedSpecies, "All species");
+      renderBreedOptions(normalizedSpecies, state.breed);
+      form.elements.sex.innerHTML = optionEntries(sexEntries(facets), normalizedSex, "Any sex");
+      form.elements.region.innerHTML = optionEntries(regionEntries(facets), normalizedRegion, "Any state");
+      form.elements.kind.innerHTML = optionEntries(LISTING_KIND_OPTIONS, state.kind, "Any listing type");
+    }
+
     async function loadFacets() {
-      facets = await rpc(client, "marketplace_public_facets_v2") || {};
-      const state = currentState();
-      form.elements.species.innerHTML = optionList(facets.species, state.species, "All species");
-      form.elements.breed.innerHTML = optionList(facets.breeds, state.breed, "All breeds");
-      form.elements.sex.innerHTML = optionList(facets.sexes, state.sex, "Any sex");
-      form.elements.region.innerHTML = optionList(facets.regions, state.region, "Any state / region");
-      form.elements.kind.innerHTML = optionList(facets.listing_kinds, state.kind, "Any listing type");
+      try {
+        facets = await rpc(client, "marketplace_public_facets_v2") || {};
+      } catch {
+        facets = {};
+      }
+      renderFilterOptions(currentState());
     }
 
     async function loadFavorites() {
@@ -217,7 +414,15 @@
 
     function applyState(state) {
       for (const name of ["q","species","breed","sex","region","pedigree","kind","min","max","sort"]) {
-        if (form.elements[name]) form.elements[name].value = state[name] || "";
+        if (!form.elements[name]) continue;
+        const value = name === "species"
+          ? canonicalSpeciesLabel(state[name])
+          : name === "sex"
+            ? canonicalSex(state[name])
+            : name === "region"
+              ? canonicalRegion(state[name])
+              : state[name];
+        form.elements[name].value = value || "";
       }
     }
 
@@ -342,6 +547,10 @@
         results.innerHTML = '<div class="marketplace-notice error">Marketplace listings could not be loaded. Try again.</div>';
       }
     }
+
+    form.elements.species.addEventListener("change", () => {
+      renderBreedOptions(form.elements.species.value, "");
+    });
 
     form.addEventListener("submit", (event) => {
       event.preventDefault();
