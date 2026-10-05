@@ -36,5 +36,5 @@ test("D1 Realtime is not loaded by the core HerdHarbor website shell", () => {
 
 test("D1 Messages runtime has a fresh cache identity", () => {
   const html = read("marketplace/messages/index.html");
-  assert.match(html, /data-marketplace-runtime="\/marketplace\/messages\/marketplace-messages\.js\?v=9"/);
+  assert.match(html, /data-marketplace-runtime="\/marketplace\/messages\/marketplace-messages\.js\?v=11"/);
 });

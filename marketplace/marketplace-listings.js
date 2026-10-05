@@ -102,11 +102,45 @@
     }).format(Number(listing.price_cents) / 100);
   }
 
+  function dateLabel(value) {
+    const date = new Date(value || "");
+    if (!Number.isFinite(date.getTime())) return "";
+    return new Intl.DateTimeFormat("en-US", { dateStyle: "medium" }).format(date);
+  }
+
+  function lifecycleButtons(listing) {
+    const id = esc(listing.id);
+    const state = clean(listing.state).toLowerCase();
+    if (state === "removed") return '<span class="marketplace-help">Locked</span>';
+
+    const buttons = [];
+    if (state === "available") {
+      buttons.push(`<button type="button" class="button button-secondary button-small" data-reconfirm-listing="${id}">Reconfirm 30 days</button>`);
+      buttons.push(`<button type="button" class="button button-secondary button-small" data-lifecycle-listing="${id}" data-lifecycle-state="pending">Mark pending</button>`);
+      buttons.push(`<button type="button" class="button button-secondary button-small" data-lifecycle-listing="${id}" data-lifecycle-state="sold">Mark sold</button>`);
+    } else if (state === "pending") {
+      buttons.push(`<button type="button" class="button button-secondary button-small" data-lifecycle-listing="${id}" data-lifecycle-state="available">Make available</button>`);
+      buttons.push(`<button type="button" class="button button-secondary button-small" data-lifecycle-listing="${id}" data-lifecycle-state="sold">Mark sold</button>`);
+    } else if (state === "expired") {
+      buttons.push(`<button type="button" class="button button-secondary button-small" data-reconfirm-listing="${id}">Renew 30 days</button>`);
+    } else if (state === "sold" || state === "archived") {
+      buttons.push(`<button type="button" class="button button-secondary button-small" data-lifecycle-listing="${id}" data-lifecycle-state="available">Relist available</button>`);
+    }
+
+    if (["available","pending","expired","sold"].includes(state)) {
+      buttons.push(`<button type="button" class="button button-secondary button-small" data-lifecycle-listing="${id}" data-lifecycle-state="archived">Archive</button>`);
+    }
+    buttons.push(`<button type="button" class="button button-secondary button-small" data-edit-listing="${id}">Edit</button>`);
+    return buttons.join(" ");
+  }
+
   async function listingCard(client, listing) {
     const firstPath = Array.isArray(listing.photo_paths) ? listing.photo_paths[0] : "";
     const photo = await signedUrl(client, firstPath);
     const location = [listing.location_city, listing.location_region].filter(Boolean).join(", ");
-    const removed = clean(listing.state).toLowerCase() === "removed";
+    const state = clean(listing.state).toLowerCase();
+    const removed = state === "removed";
+    const expiry = dateLabel(listing.expires_at);
 
     return `
       <article class="marketplace-listing-card ${removed ? "is-moderation-removed" : ""}" data-listing-id="${esc(listing.id)}">
@@ -119,10 +153,15 @@
           <h3>${esc(listing.animal_name || "Unnamed listing")}</h3>
           <p class="marketplace-card-meta">${esc([listing.breed, listing.variety_color, listing.sex].filter(Boolean).join(" · ") || listing.species || "Animal")}</p>
           <p class="marketplace-card-meta">${esc(location || "Location not set")}</p>
+          ${state === "available" && expiry ? `<p class="marketplace-card-meta">Available through ${esc(expiry)}</p>` : ""}
+          ${state === "expired" ? '<div class="marketplace-notice">This listing expired and is no longer in Browse. Renew it for another 30 days or archive it.</div>' : ""}
+          ${state === "pending" ? '<div class="marketplace-notice">Pending listings are hidden from normal Browse until you make them Available again.</div>' : ""}
+          ${state === "sold" ? '<div class="marketplace-notice success">Sold listings are hidden from normal Browse.</div>' : ""}
+          ${state === "archived" ? '<div class="marketplace-notice">Archived listings are hidden from normal Browse.</div>' : ""}
           ${removed ? '<div class="marketplace-notice error">Removed by Marketplace moderation. This listing is locked until the Owner restores it to draft.</div>' : ""}
           <div class="marketplace-card-footer">
             <strong>${esc(priceLabel(listing))}</strong>
-            ${removed ? '<span class="marketplace-help">Locked</span>' : `<button type="button" class="button button-secondary button-small" data-edit-listing="${esc(listing.id)}">Edit</button>`}
+            <span class="marketplace-listing-actions">${lifecycleButtons(listing)}</span>
           </div>
         </div>
       </article>
@@ -193,7 +232,8 @@
     }
 
     async function loadListings() {
-      const data = await rpc(client, "marketplace_member_listings");
+      await rpc(client, "marketplace_member_refresh_listing_lifecycle").catch(() => 0);
+      const data = await rpc(client, "marketplace_member_listings_v2");
       listings = Array.isArray(data) ? data : [];
       const cards = await Promise.all(listings.map((listing) => listingCard(client, listing)));
       grid.innerHTML = cards.length
@@ -204,6 +244,37 @@
         button.addEventListener("click", () => {
           const listing = listings.find((item) => String(item.id) === button.dataset.editListing);
           openEditor(listing || null, null);
+        });
+      });
+
+      grid.querySelectorAll("[data-reconfirm-listing]").forEach((button) => {
+        button.addEventListener("click", async () => {
+          button.disabled = true;
+          try {
+            await rpc(client, "marketplace_member_reconfirm_listing", { listing_id_value: button.dataset.reconfirmListing });
+            await loadListings();
+          } catch {
+            button.disabled = false;
+            globalThis.alert("This listing could not be renewed. Confirm your Seller Profile is active and try again.");
+          }
+        });
+      });
+
+      grid.querySelectorAll("[data-lifecycle-listing]").forEach((button) => {
+        button.addEventListener("click", async () => {
+          const nextState = button.dataset.lifecycleState;
+          if (nextState === "sold" && !globalThis.confirm("Mark this listing Sold? It will immediately leave normal Marketplace Browse.")) return;
+          button.disabled = true;
+          try {
+            await rpc(client, "marketplace_member_update_listing_lifecycle", {
+              listing_id_value: button.dataset.lifecycleListing,
+              state_value: nextState
+            });
+            await loadListings();
+          } catch {
+            button.disabled = false;
+            globalThis.alert("The listing status could not be changed.");
+          }
         });
       });
     }

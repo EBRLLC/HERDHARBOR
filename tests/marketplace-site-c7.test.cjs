@@ -150,13 +150,13 @@ test("C7W shared and nested Marketplace assets are consistently versioned", () =
     read("marketplace/account/index.html")
   ].join("\n");
 
-  assert.match(gate, /marketplace-shell\.js\?v=9/);
+  assert.match(gate, /marketplace-shell\.js\?v=12/);
   assert.match(shell, /marketplace-browse\.js\?v=8/);
-  assert.match(shell, /marketplace-listings\.js\?v=8/);
+  assert.match(shell, /marketplace-listings\.js\?v=9/);
   assert.match(shell, /marketplace-profile\.js\?v=8/);
-  assert.match(shell, /marketplace-admin\.js\?v=7/);
+  assert.match(shell, /marketplace-admin\.js\?v=8/);
   assert.doesNotMatch(pages, /marketplace\.css\?v=[1-6]/);
-  assert.match(pages, /marketplace-gate\.js\?v=10/);
+  assert.match(pages, /marketplace-gate\.js\?v=13/);
 });
 
 test("C7W public browse remains noindex until explicit production launch authorization", () => {
@@ -255,7 +255,7 @@ test("C7W nested Marketplace pages resolve their runtime from the current page d
 
   assert.match(gate, /const MARKETPLACE_BASE = new URL\("\.\/", window\.location\.href\)/);
   assert.doesNotMatch(gate, /gateScript\?\.src/);
-  assert.match(listing, /data-marketplace-runtime="\/marketplace\/marketplace-detail\.js\?v=8"/);
-  assert.match(seller, /data-marketplace-runtime="\/marketplace\/marketplace-seller\.js\?v=8"/);
-  assert.match(messages, /data-marketplace-runtime="\/marketplace\/messages\/marketplace-messages\.js\?v=9"/);
+  assert.match(listing, /data-marketplace-runtime="\/marketplace\/marketplace-detail\.js\?v=9"/);
+  assert.match(seller, /data-marketplace-runtime="\/marketplace\/marketplace-seller\.js\?v=9"/);
+  assert.match(messages, /data-marketplace-runtime="\/marketplace\/messages\/marketplace-messages\.js\?v=11"/);
 });
