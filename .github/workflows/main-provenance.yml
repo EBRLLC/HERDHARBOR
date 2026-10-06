@@ -1,0 +1,40 @@
+name: HerdHarbor Website main provenance
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pull-requests: read
+
+jobs:
+  reviewed-main:
+    name: Reviewed PR provenance
+    runs-on: ubuntu-latest
+    steps:
+      - name: Require merged PR provenance for main push
+        if: ${{ github.event_name == 'push' }}
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          python - <<'PY'
+          import json, os, urllib.request
+          repo=os.environ["GITHUB_REPOSITORY"]
+          sha=os.environ["GITHUB_SHA"]
+          req=urllib.request.Request(
+              f"https://api.github.com/repos/{repo}/commits/{sha}/pulls",
+              headers={
+                  "Authorization": f"Bearer {os.environ['GH_TOKEN']}",
+                  "Accept": "application/vnd.github+json",
+                  "X-GitHub-Api-Version": "2022-11-28",
+              },
+          )
+          with urllib.request.urlopen(req) as r:
+              prs=json.load(r)
+          merged=[pr for pr in prs if pr.get("merged_at") and pr.get("base",{}).get("ref")=="main"]
+          if not merged:
+              raise SystemExit("Governance violation: main commit is not traceable to a merged PR.")
+          print("Reviewed PR provenance:", ", ".join(f"#{pr['number']}" for pr in merged))
+          PY
