@@ -18,7 +18,7 @@ It describes the stable HerdHarbor public experience and links to the live web a
 - Eligible adult accounts receive one calendar month of Member access free.
 - No credit card is required to start the trial.
 - Member is $14.99/month after the trial if the user chooses to continue.
-- Eligible adults can fall back to Free Adult without deleting existing herd records.
+- Free Adult is not selectable at signup; it automatically preserves an existing adult Member account if paid access ends because the subscription is canceled or payment fails.
 - A referral qualifies after the referred Member's first successful monthly renewal.
 - Every five qualified referrals earns one stackable Member-month credit.
 - AI-assisted pedigree, voice, and photo tools remain publicly described as Coming Soon until their separate public releases.
