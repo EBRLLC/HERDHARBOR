@@ -70,3 +70,10 @@ test("customer help does not publish tester-only AI workflow instructions", () =
   assert.doesNotMatch(howTo, /Paper Pedigree AI|guide-import-paper-pedigree|Import a paper pedigree photo|voice-assisted entry|photo-assisted entry/i);
   assert.doesNotMatch(howTo, /localStorage\.|sessionStorage\.|indexedDB\./);
 });
+
+
+test("section numbers run 01 through 20 in guide order", () => {
+  const numbers = [...howTo.matchAll(/<section class="section" id="[^"]+"[\s\S]*?<span class="section-number">([^<]+)<\/span>/g)]
+    .map((match) => match[1]);
+  assert.deepEqual(numbers, Array.from({ length: 20 }, (_, index) => String(index + 1).padStart(2, "0")));
+});
