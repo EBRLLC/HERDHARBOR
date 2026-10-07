@@ -18,7 +18,9 @@ test("Free Adult is not presented as a selectable website plan", () => {
   assert.doesNotMatch(home, /continue (?:as|with) (?:a )?paid Member or (?:fall back to )?Free Adult/i);
   assert.match(home, /Free Adult is account protection, not a signup plan/i);
   assert.match(home, /It cannot be selected when creating an account/i);
-  assert.match(home, /initial Member trial expires without a paid subscription/i);\n  assert.match(home, /paid Member subscription later ends/i);\n  assert.match(home, /temporary payment failure.*past-due lifecycle/i);
+  assert.match(home, /initial Member trial expires without a paid subscription/i);
+  assert.match(home, /paid Member subscription later ends/i);
+  assert.match(home, /temporary payment failure.*past-due lifecycle/i);
 });
 
 test("pricing presents actual signup paths separately from fallback protection", () => {
