@@ -57,3 +57,12 @@ test("Marketplace is documented as a separate website workflow", () => {
   assert.match(howTo, /Seller Profile before publishing/);
   assert.match(howTo, /Buyer note:[\s\S]*do not need a Seller Profile to browse or message a seller/i);
 });
+
+
+test("How To Center covers live document show and production workflows", () => {
+  for (const anchor of ["guide-customize-print-pedigree","guide-birth-certificate","guide-new-owner-package","guide-show-entry","guide-production-record"]) {
+    assert.match(howTo, new RegExp('id="' + anchor + '"'));
+  }
+  assert.match(howTo, /Free Adult is an automatic fallback state/);
+  assert.match(howTo, /cannot be selected during signup/);
+});
