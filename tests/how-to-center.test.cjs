@@ -50,33 +50,39 @@ test("host-independent header assets and navigation are valid", () => {
 });
 
 
-test("Marketplace workflow matches the live website", () => {
+test("Marketplace is documented as a separate website workflow", () => {
   assert.match(howTo, /id="marketplace"/);
   assert.match(howTo, /href="https:\/\/herdharbor\.com\/marketplace\/"/);
   assert.match(howTo, /Anyone can view active listings/);
-  assert.match(howTo, /Complete Seller Profile before publishing/);
-  assert.match(howTo, /Select From My Herd/);
-  assert.match(howTo, /read-only and excludes private herd notes, health data, contact details, photos, internal IDs, and sync metadata/);
-  assert.match(howTo, /Do I need a Seller Profile to use Marketplace\?/);
+  assert.match(howTo, /Seller Profile before publishing/);
+  assert.match(howTo, /do not need a Seller Profile to browse or message a seller/i);
 });
 
-test("customer help documents current public workflows without exposing tester-only AI entry", () => {
+test("How To Center covers live document show and production workflows", () => {
   for (const anchor of ["guide-customize-print-pedigree","guide-birth-certificate","guide-new-owner-package","guide-show-entry","guide-production-record"]) {
     assert.match(howTo, new RegExp('id="' + anchor + '"'));
   }
-  assert.doesNotMatch(howTo, /guide-import-paper-pedigree|Paper Pedigree AI|voice-assisted entry|photo-assisted entry|AI-assisted entry/i);
-  assert.match(howTo, /Print \/ Save PDF/);
-  assert.match(howTo, /Add a show entry and result/);
-  assert.match(howTo, /Add a production record/);
-  assert.match(howTo, /\+ Record birth/);
-  assert.match(howTo, /Create offspring/);
-  assert.match(howTo, /\+ Expense/);
-  assert.match(howTo, /\+ Income/);
-  assert.match(howTo, /\+ Production/);
-  assert.match(howTo, /Sync now/);
-  assert.match(howTo, /Download safety backup/);
-  assert.match(howTo, /Export backup/);
-  assert.match(howTo, /Export records to Excel/);
-  assert.match(howTo, /Download Excel template/);
-  assert.match(howTo, /Upload Excel file/);
+  assert.match(howTo, /href="https:\/\/app\.herdharbor\.com\/#shows"/);
+  assert.match(howTo, /href="https:\/\/app\.herdharbor\.com\/#budget"/);
+});
+
+test("customer help does not publish tester-only AI workflow instructions", () => {
+  assert.doesNotMatch(howTo, /Paper Pedigree AI|guide-import-paper-pedigree|Import a paper pedigree photo|voice-assisted entry|photo-assisted entry/i);
+  assert.doesNotMatch(howTo, /localStorage\.|sessionStorage\.|indexedDB\./);
+});
+
+
+test("section numbers run 01 through 20 in guide order", () => {
+  const numbers = [...howTo.matchAll(/<section class="section" id="[^"]+"[\s\S]*?<span class="section-number">([^<]+)<\/span>/g)]
+    .map((match) => match[1]);
+  assert.deepEqual(numbers, Array.from({ length: 20 }, (_, index) => String(index + 1).padStart(2, "0")));
+});
+
+
+test("exact live control labels stay documented", () => {
+  for (const pattern of [
+    /\+ Record birth/, /Create offspring/, /\+ Expense/, /\+ Income/, /\+ Production/,
+    /Sync now/, /Download safety backup/, /Export backup/, /Export records to Excel/,
+    /Download Excel template/, /Upload Excel file/
+  ]) assert.match(howTo, pattern);
 });
