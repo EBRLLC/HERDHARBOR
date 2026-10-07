@@ -96,3 +96,10 @@ test("signup guidance matches selectable plan controls", () => {
 test("canonical HTML contains no literal escaped newlines", () => {
   assert.doesNotMatch(howTo, /\\n/);
 });
+
+
+test("customer workflow labels match current controls", () => {
+  for (const label of ["+ Record birth","+ Expense","+ Income","+ Production","Download Excel template","Upload Excel file","Export records to Excel","Download safety backup","Export backup","Sync now"]) {
+    assert.ok(howTo.includes(label), "missing live label " + label);
+  }
+});
