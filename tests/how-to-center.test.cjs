@@ -67,5 +67,16 @@ test("customer help documents current public workflows without exposing tester-o
   assert.doesNotMatch(howTo, /guide-import-paper-pedigree|Paper Pedigree AI|voice-assisted entry|photo-assisted entry|AI-assisted entry/i);
   assert.match(howTo, /Print \/ Save PDF/);
   assert.match(howTo, /Add a show entry and result/);
-  assert.match(howTo, /Add a production record/);\n  assert.match(howTo, /\+ Record birth/);\n  assert.match(howTo, /Create offspring/);\n  assert.match(howTo, /\+ Expense/);\n  assert.match(howTo, /\+ Income/);\n  assert.match(howTo, /\+ Production/);\n  assert.match(howTo, /Sync now/);\n  assert.match(howTo, /Download safety backup/);\n  assert.match(howTo, /Export backup/);\n  assert.match(howTo, /Export records to Excel/);\n  assert.match(howTo, /Download Excel template/);\n  assert.match(howTo, /Upload Excel file/);
+  assert.match(howTo, /Add a production record/);
+  assert.match(howTo, /\+ Record birth/);
+  assert.match(howTo, /Create offspring/);
+  assert.match(howTo, /\+ Expense/);
+  assert.match(howTo, /\+ Income/);
+  assert.match(howTo, /\+ Production/);
+  assert.match(howTo, /Sync now/);
+  assert.match(howTo, /Download safety backup/);
+  assert.match(howTo, /Export backup/);
+  assert.match(howTo, /Export records to Excel/);
+  assert.match(howTo, /Download Excel template/);
+  assert.match(howTo, /Upload Excel file/);
 });
