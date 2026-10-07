@@ -16,7 +16,7 @@ The public product language presents HerdHarbor as a farm management app with sp
 - Eligible adult accounts receive one calendar month of Member access free.
 - No credit card is required to start the free month.
 - Member is $14.99/month after the free month if the user chooses to continue.
-- Free Adult remains the adult fallback without deleting existing herd records.
+- Free Adult is an automatic adult fallback state after Member access ends; it is not selectable at signup and exists to preserve existing animals and records.
 - Founder pricing remains reserved for eligible Founder accounts and is not a public signup choice.
 - Every five qualified referrals earns one stackable Member-month credit.
 
