@@ -36,6 +36,10 @@ test("How To Center matches current customer-facing workflow labels", () => {
   assert.match(howTo, /herd records are not deleted/i);
   assert.match(howTo, /not a DNA test/i);
   assert.match(howTo, /not a substitute for veterinary diagnosis or treatment/i);
+  assert.match(howTo, /Junior is a separate free plan/i);
+  assert.doesNotMatch(howTo, /Trial, Membership & Referrals\s*v1\.8\.4/i);
+  assert.doesNotMatch(howTo, /Paper Pedigree AI|guide-import-paper-pedigree|Import a paper pedigree photo/i);
+  assert.doesNotMatch(howTo, /localStorage\.|sessionStorage\.|indexedDB\./);
 });
 
 test("How To Center uses host-independent navigation and a valid public brand asset", () => {
