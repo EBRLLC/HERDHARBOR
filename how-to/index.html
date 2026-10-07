@@ -112,7 +112,7 @@
       <a class="guide-card" href="#analytics" data-icon-label="Analytics & Production" data-app-route="analytics" data-search="analytics reports production show sales revenue growth"><span class="guide-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><use href="#i-analytics"></use></svg></span><strong>Analytics & Production</strong><span>Turn records into useful trends without entering the same fact twice.</span></a>
       <a class="guide-card" href="#sales" data-icon-label="Sales & Customers" data-app-route="sales" data-search="sale sold customer payment transfer price"><span class="guide-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><use href="#i-sales"></use></svg></span><strong>Sales & Customers</strong><span>Record buyers, sales, payments, and animal status changes.</span></a>
       <a class="guide-card" href="#marketplace" data-icon-label="Marketplace" data-search="marketplace browse listing seller profile message favorite pedigree filters publish"><span class="guide-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><use href="#i-marketplace"></use></svg></span><strong>Marketplace</strong><span>Browse, message, create listings, publish safely, and share only the pedigree details you choose.</span></a>
-      <a class="guide-card" href="#subscription" data-icon-label="Membership & Referrals" data-search="subscription plan member free adult junior billing stripe trial referral calendar month"><span class="guide-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><use href="#i-member"></use></svg></span><strong>Trial, Membership & Referrals</strong><span>Understand trial access, plans, billing, and referral credits.</span></a>
+      <a class="guide-card" href="#subscription" data-icon-label="Membership & Referrals" data-search="subscription plan member free adult junior billing stripe trial referral calendar month"><span class="guide-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><use href="#i-member"></use></svg></span><strong>Trial, Membership & Referrals</strong><span>Understand Member trial access, billing, automatic Free Adult fallback, and referral credits.</span></a>
       <a class="guide-card" href="#sync" data-icon-label="Cloud Sync & Offline" data-search="cloud sync offline backup data device"><span class="guide-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><use href="#i-cloud"></use></svg></span><strong>Cloud Sync & Offline Use</strong><span>Know what happens online, offline, and when moving between devices.</span></a>
       <a class="guide-card" href="#youth" data-icon-label="Youth & Junior" data-search="junior youth child parent guardian 4-h"><span class="guide-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><use href="#i-youth"></use></svg></span><strong>Youth & Junior Accounts</strong><span>Use HerdHarbor appropriately with adult-managed youth participation.</span></a>
       <a class="guide-card" href="#symptoms" data-icon-label="Symptom Guide" data-app-route="symptoms" data-search="symptom guide symptoms urgency observation health educational veterinarian"><span class="guide-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><use href="#i-symptoms"></use></svg></span><strong>Symptom Guide</strong><span>Organize observed signs and understand urgency without treating the guide as a diagnosis.</span></a>
@@ -195,11 +195,11 @@
       <div class="guide-meta"><span class="meta-chip">Estimated 2–4 min</span><span class="meta-chip neutral">Basic</span><span class="meta-chip neutral">App area: Births & Litters</span></div>
       <div class="guide-actions"><a class="mini-link primary" href="https://app.herdharbor.com/#litters">Open this in HerdHarbor →</a></div>
       <div class="steps">
-        <div class="step"><strong>Open Births & Litters or the breeding record.</strong> Choose the breeding that produced the birth whenever possible.</div>
-        <div class="step"><strong>Record the birth date and outcome.</strong> Enter the counts and other species-appropriate birth information shown by HerdHarbor.</div>
-        <div class="step"><strong>Create offspring from the litter workflow.</strong> Add individual names/tags when known. Parentage should carry forward from the selected breeding.</div>
-        <div class="step"><strong>Save the litter and offspring.</strong> New individual animals become available for Health, Growth, Pedigree, Genetics, Shows, Production, and Sales as applicable.</div>
-        <div class="step"><strong>Use Tasks for follow-up work.</strong> Weaning or other scheduled care can appear in Today when it is represented by existing task/follow-up data.</div>
+        <div class="step"><strong>Open Births & Litters and choose + Record birth, or choose Record birth on the breeding.</strong> Select the breeding that produced the birth whenever one exists so sire and dam stay linked.</div>
+        <div class="step"><strong>Enter the actual birth information.</strong> Record the birth date, born alive, stillborn, fostered young, losses, expected weaning date, and other fields that apply.</div>
+        <div class="step"><strong>Save the birth record first.</strong> When it is linked to a breeding, HerdHarbor marks that breeding delivered, closes its expected-birth reminders, and can create the weaning reminder from the saved date.</div>
+        <div class="step"><strong>Create individual offspring from the saved birth card.</strong> Choose Create offspring or Add offspring, then add the individual animals you want tracked. Parentage carries forward from the linked breeding.</div>
+        <div class="step"><strong>Update the same birth record as the litter develops.</strong> Record later weaned or lost-before-weaning counts instead of creating a second birth record.</div>
       </div>
     
       <div class="guide-feedback" data-feedback-guide="litters"><strong>Was this guide helpful?</strong><div class="feedback-actions"><button type="button" data-feedback="yes">Yes</button><button type="button" data-feedback="no">No</button></div><p class="feedback-message" aria-live="polite"></p></div>
@@ -403,10 +403,11 @@
     <section class="section" id="budget" data-guide="budget expense income cost feed supplies equipment revenue profitability financial">
       <div class="section-header"><span class="section-number">17</span><div><h2>Budget & Expenses</h2><p>Use Budget for operation-level money records and let Analytics reuse those records where supported.</p></div></div>
       <div class="steps">
-        <div class="step"><strong>Open Budget from the Management menu.</strong> Use the existing expense/income controls instead of keeping a second copy of the same transaction elsewhere in HerdHarbor.</div>
-        <div class="step"><strong>Record the real date, amount, and category.</strong> Add vendor, description, animal/litter context, or notes when the workflow provides those fields and the information is known.</div>
-        <div class="step"><strong>Keep animal/customer transactions in Sales & Customers.</strong> Budget is for the operation-level financial view rather than replacing the sale record and customer history.</div>
-        <div class="step"><strong>Review financial summaries in Analytics when available.</strong> Profitability and trend views are only as complete as the underlying recorded income and expenses.</div>
+        <div class="step"><strong>Open Budget from the Management menu.</strong> Use + Expense for costs, + Income for non-sale income, and + Production for production records.</div>
+        <div class="step"><strong>Record the real date, amount, category, and scope.</strong> Add vendor/payer, description, species or animal context, and notes only when they apply.</div>
+        <div class="step"><strong>Record animal sales and received sale payments in Sales & Customers.</strong> HerdHarbor links received sale payments into Budget automatically, so do not enter the same payment again as separate income.</div>
+        <div class="step"><strong>Use Production for Eggs, Milk, Broilers, Hay, or a custom product.</strong> When a production record includes sold value, its linked income is updated from that record instead of creating a duplicate transaction.</div>
+        <div class="step"><strong>Use the period, species, and transaction filters to review the right totals.</strong> Budget and Analytics are only as complete as the records you enter.</div>
       </div>
       <div class="tip"><a class="route-link" href="https://app.herdharbor.com/#budget">Open Budget →</a> &nbsp; <a class="route-link" href="https://app.herdharbor.com/#analytics">Open Analytics →</a></div>
     
@@ -416,12 +417,12 @@
     <section class="section" id="settings" data-guide="settings account profile operation membership subscription referral sync cloud backup import export spreadsheet appearance privacy delete data">
       <div class="section-header"><span class="section-number">18</span><div><h2>Settings, Account & Data</h2><p>Settings is the control center for your account, operation profile, membership, data tools, sync, and app preferences.</p></div></div>
       <div class="steps">
-        <div class="step"><strong>Open Settings from the Account area.</strong> Review the signed-in account and operation profile before changing account-bound or cloud-related settings.</div>
-        <div class="step"><strong>Use Membership controls for selectable plan and billing actions.</strong> Junior and Member are signup/account choices where available. Free Adult may be displayed as the current fallback state, but it is never selected as a plan. Referral, checkout, and billing-portal information stays in the subscription controls.</div>
-        <div class="step"><strong>Use Sync controls for cloud status and recovery.</strong> Check the current sync state, retry only when appropriate, and preserve local data if a conflict or provider problem is shown.</div>
-        <div class="step"><strong>Use Data tools for backups, imports, and exports.</strong> Download a safety backup before destructive actions. Spreadsheet imports should be reviewed before confirmation, and exports do not change the underlying records.</div>
-        <div class="step"><strong>Use appearance and profile settings for presentation changes.</strong> These do not replace animal, health, breeding, sales, or other canonical records.</div>
-        <div class="step"><strong>Use the dedicated account-deletion/privacy controls when needed.</strong> Do not clear browser storage as a substitute for signing out, switching accounts, repairing sync, or deleting the account.</div>
+        <div class="step"><strong>Open Settings from the Account area.</strong> Use Edit profile for operation details and the Appearance controls for presentation changes.</div>
+        <div class="step"><strong>Review Membership before changing billing.</strong> Junior and Member are selectable account paths where available. Free Adult may appear as the current automatic fallback state, but it is never a plan you select.</div>
+        <div class="step"><strong>Use Cloud sync for connection and recovery status.</strong> Review Status, Last synced, Connection, and Unsynced changes. Choose Sync now to retry after connectivity returns; do not clear local data to repair sync.</div>
+        <div class="step"><strong>Use Download safety backup before risky or destructive work.</strong> The Export and import area also provides Export backup, Import backup, and Export records to Excel.</div>
+        <div class="step"><strong>Use Excel spreadsheet import for bulk record entry.</strong> Choose Download Excel template, fill the supported sheets, then Upload Excel file and review valid rows, duplicates, and errors before confirming.</div>
+        <div class="step"><strong>Use the dedicated Account deletion and Privacy controls when needed.</strong> Clear local data only removes this device's working copy; it is not account deletion and is not a substitute for signing out or switching accounts.</div>
       </div>
       <div class="tip"><a class="route-link" href="https://app.herdharbor.com/#settings">Open Settings →</a></div>
     
