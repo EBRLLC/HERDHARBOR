@@ -96,3 +96,12 @@ test("signup guidance matches selectable plan controls", () => {
 test("canonical HTML contains no literal escaped newlines", () => {
   assert.doesNotMatch(howTo, /\\n/);
 });
+
+
+test("exact live controls stay documented", () => {
+  for (const pattern of [
+    /\+ Record birth/, /Create offspring/, /\+ Expense/, /\+ Income/, /\+ Production/,
+    /Sync now/, /Download safety backup/, /Export backup/, /Export records to Excel/,
+    /Download Excel template/, /Upload Excel file/
+  ]) assert.match(howTo, pattern);
+});
