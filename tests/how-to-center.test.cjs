@@ -12,18 +12,18 @@ test("How To Center is complete, ordered, and uses canonical app routes", () => 
   assert.match(howTo, /HERDHARBOR HOW-TO CANONICAL/);
   assert.match(howTo, /Most common tasks/);
   assert.match(howTo, /New to HerdHarbor\? Start here\./);
-  assert.match(howTo, /19 guides available/);
+  assert.match(howTo, /20 guides available/);
   assert.doesNotMatch(howTo, /Visual walkthrough coming soon/);
   assert.doesNotMatch(howTo, /href="\/#/);
 
   const expected = [
     "getting-started","animals","pedigrees","breeding","litters","health","growth","genetics",
-    "tasks","analytics","sales","subscription","sync","youth","symptoms","budget","settings",
+    "tasks","analytics","sales","marketplace","subscription","sync","youth","symptoms","budget","settings",
     "workflow-index","faq"
   ];
   const actual = [...howTo.matchAll(/<section class="section" id="([^"]+)"/g)].map((match) => match[1]);
   assert.deepEqual(actual, expected);
-  assert.equal([...howTo.matchAll(/<a class="guide-card"[^>]*href="#/g)].length, 19);
+  assert.equal([...howTo.matchAll(/<a class="guide-card"[^>]*href="#/g)].length, 20);
 });
 
 test("How To Center matches current customer-facing workflow labels", () => {
@@ -47,4 +47,13 @@ test("How To Center uses host-independent navigation and a valid public brand as
   assert.match(howTo, /href="https:\/\/herdharbor\.com\/" aria-label="Back to HerdHarbor website"/);
   assert.match(howTo, /href="https:\/\/app\.herdharbor\.com\/">Back to app<\/a>/);
   assert.match(howTo, /src="https:\/\/herdharbor\.com\/assets\/herdharbor-icon\.png"/);
+});
+
+
+test("Marketplace is documented as a separate website workflow", () => {
+  assert.match(howTo, /id="marketplace"/);
+  assert.match(howTo, /href="https:\/\/herdharbor\.com\/marketplace\/"/);
+  assert.match(howTo, /Anyone can view active listings/);
+  assert.match(howTo, /Seller Profile before publishing/);
+  assert.match(howTo, /Buyer note:[\s\S]*do not need a Seller Profile to browse or message a seller/i);
 });
