@@ -1,0 +1,45 @@
+"use strict";
+
+const test = require("node:test");
+const assert = require("node:assert/strict");
+const fs = require("node:fs");
+const path = require("node:path");
+
+const root = path.resolve(__dirname, "..");
+const howTo = fs.readFileSync(path.join(root, "how-to/index.html"), "utf8");
+
+test("How To Center is complete, ordered, and uses canonical app routes", () => {
+  assert.match(howTo, /HERDHARBOR HOW-TO CANONICAL/);
+  assert.match(howTo, /Most common tasks/);
+  assert.match(howTo, /New to HerdHarbor\? Start here\./);
+  assert.match(howTo, /19 guides available/);
+  assert.doesNotMatch(howTo, /Visual walkthrough coming soon/);
+  assert.doesNotMatch(howTo, /href="\/#/);
+
+  const expected = [
+    "getting-started","animals","pedigrees","breeding","litters","health","growth","genetics",
+    "tasks","analytics","sales","subscription","sync","youth","symptoms","budget","settings",
+    "workflow-index","faq"
+  ];
+  const actual = [...howTo.matchAll(/<section class="section" id="([^"]+)"/g)].map((match) => match[1]);
+  assert.deepEqual(actual, expected);
+  assert.equal([...howTo.matchAll(/<a class="guide-card"[^>]*href="#/g)].length, 19);
+});
+
+test("How To Center matches current customer-facing workflow labels", () => {
+  for (const route of ["animals","pedigrees","breeding","litters","health","symptoms","tasks","analytics","budget","sales","settings"]) {
+    assert.match(howTo, new RegExp('https://app\\.herdharbor\\.com/#' + route));
+  }
+  assert.match(howTo, /Weight, Treatment, Medication, Vaccination, Observation, or Veterinary visit/);
+  assert.match(howTo, /How to Use Genetics & Rabbit Pair Analysis/);
+  assert.match(howTo, /Free Adult is the permanent adult fallback/i);
+  assert.match(howTo, /herd records are not deleted/i);
+  assert.match(howTo, /not a DNA test/i);
+  assert.match(howTo, /not a substitute for veterinary diagnosis or treatment/i);
+});
+
+test("How To Center uses host-independent navigation and a valid public brand asset", () => {
+  assert.match(howTo, /href="https:\/\/herdharbor\.com\/" aria-label="Back to HerdHarbor website"/);
+  assert.match(howTo, /href="https:\/\/app\.herdharbor\.com\/">Back to app<\/a>/);
+  assert.match(howTo, /src="https:\/\/herdharbor\.com\/assets\/herdharbor-icon\.png"/);
+});
