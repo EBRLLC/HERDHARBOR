@@ -34,6 +34,7 @@ test("How To Center matches current customer-facing workflow labels", () => {
   assert.match(howTo, /How to Use Genetics & Rabbit Pair Analysis/);
   assert.match(howTo, /Free Adult is the permanent adult fallback/i);
   assert.match(howTo, /not a signup plan and cannot be selected as an account type/i);
+  assert.match(howTo, /payment failure ultimately ends paid access/i);
   assert.match(howTo, /herd records are not deleted/i);
   assert.match(howTo, /not a DNA test/i);
   assert.match(howTo, /not a substitute for veterinary diagnosis or treatment/i);
