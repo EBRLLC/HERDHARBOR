@@ -18,7 +18,9 @@ test("Free Adult is not presented as a selectable website plan", () => {
   assert.doesNotMatch(home, /continue (?:as|with) (?:a )?paid Member or (?:fall back to )?Free Adult/i);
   assert.match(home, /Free Adult is account protection, not a signup plan/i);
   assert.match(home, /It cannot be selected when creating an account/i);
-  assert.match(home, /subscription is canceled or a payment failure interrupts access/i);
+  assert.match(home, /initial Member trial expires without a paid subscription/i);
+  assert.match(home, /paid Member subscription later ends/i);
+  assert.match(home, /temporary payment failure.*past-due lifecycle/i);
 });
 
 test("pricing presents actual signup paths separately from fallback protection", () => {
@@ -32,9 +34,9 @@ test("pricing presents actual signup paths separately from fallback protection",
 
 test("website help and release copy use the same fallback-only rule", () => {
   for (const source of [howTo, currentRelease]) {
-    assert.match(source, /not (?:a selectable signup plan|a signup plan|selectable at signup)/i);
-    assert.match(source, /subscription is canceled or (?:a )?payment (?:failure|fails)/i);
+    assert.match(source, /not (?:a selectable account or signup plan|a selectable signup plan|a signup plan|selectable at signup)/i);
+    assert.match(source, /trial (?:ends|expires).*without a paid subscription/i);
+    assert.match(source, /paid Member subscription.*ends/i);
   }
-  assert.doesNotMatch(howTo, /fallback after trial or paid Member access ends/i);
-  assert.doesNotMatch(howTo, /paid\/trial Member access ends/i);
+  assert.doesNotMatch(howTo, /value="free_adult"/i);
 });
